@@ -3,7 +3,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-$role_id = PCC_WooOTEC_Pro_Core::instance()->get_option('student_role_id', 5);
+$role_id = Woo_OTEC_Moodle_Core::instance()->get_option('student_role_id', 5);
 ?>
 <h3>Paso 3: Permisos del Alumno (Rol)</h3>
 <p>¿Con qué permisos o nivel de acceso entrarán tus clientes a la escuela cuando compren un curso? (Normalmente entran como Estudiantes).</p>

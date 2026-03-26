@@ -8,10 +8,10 @@ if (!defined('ABSPATH')) {
  * Orquestador del panel de administración.
  * Inicializa las clases de configuración y AJAX, y gestiona la carga de vistas.
  */
-final class PCC_WooOTEC_Pro_Admin {
-    private static ?PCC_WooOTEC_Pro_Admin $instance = null;
+final class Woo_OTEC_Moodle_Admin {
+    private static ?Woo_OTEC_Moodle_Admin $instance = null;
 
-    public static function instance(): PCC_WooOTEC_Pro_Admin {
+    public static function instance(): Woo_OTEC_Moodle_Admin {
         if (self::$instance === null) {
             self::$instance = new self();
         }
@@ -27,8 +27,8 @@ final class PCC_WooOTEC_Pro_Admin {
             return;
         }
 
-        PCC_WooOTEC_Pro_Settings::instance()->boot();
-        PCC_WooOTEC_Pro_Ajax_Handler::instance()->boot();
+        Woo_OTEC_Moodle_Settings::instance()->boot();
+        Woo_OTEC_Moodle_Ajax_Handler::instance()->boot();
 
         add_action('admin_enqueue_scripts', array($this, 'enqueue_assets'));
     }
@@ -38,23 +38,23 @@ final class PCC_WooOTEC_Pro_Admin {
     // -------------------------------------------------------------------------
 
     public function enqueue_assets(string $hook): void {
-        if (strpos($hook, 'pcc-woootec-chile') === false) {
+        if (strpos($hook, 'woo-otec-moodle') === false) {
             return;
         }
 
         wp_enqueue_media();
-        wp_enqueue_style('pcc-woootec-modern-ui', PCC_WOOOTEC_PRO_URL . 'assets/admin/css/modern-ui.css', array(), PCC_WOOOTEC_PRO_VERSION);
-        wp_enqueue_script('pcc-woootec-modern-ui', PCC_WOOOTEC_PRO_URL . 'assets/admin/js/modern-ui.js', array('jquery'), PCC_WOOOTEC_PRO_VERSION, true);
+        wp_enqueue_style('woo-otec-modern-ui', WOO_OTEC_MOODLE_URL . 'assets/admin/css/modern-ui.css', array(), WOO_OTEC_MOODLE_VERSION);
+        wp_enqueue_script('woo-otec-modern-ui', WOO_OTEC_MOODLE_URL . 'assets/admin/js/modern-ui.js', array('jquery'), WOO_OTEC_MOODLE_VERSION, true);
 
         $local = array(
             'ajaxUrl'       => admin_url('admin-ajax.php'),
-            'nonce'         => wp_create_nonce('pcc_woootec_sync_stage'),
-            'emailNonce'    => wp_create_nonce('pcc_woootec_email_tools'),
+            'nonce'         => wp_create_nonce('woo_otec_moodle_sync_stage'),
+            'emailNonce'    => wp_create_nonce('woo_otec_moodle_email_tools'),
             'defaultTab'    => $this->get_default_tab(),
-            'templateNonce' => wp_create_nonce('pcc_woootec_template_fields'),
+            'templateNonce' => wp_create_nonce('woo_otec_moodle_template_fields'),
         );
 
-        wp_localize_script('pcc-woootec-modern-ui', 'pccWoootecAdmin', $local);
+        wp_localize_script('woo-otec-modern-ui', 'wooOtecMoodleAdmin', $local);
     }
 
     // -------------------------------------------------------------------------
@@ -63,11 +63,11 @@ final class PCC_WooOTEC_Pro_Admin {
 
     public function render_settings_page(): void {
         $data = array(
-            'core'             => PCC_WooOTEC_Pro_Core::instance(),
-            'last_sync'        => PCC_WooOTEC_Pro_Core::instance()->get_option('last_sync', array()),
-            'connection_ok'    => PCC_WooOTEC_Pro_API::instance()->test_connection(),
-            'sync_log'         => PCC_WooOTEC_Pro_Logger::read_tail(PCC_WooOTEC_Pro_Logger::SYNC_LOG),
-            'error_log'        => PCC_WooOTEC_Pro_Logger::read_tail(PCC_WooOTEC_Pro_Logger::ERROR_LOG),
+            'core'             => Woo_OTEC_Moodle_Core::instance(),
+            'last_sync'        => Woo_OTEC_Moodle_Core::instance()->get_option('last_sync', array()),
+            'connection_ok'    => Woo_OTEC_Moodle_API::instance()->test_connection(),
+            'sync_log'         => Woo_OTEC_Moodle_Logger::read_tail(Woo_OTEC_Moodle_Logger::SYNC_LOG),
+            'error_log'        => Woo_OTEC_Moodle_Logger::read_tail(Woo_OTEC_Moodle_Logger::ERROR_LOG),
             'release'          => array(),
             'update_available' => false,
             'active_tab'       => $this->get_default_tab(),
@@ -81,7 +81,7 @@ final class PCC_WooOTEC_Pro_Admin {
         wp_safe_redirect(
             add_query_arg(
                 array(
-                    'page' => 'pcc-woootec-chile',
+                    'page' => 'woo-otec-moodle',
                     'tab'  => 'sync',
                 ),
                 admin_url('admin.php')
@@ -94,7 +94,7 @@ final class PCC_WooOTEC_Pro_Admin {
         wp_safe_redirect(
             add_query_arg(
                 array(
-                    'page' => 'pcc-woootec-chile',
+                    'page' => 'woo-otec-moodle',
                     'tab'  => 'sync',
                 ),
                 admin_url('admin.php')
@@ -108,7 +108,7 @@ final class PCC_WooOTEC_Pro_Admin {
     // -------------------------------------------------------------------------
 
     private function render_view(string $view, array $data = array()): void {
-        $view_path = PCC_WOOOTEC_PRO_PATH . 'admin/views/' . $view;
+        $view_path = WOO_OTEC_MOODLE_PATH . 'admin/views/' . $view;
         if (!file_exists($view_path)) {
             return;
         }

@@ -2,8 +2,8 @@
 if (!defined('ABSPATH')) {
     exit;
 }
-$moodle_url = PCC_WooOTEC_Pro_Core::instance()->get_option('moodle_url', '');
-$moodle_token = PCC_WooOTEC_Pro_Core::instance()->get_option('moodle_token', '');
+$moodle_url = Woo_OTEC_Moodle_Core::instance()->get_option('moodle_url', '');
+$moodle_token = Woo_OTEC_Moodle_Core::instance()->get_option('moodle_token', '');
 ?>
 <h3>Paso 1: Vincular tu Escuela</h3>
 <p>Dile al sistema dónde está ubicada tu plataforma de cursos (Moodle) y entrega la "Llave Maestra" para que se puedan comunicar en privado de manera segura.</p>

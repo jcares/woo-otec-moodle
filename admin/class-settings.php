@@ -6,12 +6,12 @@ if (!defined('ABSPATH')) {
 
 /**
  * Gestiona el registro del menú, las opciones del plugin y los helpers de vista del panel.
- * Extraído de PCC_WooOTEC_Pro_Admin para separar responsabilidades.
+ * Extraído de Woo_OTEC_Moodle_Admin para separar responsabilidades.
  */
-final class PCC_WooOTEC_Pro_Settings {
-    private static ?PCC_WooOTEC_Pro_Settings $instance = null;
+final class Woo_OTEC_Moodle_Settings {
+    private static ?Woo_OTEC_Moodle_Settings $instance = null;
 
-    public static function instance(): PCC_WooOTEC_Pro_Settings {
+    public static function instance(): Woo_OTEC_Moodle_Settings {
         if (self::$instance === null) {
             self::$instance = new self();
         }
@@ -36,15 +36,15 @@ final class PCC_WooOTEC_Pro_Settings {
             'PCC WooOTEC Chile',
             'PCC WooOTEC Chile',
             'manage_options',
-            'pcc-woootec-chile',
-            array(PCC_WooOTEC_Pro_Admin::instance(), 'render_settings_page'),
+            'woo-otec-moodle',
+            array(Woo_OTEC_Moodle_Admin::instance(), 'render_settings_page'),
             'dashicons-welcome-learn-more',
             25
         );
 
-        add_submenu_page('pcc-woootec-chile', 'Configuracion', 'Configuracion', 'manage_options', 'pcc-woootec-chile', array(PCC_WooOTEC_Pro_Admin::instance(), 'render_settings_page'));
-        add_submenu_page('pcc-woootec-chile', 'Sincronizacion', 'Sincronizacion', 'manage_options', 'pcc-woootec-chile-sync', array(PCC_WooOTEC_Pro_Admin::instance(), 'render_sync_page'));
-        add_submenu_page('pcc-woootec-chile', 'Logs', 'Logs', 'manage_options', 'pcc-woootec-chile-logs', array(PCC_WooOTEC_Pro_Admin::instance(), 'render_logs_page'));
+        add_submenu_page('woo-otec-moodle', 'Configuracion', 'Configuracion', 'manage_options', 'woo-otec-moodle', array(Woo_OTEC_Moodle_Admin::instance(), 'render_settings_page'));
+        add_submenu_page('woo-otec-moodle', 'Sincronizacion', 'Sincronizacion', 'manage_options', 'woo-otec-moodle-sync', array(Woo_OTEC_Moodle_Admin::instance(), 'render_sync_page'));
+        add_submenu_page('woo-otec-moodle', 'Logs', 'Logs', 'manage_options', 'woo-otec-moodle-logs', array(Woo_OTEC_Moodle_Admin::instance(), 'render_logs_page'));
     }
 
     // -------------------------------------------------------------------------
@@ -74,45 +74,45 @@ final class PCC_WooOTEC_Pro_Settings {
         );
 
         register_setting(
-            'pcc_woootec_pro_settings',
-            'pcc_woootec_pro_template_fields',
+            'woo_otec_moodle_settings',
+            'woo_otec_moodle_template_fields',
             array(
                 'type'              => 'array',
                 'sanitize_callback' => array($this, 'sanitize_array'),
-                'default'           => PCC_WooOTEC_Pro_Core::instance()->get_defaults()['template_fields'] ?? array(),
+                'default'           => Woo_OTEC_Moodle_Core::instance()->get_defaults()['template_fields'] ?? array(),
             )
         );
 
         register_setting(
-            'pcc_woootec_pro_settings',
-            'pcc_woootec_pro_mappings',
+            'woo_otec_moodle_settings',
+            'woo_otec_moodle_mappings',
             array(
                 'type'              => 'array',
                 'sanitize_callback' => array($this, 'sanitize_mappings'),
-                'default'           => PCC_WooOTEC_Pro_Mapper::instance()->get_default_mappings(),
+                'default'           => Woo_OTEC_Moodle_Mapper::instance()->get_default_mappings(),
             )
         );
 
         foreach ($fields as $field => $sanitize_callback) {
             register_setting(
-                'pcc_woootec_pro_settings',
-                'pcc_woootec_pro_' . $field,
+                'woo_otec_moodle_settings',
+                'woo_otec_moodle_' . $field,
                 array(
                     'type'              => in_array($sanitize_callback, array('absint'), true) ? 'integer' : 'string',
                     'sanitize_callback' => $sanitize_callback,
-                    'default'           => PCC_WooOTEC_Pro_Core::instance()->get_defaults()[$field] ?? '',
+                    'default'           => Woo_OTEC_Moodle_Core::instance()->get_defaults()[$field] ?? '',
                 )
             );
         }
 
         foreach (array('sso_enabled', 'auto_update', 'redirect_after_purchase', 'debug_enabled', 'email_enabled') as $field) {
             register_setting(
-                'pcc_woootec_pro_settings',
-                'pcc_woootec_pro_' . $field,
+                'woo_otec_moodle_settings',
+                'woo_otec_moodle_' . $field,
                 array(
                     'type'              => 'string',
                     'sanitize_callback' => array($this, 'sanitize_checkbox'),
-                    'default'           => PCC_WooOTEC_Pro_Core::instance()->get_defaults()[$field] ?? 'no',
+                    'default'           => Woo_OTEC_Moodle_Core::instance()->get_defaults()[$field] ?? 'no',
                 )
             );
         }
@@ -152,7 +152,7 @@ final class PCC_WooOTEC_Pro_Settings {
             return '';
         }
 
-        return wp_kses($value, PCC_WooOTEC_Pro_Mailer::instance()->get_email_allowed_html());
+        return wp_kses($value, Woo_OTEC_Moodle_Mailer::instance()->get_email_allowed_html());
     }
 
     // -------------------------------------------------------------------------
@@ -235,7 +235,7 @@ final class PCC_WooOTEC_Pro_Settings {
                 $label    = $labels[$meta_key] ?? $this->format_meta_label($meta_key);
 
                 echo '<label class="pcc-meta-checkbox">';
-                echo '<input type="checkbox" id="' . esc_attr($field_id) . '" name="pcc_woootec_pro_template_fields[]" value="' . esc_attr($meta_key) . '" ' . checked($checked, true, false) . '>';
+                echo '<input type="checkbox" id="' . esc_attr($field_id) . '" name="woo_otec_moodle_template_fields[]" value="' . esc_attr($meta_key) . '" ' . checked($checked, true, false) . '>';
                 echo '<span>' . esc_html($label) . '</span>';
                 echo '</label>';
             }

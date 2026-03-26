@@ -4,10 +4,10 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-final class PCC_WooOTEC_Pro_Mailer {
-    private static ?PCC_WooOTEC_Pro_Mailer $instance = null;
+final class Woo_OTEC_Moodle_Mailer {
+    private static ?Woo_OTEC_Moodle_Mailer $instance = null;
 
-    public static function instance(): PCC_WooOTEC_Pro_Mailer {
+    public static function instance(): Woo_OTEC_Moodle_Mailer {
         if (self::$instance === null) {
             self::$instance = new self();
         }
@@ -19,12 +19,12 @@ final class PCC_WooOTEC_Pro_Mailer {
     }
 
     public function render_subject(array $data): string {
-        $subject = (string) PCC_WooOTEC_Pro_Core::instance()->get_option('email_subject', 'Acceso a tus cursos en {{sitio}}');
+        $subject = (string) Woo_OTEC_Moodle_Core::instance()->get_option('email_subject', 'Acceso a tus cursos en {{sitio}}');
         return wp_strip_all_tags($this->replace_template_variables($subject, $data));
     }
 
     public function render_template(array $data, bool $preview = false): string {
-        $template = (string) PCC_WooOTEC_Pro_Core::instance()->get_option('email_template', '');
+        $template = (string) Woo_OTEC_Moodle_Core::instance()->get_option('email_template', '');
         $template = html_entity_decode($template, ENT_QUOTES | ENT_HTML5, 'UTF-8');
         $html = $this->replace_template_variables($template, $data);
 
@@ -58,7 +58,7 @@ final class PCC_WooOTEC_Pro_Mailer {
     }
 
     public function filter_mail_from(string $email): string {
-        $configured = sanitize_email((string) PCC_WooOTEC_Pro_Core::instance()->get_option('email_from_address', ''));
+        $configured = sanitize_email((string) Woo_OTEC_Moodle_Core::instance()->get_option('email_from_address', ''));
         if ($configured !== '') {
             return $configured;
         }
@@ -72,7 +72,7 @@ final class PCC_WooOTEC_Pro_Mailer {
     }
 
     public function filter_mail_from_name(string $name): string {
-        $configured = sanitize_text_field((string) PCC_WooOTEC_Pro_Core::instance()->get_option('email_from_name', ''));
+        $configured = sanitize_text_field((string) Woo_OTEC_Moodle_Core::instance()->get_option('email_from_name', ''));
         if ($configured !== '') {
             return $configured;
         }

@@ -4,10 +4,10 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-final class PCC_WooOTEC_Pro_SSO {
-    private static ?PCC_WooOTEC_Pro_SSO $instance = null;
+final class Woo_OTEC_Moodle_SSO {
+    private static ?Woo_OTEC_Moodle_SSO $instance = null;
 
-    public static function instance(): PCC_WooOTEC_Pro_SSO {
+    public static function instance(): Woo_OTEC_Moodle_SSO {
         if (self::$instance === null) {
             self::$instance = new self();
         }
@@ -19,16 +19,16 @@ final class PCC_WooOTEC_Pro_SSO {
     }
 
     public function is_enabled(): bool {
-        return PCC_WooOTEC_Pro_Core::instance()->get_option('sso_enabled', 'yes') === 'yes';
+        return Woo_OTEC_Moodle_Core::instance()->get_option('sso_enabled', 'yes') === 'yes';
     }
 
     public function get_base_url(): string {
-        $custom = trim((string) PCC_WooOTEC_Pro_Core::instance()->get_option('sso_base_url', ''));
+        $custom = trim((string) Woo_OTEC_Moodle_Core::instance()->get_option('sso_base_url', ''));
         if ($custom !== '') {
             return rtrim($custom, '/');
         }
 
-        return PCC_WooOTEC_Pro_API::instance()->get_moodle_url();
+        return Woo_OTEC_Moodle_API::instance()->get_moodle_url();
     }
 
     public function build_url(string $email, int $course_id = 0): string {

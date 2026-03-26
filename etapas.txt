@@ -14,7 +14,7 @@
 ## ❌ Etapas Faltantes (No encontradas respecto al Readme)
 - [x] **Setup Wizard Profesional (Asistente inicial)**: 
   - Archivos creados en `admin/wizard/` bajo la rama `feature/setup-wizard`.
-  - Inyectado en WordPress y disponible a través de la URI `admin.php?page=pcc-woootec-setup`.
+  - Inyectado en WordPress y disponible a través de la URI `admin.php?page=woo-otec-setup`.
 
 - [ ] **Soporte multi-curso por producto (Roadmap)**:
   - Estipulado en el roadmap, pero sujeto a integrarse pronto.

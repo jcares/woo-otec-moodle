@@ -8,10 +8,10 @@ if (!defined('ABSPATH')) {
  * PCC WooOTEC Pro Mapper
  * Handles flexible field mapping between Moodle and WooCommerce
  */
-final class PCC_WooOTEC_Pro_Mapper {
-    private static ?PCC_WooOTEC_Pro_Mapper $instance = null;
+final class Woo_OTEC_Moodle_Mapper {
+    private static ?Woo_OTEC_Moodle_Mapper $instance = null;
 
-    public static function instance(): PCC_WooOTEC_Pro_Mapper {
+    public static function instance(): Woo_OTEC_Moodle_Mapper {
         if (self::$instance === null) {
             self::$instance = new self();
         }
@@ -48,14 +48,14 @@ final class PCC_WooOTEC_Pro_Mapper {
             }
         }
 
-        return apply_filters('pcc_woootec_mapped_course_data', $mapped, $course_data);
+        return apply_filters('woo_otec_moodle_mapped_course_data', $mapped, $course_data);
     }
 
     /**
      * Get current mappings from options or defaults
      */
     public function get_mappings(): array {
-        $saved = get_option('pcc_woootec_pro_mappings', array());
+        $saved = get_option('woo_otec_moodle_mappings', array());
         return !empty($saved) ? $saved : $this->get_default_mappings();
     }
 
@@ -63,6 +63,6 @@ final class PCC_WooOTEC_Pro_Mapper {
      * Save mappings
      */
     public function save_mappings(array $mappings): void {
-        update_option('pcc_woootec_pro_mappings', $mappings);
+        update_option('woo_otec_moodle_mappings', $mappings);
     }
 }

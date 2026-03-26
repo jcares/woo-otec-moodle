@@ -4,10 +4,10 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-final class PCC_WooOTEC_Pro_Asistente {
-    private static ?PCC_WooOTEC_Pro_Asistente $instance = null;
+final class Woo_OTEC_Moodle_Asistente {
+    private static ?Woo_OTEC_Moodle_Asistente $instance = null;
 
-    public static function instance(): PCC_WooOTEC_Pro_Asistente {
+    public static function instance(): Woo_OTEC_Moodle_Asistente {
         if (self::$instance === null) {
             self::$instance = new self();
         }
@@ -19,7 +19,7 @@ final class PCC_WooOTEC_Pro_Asistente {
 
     public function boot(): void {
         add_action('admin_menu', array($this, 'add_wizard_page'));
-        add_action('admin_post_pcc_woootec_asistente_save', array($this, 'handle_save'));
+        add_action('admin_post_woo_otec_moodle_asistente_save', array($this, 'handle_save'));
         add_action('admin_enqueue_scripts', array($this, 'enqueue_assets'));
     }
 
@@ -29,17 +29,17 @@ final class PCC_WooOTEC_Pro_Asistente {
             'Asistente Moodle',
             'Asistente Moodle',
             'manage_options',
-            'pcc-woootec-asistente',
+            'woo-otec-asistente',
             array($this, 'render_wizard')
         );
     }
 
     public function enqueue_assets(string $hook): void {
-        if (strpos($hook, 'pcc-woootec-asistente') === false) {
+        if (strpos($hook, 'woo-otec-asistente') === false) {
             return;
         }
 
-        wp_enqueue_style('pcc-woootec-wizard-css', PCC_WOOOTEC_PRO_URL . 'admin/asistente/assets/css/asistente.css', array(), PCC_WOOOTEC_PRO_VERSION);
+        wp_enqueue_style('woo-otec-wizard-css', WOO_OTEC_MOODLE_URL . 'admin/asistente/assets/css/asistente.css', array(), WOO_OTEC_MOODLE_VERSION);
     }
 
     public function render_wizard(): void {
@@ -50,7 +50,7 @@ final class PCC_WooOTEC_Pro_Asistente {
         $step = isset($_GET['step']) ? (int) $_GET['step'] : 1;
         $step = max(1, min(5, $step));
 
-        $view_path = PCC_WOOOTEC_PRO_PATH . 'admin/asistente/views/plantilla.php';
+        $view_path = WOO_OTEC_MOODLE_PATH . 'admin/asistente/views/plantilla.php';
         if (file_exists($view_path)) {
             include $view_path;
         } else {
@@ -63,17 +63,17 @@ final class PCC_WooOTEC_Pro_Asistente {
             wp_die('No autorizado.');
         }
 
-        check_admin_referer('pcc_woootec_asistente_save', 'wizard_nonce');
+        check_admin_referer('woo_otec_moodle_asistente_save', 'wizard_nonce');
 
         $step = isset($_POST['step']) ? (int) $_POST['step'] : 1;
 
         if ($step === 1) {
             // Guardar URL & Token
             if (isset($_POST['moodle_url'])) {
-                PCC_WooOTEC_Pro_Core::instance()->update_option('moodle_url', esc_url_raw($_POST['moodle_url']));
+                Woo_OTEC_Moodle_Core::instance()->update_option('moodle_url', esc_url_raw($_POST['moodle_url']));
             }
             if (isset($_POST['moodle_token'])) {
-                PCC_WooOTEC_Pro_Core::instance()->update_option('moodle_token', sanitize_text_field($_POST['moodle_token']));
+                Woo_OTEC_Moodle_Core::instance()->update_option('moodle_token', sanitize_text_field($_POST['moodle_token']));
             }
             $next_step = 2;
         } elseif ($step === 2) {
@@ -82,26 +82,26 @@ final class PCC_WooOTEC_Pro_Asistente {
         } elseif ($step === 3) {
             // Guardar ID del Rol
             if (isset($_POST['student_role_id'])) {
-                PCC_WooOTEC_Pro_Core::instance()->update_option('student_role_id', absint($_POST['student_role_id']));
+                Woo_OTEC_Moodle_Core::instance()->update_option('student_role_id', absint($_POST['student_role_id']));
             }
             $next_step = 4;
         } elseif ($step === 4) {
             // Guardar Parámetros Base
             if (isset($_POST['default_price'])) {
-                PCC_WooOTEC_Pro_Core::instance()->update_option('default_price', sanitize_text_field($_POST['default_price']));
+                Woo_OTEC_Moodle_Core::instance()->update_option('default_price', sanitize_text_field($_POST['default_price']));
             }
             if (isset($_POST['default_instructor'])) {
-                PCC_WooOTEC_Pro_Core::instance()->update_option('default_instructor', sanitize_text_field($_POST['default_instructor']));
+                Woo_OTEC_Moodle_Core::instance()->update_option('default_instructor', sanitize_text_field($_POST['default_instructor']));
             }
             $next_step = 5;
         } else {
             // Finalizar: Volver al Dashboard
-            $redirect_url = admin_url('admin.php?page=pcc-woootec-chile');
+            $redirect_url = admin_url('admin.php?page=woo-otec-moodle');
             wp_safe_redirect($redirect_url);
             exit;
         }
 
-        $redirect_url = admin_url('admin.php?page=pcc-woootec-asistente&step=' . $next_step);
+        $redirect_url = admin_url('admin.php?page=woo-otec-asistente&step=' . $next_step);
         wp_safe_redirect($redirect_url);
         exit;
     }

@@ -4,7 +4,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-final class PCC_WooOTEC_Pro_Logger {
+final class Woo_OTEC_Moodle_Logger {
     public const SYNC_LOG = 'sync.log';
     public const ERROR_LOG = 'error.log';
     public const MAIN_LOG = 'log.txt';
@@ -22,7 +22,7 @@ final class PCC_WooOTEC_Pro_Logger {
     }
 
     public static function get_directory(): string {
-        $directory = PCC_WOOOTEC_PRO_PATH . 'logs/';
+        $directory = WOO_OTEC_MOODLE_PATH . 'logs/';
         self::ensure_directory($directory);
         return $directory;
     }

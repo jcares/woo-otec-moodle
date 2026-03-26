@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @var PCC_WooOTEC_Pro_Core $core
+ * @var Woo_OTEC_Moodle_Core $core
  * @var array $last_sync
  * @var bool $connection_ok
  * @var array $sync_log
@@ -19,7 +19,7 @@ $status = $status ?? '';
 
 $default_image_id = (int) $core->get_option('default_image_id', 0);
 $default_image_url = $default_image_id > 0 ? wp_get_attachment_image_url($default_image_id, 'medium') : '';
-$brand_logo_url = PCC_WOOOTEC_PRO_URL . 'assets/images/logo-pccurico.png';
+$brand_logo_url = WOO_OTEC_MOODLE_URL . 'assets/images/logo-pccurico.png';
 $release_page_url = 'https://github.com/jcares/PCC-WooOTEC-Chile/releases';
 $release_json_url = 'https://github.com/jcares/PCC-WooOTEC-Chile/blob/main/release.json';
 $last_sync_label = !empty($last_sync['timestamp']) ? (string) $last_sync['timestamp'] : 'Sin ejecuciones';
@@ -27,7 +27,7 @@ $sync_status = !empty($last_sync['status']) ? (string) $last_sync['status'] : 'i
 $email_enabled = $core->get_option('email_enabled', 'yes') === 'yes';
 $sso_enabled = $core->get_option('sso_enabled', 'yes') === 'yes';
 $email_from_address = (string) $core->get_option('email_from_address', '');
-$fallback_from_address = PCC_WooOTEC_Pro_Mailer::instance()->filter_mail_from(get_option('admin_email', ''));
+$fallback_from_address = Woo_OTEC_Moodle_Mailer::instance()->filter_mail_from(get_option('admin_email', ''));
 $tabs = array(
     'general'  => 'Conectar Moodle',
     'sync'     => 'Sincronización',
@@ -54,7 +54,7 @@ $tabs = array(
     </div>
 
     <div style="margin-top: 15px; margin-bottom: 15px; text-align: right;">
-        <a href="<?php echo esc_url(admin_url('admin.php?page=pcc-woootec-asistente')); ?>" class="button button-primary button-large" style="background:#2271b1; border-color:#2271b1;">💫 Iniciar Asistente de Configuración</a>
+        <a href="<?php echo esc_url(admin_url('admin.php?page=woo-otec-asistente')); ?>" class="button button-primary button-large" style="background:#2271b1; border-color:#2271b1;">💫 Iniciar Asistente de Configuración</a>
     </div>
 
     <?php if ($status !== '') : ?>
@@ -71,13 +71,13 @@ $tabs = array(
         </div>
     <?php endif; ?>
 
-    <form method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>" id="pcc-woootec-sync-form">
-        <input type="hidden" name="action" value="pcc_woootec_run_sync">
-        <?php wp_nonce_field('pcc_woootec_run_sync'); ?>
+    <form method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>" id="woo-otec-sync-form">
+        <input type="hidden" name="action" value="woo_otec_moodle_run_sync">
+        <?php wp_nonce_field('woo_otec_moodle_run_sync'); ?>
     </form>
 
     <form method="post" action="options.php" class="pcc-settings-form">
-        <?php settings_fields('pcc_woootec_pro_settings'); ?>
+        <?php settings_fields('woo_otec_moodle_settings'); ?>
 
         <!-- Overview Grid -->
         <div class="pcc-overview-grid">
@@ -89,7 +89,7 @@ $tabs = array(
                     if ($connection_ok) {
                         echo 'Aula responde correctamente.';
                     } else {
-                        $last_error = PCC_WooOTEC_Pro_Logger::read_tail(PCC_WooOTEC_Pro_Logger::ERROR_LOG, 1);
+                        $last_error = Woo_OTEC_Moodle_Logger::read_tail(Woo_OTEC_Moodle_Logger::ERROR_LOG, 1);
                         $error_text = !empty($last_error) ? $last_error[0] : '';
                         if (strpos($error_text, 'Could not resolve host') !== false) {
                             echo '<span style="color: #ff5370;">Error de DNS: El servidor no alcanza el dominio Moodle.</span>';
@@ -112,7 +112,7 @@ $tabs = array(
             </article>
             <article class="pcc-overview-card">
                 <span class="pcc-overview-card__label">Versión</span>
-                <strong class="pcc-overview-card__value"><?php echo esc_html(PCC_WOOOTEC_PRO_VERSION); ?></strong>
+                <strong class="pcc-overview-card__value"><?php echo esc_html(WOO_OTEC_MOODLE_VERSION); ?></strong>
                 <p><?php echo !empty($update_available) ? 'Hay una nueva versión detectada.' : 'Sin actualizaciones pendientes.'; ?></p>
             </article>
         </div>
@@ -147,31 +147,31 @@ $tabs = array(
                         <p class="description">Credenciales para realizar la conexión con Moodle.</p>
                         <table class="form-table">
                             <tr>
-                                <th scope="row"><label for="pcc_woootec_pro_moodle_url">URL Moodle</label></th>
+                                <th scope="row"><label for="woo_otec_moodle_moodle_url">URL Moodle</label></th>
                                 <td>
-                                    <input class="regular-text" type="url" id="pcc_woootec_pro_moodle_url" name="pcc_woootec_pro_moodle_url" value="<?php echo esc_attr((string) $core->get_option('moodle_url', '')); ?>">
+                                    <input class="regular-text" type="url" id="woo_otec_moodle_moodle_url" name="woo_otec_moodle_moodle_url" value="<?php echo esc_attr((string) $core->get_option('moodle_url', '')); ?>">
                                     <p class="pcc-field-help">Ejemplo: `https://campus.tudominio.cl`.</p>
                                 </td>
                             </tr>
                             <tr>
-                                <th scope="row"><label for="pcc_woootec_pro_moodle_token">Token Moodle</label></th>
+                                <th scope="row"><label for="woo_otec_moodle_moodle_token">Token Moodle</label></th>
                                 <td>
-                                    <input class="regular-text" type="password" id="pcc_woootec_pro_moodle_token" name="pcc_woootec_pro_moodle_token" value="<?php echo esc_attr((string) $core->get_option('moodle_token', '')); ?>" autocomplete="off">
+                                    <input class="regular-text" type="password" id="woo_otec_moodle_moodle_token" name="woo_otec_moodle_moodle_token" value="<?php echo esc_attr((string) $core->get_option('moodle_token', '')); ?>" autocomplete="off">
                                     <p class="pcc-field-help">Token del servicio web con permisos para usuarios, cursos, categorías y matrículas.</p>
                                 </td>
                             </tr>
                             <tr>
-                                <th scope="row"><label for="pcc_woootec_pro_student_role_id">Role ID estudiante</label></th>
+                                <th scope="row"><label for="woo_otec_moodle_student_role_id">Role ID estudiante</label></th>
                                 <td>
-                                    <input class="small-text" type="number" id="pcc_woootec_pro_student_role_id" name="pcc_woootec_pro_student_role_id" value="<?php echo esc_attr((string) $core->get_option('student_role_id', 5)); ?>">
+                                    <input class="small-text" type="number" id="woo_otec_moodle_student_role_id" name="woo_otec_moodle_student_role_id" value="<?php echo esc_attr((string) $core->get_option('student_role_id', 5)); ?>">
                                     <p class="pcc-field-help">Normalmente es `5`, pero depende de tu Moodle.</p>
                                 </td>
                             </tr>
                             <tr>
                                 <th scope="row">Imagen por defecto</th>
                                 <td>
-                                    <input type="hidden" id="pcc_woootec_pro_default_image_id" name="pcc_woootec_pro_default_image_id" value="<?php echo esc_attr((string) $default_image_id); ?>">
-                                    <button type="button" class="button pcc-media-picker" data-target="#pcc_woootec_pro_default_image_id" data-preview="#pcc-default-image-preview">Seleccionar imagen</button>
+                                    <input type="hidden" id="woo_otec_moodle_default_image_id" name="woo_otec_moodle_default_image_id" value="<?php echo esc_attr((string) $default_image_id); ?>">
+                                    <button type="button" class="button pcc-media-picker" data-target="#woo_otec_moodle_default_image_id" data-preview="#pcc-default-image-preview">Seleccionar imagen</button>
                                     <p class="pcc-field-help">Se usa cuando el curso no trae imagen desde Moodle.</p>
                                     <div class="pcc-image-preview-wrap">
                                         <img id="pcc-default-image-preview" src="<?php echo esc_url($default_image_url); ?>" alt="" class="pcc-image-preview<?php echo $default_image_url === '' ? ' is-hidden' : ''; ?>">
@@ -179,23 +179,23 @@ $tabs = array(
                                 </td>
                             </tr>
                             <tr>
-                                <th scope="row"><label for="pcc_woootec_pro_default_price">Precio default</label></th>
+                                <th scope="row"><label for="woo_otec_moodle_default_price">Precio default</label></th>
                                 <td>
-                                    <input class="regular-text" type="text" id="pcc_woootec_pro_default_price" name="pcc_woootec_pro_default_price" value="<?php echo esc_attr((string) $core->get_option('default_price', '49000')); ?>">
+                                    <input class="regular-text" type="text" id="woo_otec_moodle_default_price" name="woo_otec_moodle_default_price" value="<?php echo esc_attr((string) $core->get_option('default_price', '49000')); ?>">
                                     <p class="pcc-field-help">Monto sin símbolos ni separadores, por ejemplo `49000`.</p>
                                 </td>
                             </tr>
                             <tr>
-                                <th scope="row"><label for="pcc_woootec_pro_default_instructor">Instructor default</label></th>
+                                <th scope="row"><label for="woo_otec_moodle_default_instructor">Instructor default</label></th>
                                 <td>
-                                    <input class="regular-text" type="text" id="pcc_woootec_pro_default_instructor" name="pcc_woootec_pro_default_instructor" value="<?php echo esc_attr((string) $core->get_option('default_instructor', 'No asignado')); ?>">
+                                    <input class="regular-text" type="text" id="woo_otec_moodle_default_instructor" name="woo_otec_moodle_default_instructor" value="<?php echo esc_attr((string) $core->get_option('default_instructor', 'No asignado')); ?>">
                                     <p class="pcc-field-help">Texto fallback cuando Moodle no informa docente.</p>
                                 </td>
                             </tr>
                             <tr>
-                                <th scope="row"><label for="pcc_woootec_pro_fallback_description">Descripción fallback</label></th>
+                                <th scope="row"><label for="woo_otec_moodle_fallback_description">Descripción fallback</label></th>
                                 <td>
-                                    <textarea class="large-text" rows="4" id="pcc_woootec_pro_fallback_description" name="pcc_woootec_pro_fallback_description"><?php echo esc_textarea((string) $core->get_option('fallback_description', '')); ?></textarea>
+                                    <textarea class="large-text" rows="4" id="woo_otec_moodle_fallback_description" name="woo_otec_moodle_fallback_description"><?php echo esc_textarea((string) $core->get_option('fallback_description', '')); ?></textarea>
                                     <p class="pcc-field-help">Descripción usada al crear o actualizar productos sin contenido suficiente.</p>
                                 </td>
                             </tr>
@@ -333,22 +333,22 @@ $tabs = array(
                             <tr>
                                 <th scope="row">Estado del SSO</th>
                                 <td>
-                                    <input type="checkbox" id="pcc_woootec_pro_sso_enabled" name="pcc_woootec_pro_sso_enabled" value="yes" <?php checked($core->get_option('sso_enabled', 'yes'), 'yes'); ?>>
-                                    <label for="pcc_woootec_pro_sso_enabled">Activar SSO</label>
+                                    <input type="checkbox" id="woo_otec_moodle_sso_enabled" name="woo_otec_moodle_sso_enabled" value="yes" <?php checked($core->get_option('sso_enabled', 'yes'), 'yes'); ?>>
+                                    <label for="woo_otec_moodle_sso_enabled">Activar SSO</label>
                                     <p class="pcc-field-help">Permite acceso directo al aula sin login manual adicional.</p>
                                 </td>
                             </tr>
                             <tr>
-                                <th scope="row"><label for="pcc_woootec_pro_sso_base_url">URL base SSO</label></th>
+                                <th scope="row"><label for="woo_otec_moodle_sso_base_url">URL base SSO</label></th>
                                 <td>
-                                    <input class="regular-text" type="url" id="pcc_woootec_pro_sso_base_url" name="pcc_woootec_pro_sso_base_url" value="<?php echo esc_attr((string) $core->get_option('sso_base_url', '')); ?>">
+                                    <input class="regular-text" type="url" id="woo_otec_moodle_sso_base_url" name="woo_otec_moodle_sso_base_url" value="<?php echo esc_attr((string) $core->get_option('sso_base_url', '')); ?>">
                                     <p class="pcc-field-help">Ejemplo: `https://campus.tudominio.cl/auth/userkey/login.php`.</p>
                                 </td>
                             </tr>
                             <tr>
-                                <th scope="row"><label for="pcc_woootec_pro_redirect_after_purchase">Redirigir tras compra</label></th>
+                                <th scope="row"><label for="woo_otec_moodle_redirect_after_purchase">Redirigir tras compra</label></th>
                                 <td>
-                                    <input type="checkbox" id="pcc_woootec_pro_redirect_after_purchase" name="pcc_woootec_pro_redirect_after_purchase" value="yes" <?php checked($core->get_option('redirect_after_purchase', 'no'), 'yes'); ?>>
+                                    <input type="checkbox" id="woo_otec_moodle_redirect_after_purchase" name="woo_otec_moodle_redirect_after_purchase" value="yes" <?php checked($core->get_option('redirect_after_purchase', 'no'), 'yes'); ?>>
                                     <p class="pcc-field-help">Envía al alumno directo al aula virtual al finalizar la compra.</p>
                                 </td>
                             </tr>
@@ -368,14 +368,14 @@ $tabs = array(
                         <p class="description">Configura cómo se muestran y vinculan los datos de Moodle.</p>
                         <?php
                         $reference_id = (int) $core->get_option('template_reference', 0);
-                        $reference_products = PCC_WooOTEC_Pro_Settings::instance()->get_template_reference_products();
+                        $reference_products = Woo_OTEC_Moodle_Settings::instance()->get_template_reference_products();
                         $selected_fields = (array) $core->get_option('template_fields', array());
                         ?>
                         <table class="form-table">
                             <tr>
-                                <th scope="row"><label for="pcc_woootec_pro_template_style">Estilo de Plantilla</label></th>
+                                <th scope="row"><label for="woo_otec_moodle_template_style">Estilo de Plantilla</label></th>
                                 <td>
-                                    <select id="pcc_woootec_pro_template_style" name="pcc_woootec_pro_template_style">
+                                    <select id="woo_otec_moodle_template_style" name="woo_otec_moodle_template_style">
                                         <?php $current_style = $core->get_option('template_style', 'classic'); ?>
                                         <option value="classic" <?php selected($current_style, 'classic'); ?>>Classic (WooCommerce Default)</option>
                                         <option value="academy" <?php selected($current_style, 'academy'); ?>>Academy (Moderna/LMS)</option>
@@ -384,9 +384,9 @@ $tabs = array(
                                 </td>
                             </tr>
                             <tr>
-                                <th scope="row"><label for="pcc_woootec_pro_template_reference">Producto de referencia</label></th>
+                                <th scope="row"><label for="woo_otec_moodle_template_reference">Producto de referencia</label></th>
                                 <td>
-                                    <select id="pcc_woootec_pro_template_reference" name="pcc_woootec_pro_template_reference">
+                                    <select id="woo_otec_moodle_template_reference" name="woo_otec_moodle_template_reference">
                                         <option value="">Selecciona un curso sincronizado</option>
                                         <?php foreach ($reference_products as $product) : ?>
                                             <option value="<?php echo esc_attr((string) $product->get_id()); ?>" <?php selected($reference_id, $product->get_id()); ?>>
@@ -412,7 +412,7 @@ $tabs = array(
                             </thead>
                             <tbody>
                                 <?php 
-                                $mapper = PCC_WooOTEC_Pro_Mapper::instance();
+                                $mapper = Woo_OTEC_Moodle_Mapper::instance();
                                 $mappings = $mapper->get_mappings();
                                 $reference_product = $reference_id > 0 ? wc_get_product($reference_id) : null;
                                 
@@ -436,12 +436,12 @@ $tabs = array(
                                     ?>
                                     <tr>
                                         <td>
-                                            <input type="checkbox" name="pcc_woootec_pro_mappings[<?php echo esc_attr($moodle_key); ?>][enabled]" value="yes" <?php checked($config['enabled'] ?? 'yes', 'yes'); ?>>
+                                            <input type="checkbox" name="woo_otec_moodle_mappings[<?php echo esc_attr($moodle_key); ?>][enabled]" value="yes" <?php checked($config['enabled'] ?? 'yes', 'yes'); ?>>
                                         </td>
                                         <td><strong><?php echo esc_html($moodle_key); ?></strong></td>
                                         <td>
-                                            <input type="text" name="pcc_woootec_pro_mappings[<?php echo esc_attr($moodle_key); ?>][label]" value="<?php echo esc_attr($config['label']); ?>" style="width: 100%;">
-                                            <input type="hidden" name="pcc_woootec_pro_mappings[<?php echo esc_attr($moodle_key); ?>][target]" value="<?php echo esc_attr($target); ?>">
+                                            <input type="text" name="woo_otec_moodle_mappings[<?php echo esc_attr($moodle_key); ?>][label]" value="<?php echo esc_attr($config['label']); ?>" style="width: 100%;">
+                                            <input type="hidden" name="woo_otec_moodle_mappings[<?php echo esc_attr($moodle_key); ?>][target]" value="<?php echo esc_attr($target); ?>">
                                         </td>
                                         <td>
                                             <div style="font-size: 11px; color: #666; font-style: italic; max-width: 300px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="<?php echo esc_attr((string)$real_value); ?>">
@@ -459,27 +459,27 @@ $tabs = array(
                         <h3>Emails de Notificación</h3>
                         <table class="form-table">
                             <tr>
-                                <th scope="row"><label for="pcc_woootec_pro_email_enabled">Activar envío</label></th>
+                                <th scope="row"><label for="woo_otec_moodle_email_enabled">Activar envío</label></th>
                                 <td>
-                                    <input type="checkbox" id="pcc_woootec_pro_email_enabled" name="pcc_woootec_pro_email_enabled" value="yes" <?php checked($core->get_option('email_enabled', 'yes'), 'yes'); ?>>
+                                    <input type="checkbox" id="woo_otec_moodle_email_enabled" name="woo_otec_moodle_email_enabled" value="yes" <?php checked($core->get_option('email_enabled', 'yes'), 'yes'); ?>>
                                 </td>
                             </tr>
                             <tr>
-                                <th scope="row"><label for="pcc_woootec_pro_email_from_address">Email remitente</label></th>
+                                <th scope="row"><label for="woo_otec_moodle_email_from_address">Email remitente</label></th>
                                 <td>
-                                    <input class="regular-text" type="email" id="pcc_woootec_pro_email_from_address" name="pcc_woootec_pro_email_from_address" value="<?php echo esc_attr($email_from_address); ?>" placeholder="<?php echo esc_attr($fallback_from_address); ?>">
+                                    <input class="regular-text" type="email" id="woo_otec_moodle_email_from_address" name="woo_otec_moodle_email_from_address" value="<?php echo esc_attr($email_from_address); ?>" placeholder="<?php echo esc_attr($fallback_from_address); ?>">
                                 </td>
                             </tr>
                             <tr>
-                                <th scope="row"><label for="pcc_woootec_pro_email_subject">Asunto</label></th>
+                                <th scope="row"><label for="woo_otec_moodle_email_subject">Asunto</label></th>
                                 <td>
-                                    <input class="regular-text" type="text" id="pcc_woootec_pro_email_subject" name="pcc_woootec_pro_email_subject" value="<?php echo esc_attr((string) $core->get_option('email_subject', '')); ?>">
+                                    <input class="regular-text" type="text" id="woo_otec_moodle_email_subject" name="woo_otec_moodle_email_subject" value="<?php echo esc_attr((string) $core->get_option('email_subject', '')); ?>">
                                 </td>
                             </tr>
                             <tr>
-                                <th scope="row"><label for="pcc_woootec_pro_email_template">Plantilla HTML</label></th>
+                                <th scope="row"><label for="woo_otec_moodle_email_template">Plantilla HTML</label></th>
                                 <td>
-                                    <textarea class="large-text code pcc-email-template-field" rows="12" id="pcc_woootec_pro_email_template" name="pcc_woootec_pro_email_template"><?php echo esc_textarea((string) $core->get_option('email_template', '')); ?></textarea>
+                                    <textarea class="large-text code pcc-email-template-field" rows="12" id="woo_otec_moodle_email_template" name="woo_otec_moodle_email_template"><?php echo esc_textarea((string) $core->get_option('email_template', '')); ?></textarea>
                                 </td>
                             </tr>
                         </table>
@@ -496,7 +496,7 @@ $tabs = array(
                         <h3>Registro de errores</h3>
                         <div class="pcc-log-viewer-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
                             <strong>Últimas 100 líneas del log:</strong>
-                            <a href="<?php echo esc_url(admin_url('admin-ajax.php?action=pcc_woootec_export_logs&nonce=' . wp_create_nonce('pcc_woootec_export_logs'))); ?>" class="button button-secondary">Exportar log</a>
+                            <a href="<?php echo esc_url(admin_url('admin-ajax.php?action=woo_otec_moodle_export_logs&nonce=' . wp_create_nonce('woo_otec_moodle_export_logs'))); ?>" class="button button-secondary">Exportar log</a>
                         </div>
                         <div class="pcc-log-viewer" style="background: #1e1e1e; color: #d4d4d4; padding: 15px; border-radius: 4px; font-family: monospace; font-size: 12px; max-height: 400px; overflow-y: auto;">
                             <?php 

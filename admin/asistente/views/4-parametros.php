@@ -3,8 +3,8 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-$price = PCC_WooOTEC_Pro_Core::instance()->get_option('default_price', '0');
-$instructor = PCC_WooOTEC_Pro_Core::instance()->get_option('default_instructor', 'No asignado');
+$price = Woo_OTEC_Moodle_Core::instance()->get_option('default_price', '0');
+$instructor = Woo_OTEC_Moodle_Core::instance()->get_option('default_instructor', 'No asignado');
 ?>
 <h3>Paso 4: Ajustes Base para tus Cursos</h3>
 <p>Para ahorrarte tiempo, cada vez que importes cursos desde la escuela hacia tu tienda web, se rellenarán automáticamente con esta información básica si es que vienen vacíos.</p>

@@ -4,10 +4,10 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-final class PCC_WooOTEC_Pro_Frontend {
-    private static ?PCC_WooOTEC_Pro_Frontend $instance = null;
+final class Woo_OTEC_Moodle_Frontend {
+    private static ?Woo_OTEC_Moodle_Frontend $instance = null;
 
-    public static function instance(): PCC_WooOTEC_Pro_Frontend {
+    public static function instance(): Woo_OTEC_Moodle_Frontend {
         if (self::$instance === null) {
             self::$instance = new self();
         }
@@ -58,7 +58,7 @@ final class PCC_WooOTEC_Pro_Frontend {
         }
 
         if ($product && get_post_meta($product->get_id(), '_moodle_id', true)) {
-            $style = PCC_WooOTEC_Pro_Core::instance()->get_option('template_style', 'classic');
+            $style = Woo_OTEC_Moodle_Core::instance()->get_option('template_style', 'classic');
             $classes[] = 'pcc-course-card';
             $classes[] = 'pcc-style-' . $style;
         }
@@ -72,7 +72,7 @@ final class PCC_WooOTEC_Pro_Frontend {
             return;
         }
 
-        $style = PCC_WooOTEC_Pro_Core::instance()->get_option('template_style', 'classic');
+        $style = Woo_OTEC_Moodle_Core::instance()->get_option('template_style', 'classic');
         if ($style === 'classic') {
             return;
         }
@@ -86,7 +86,7 @@ final class PCC_WooOTEC_Pro_Frontend {
             return;
         }
 
-        $style = PCC_WooOTEC_Pro_Core::instance()->get_option('template_style', 'classic');
+        $style = Woo_OTEC_Moodle_Core::instance()->get_option('template_style', 'classic');
         if ($style === 'classic') {
             return;
         }
@@ -107,7 +107,7 @@ final class PCC_WooOTEC_Pro_Frontend {
             return;
         }
 
-        $style = PCC_WooOTEC_Pro_Core::instance()->get_option('template_style', 'classic');
+        $style = Woo_OTEC_Moodle_Core::instance()->get_option('template_style', 'classic');
         if ($style === 'classic') {
             return;
         }
@@ -123,7 +123,7 @@ final class PCC_WooOTEC_Pro_Frontend {
     }
 
     private function get_selected_template_fields(): array {
-        $fields = (array) PCC_WooOTEC_Pro_Core::instance()->get_option('template_fields', array());
+        $fields = (array) Woo_OTEC_Moodle_Core::instance()->get_option('template_fields', array());
         $fields = array_values(array_unique(array_filter(array_map('strval', $fields))));
         return $fields;
     }
@@ -232,7 +232,7 @@ final class PCC_WooOTEC_Pro_Frontend {
     public function enqueue_assets(): void {
         wp_enqueue_style('dashicons');
         $deps = array();
-        wp_enqueue_style('pcc-woootec-frontend', PCC_WOOOTEC_PRO_URL . 'assets/css/frontend.css', $deps, PCC_WOOOTEC_PRO_VERSION);
+        wp_enqueue_style('woo-otec-frontend', WOO_OTEC_MOODLE_URL . 'assets/css/frontend.css', $deps, WOO_OTEC_MOODLE_VERSION);
     }
 
     public function render_my_courses_shortcode(): string {
@@ -269,17 +269,17 @@ final class PCC_WooOTEC_Pro_Frontend {
 
                 $courses[$product_id] = array(
                     'title'      => get_the_title($product_id),
-                    'image'      => get_the_post_thumbnail_url($product_id, 'medium') ?: PCC_WOOOTEC_PRO_URL . 'assets/images/default-course.jpg',
+                    'image'      => get_the_post_thumbnail_url($product_id, 'medium') ?: WOO_OTEC_MOODLE_URL . 'assets/images/default-course.jpg',
                     'instructor' => (string) get_post_meta($product_id, '_instructor', true),
                     'start_date' => (int) get_post_meta($product_id, '_start_date', true),
                     'end_date'   => (int) get_post_meta($product_id, '_end_date', true),
-                    'access_url' => PCC_WooOTEC_Pro_SSO::instance()->build_url((string) $user->user_email, $course_id),
+                    'access_url' => Woo_OTEC_Moodle_SSO::instance()->build_url((string) $user->user_email, $course_id),
                 );
             }
         }
 
         ob_start();
-        $template = PCC_WOOOTEC_PRO_PATH . 'public/templates/my-courses.php';
+        $template = WOO_OTEC_MOODLE_PATH . 'public/templates/my-courses.php';
         if (file_exists($template)) {
             $courses = array_values($courses);
             include $template;

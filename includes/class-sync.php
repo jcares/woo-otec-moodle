@@ -4,10 +4,10 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-final class PCC_WooOTEC_Pro_Sync {
-    private static ?PCC_WooOTEC_Pro_Sync $instance = null;
+final class Woo_OTEC_Moodle_Sync {
+    private static ?Woo_OTEC_Moodle_Sync $instance = null;
 
-    public static function instance(): PCC_WooOTEC_Pro_Sync {
+    public static function instance(): Woo_OTEC_Moodle_Sync {
         if (self::$instance === null) {
             self::$instance = new self();
         }
@@ -34,38 +34,49 @@ final class PCC_WooOTEC_Pro_Sync {
             return $result;
         }
 
-        $categories = PCC_WooOTEC_Pro_API::instance()->get_categories();
-        $category_result = $this->sync_categories($categories);
+        try {
+            $categories      = Woo_OTEC_Moodle_API::instance()->get_categories();
+            $category_result = $this->sync_categories(is_wp_error($categories) ? [] : $categories);
 
-        $courses = PCC_WooOTEC_Pro_API::instance()->get_courses();
-        if (empty($courses)) {
-            $result['message'] = 'No se pudieron obtener cursos desde Moodle.';
+            $courses = Woo_OTEC_Moodle_API::instance()->get_courses();
+            if (is_wp_error($courses) || empty($courses)) {
+                $result['message']            = is_wp_error($courses) ? $courses->get_error_message() : 'No se pudieron obtener cursos desde Moodle.';
+                $result['categories_created'] = $category_result['created'];
+                $result['categories_updated'] = $category_result['updated'];
+                $this->update_last_sync($result);
+                return $result;
+            }
+
+            $course_result = $this->sync_courses($courses);
+
+            $result['status']             = 'success';
+            $result['message']            = 'Sincronización completada.';
             $result['categories_created'] = $category_result['created'];
             $result['categories_updated'] = $category_result['updated'];
+            $result['products_created']   = $course_result['created'];
+            $result['products_updated']   = $course_result['updated'];
+
             $this->update_last_sync($result);
-            return $result;
-        }
+            Woo_OTEC_Moodle_Logger::info('Sincronización Moodle -> WooCommerce completada', $result);
 
-        $course_result = $this->sync_courses($courses);
-
-        $result['status'] = 'success';
-        $result['message'] = 'Sincronización completada.';
-        $result['categories_created'] = $category_result['created'];
-        $result['categories_updated'] = $category_result['updated'];
-        $result['products_created'] = $course_result['created'];
-        $result['products_updated'] = $course_result['updated'];
-
-        $this->update_last_sync($result);
-        PCC_WooOTEC_Pro_Logger::info('Sincronización Moodle -> WooCommerce completada', $result);
-
-        if ($verbose) {
-            foreach ($course_result['messages'] as $message) {
-                PCC_WooOTEC_Pro_Logger::info($message);
+            if ($verbose) {
+                foreach ($course_result['messages'] as $message) {
+                    Woo_OTEC_Moodle_Logger::info($message);
+                }
             }
+        } catch (PCC_Moodle_Exception $e) {
+            $result['message'] = 'Error de conexión con Moodle: ' . $e->getMessage();
+            Woo_OTEC_Moodle_Logger::error('Fallo global de sincronización', [
+                'error_code' => $e->get_error_code(),
+                'function'   => $e->get_moodle_function(),
+                'message'    => $e->getMessage(),
+            ]);
+            $this->update_last_sync($result);
         }
 
         return $result;
     }
+
 
     public function sync_categories(array $categories): array {
         $result = array('created' => 0, 'updated' => 0);
@@ -231,7 +242,7 @@ final class PCC_WooOTEC_Pro_Sync {
             );
 
             if (is_wp_error($updated)) {
-                PCC_WooOTEC_Pro_Logger::error('No se pudo actualizar categoria', array('moodle_id' => $moodle_id, 'error' => $updated->get_error_message()));
+                Woo_OTEC_Moodle_Logger::error('No se pudo actualizar categoria', array('moodle_id' => $moodle_id, 'error' => $updated->get_error_message()));
                 return null;
             }
 
@@ -248,7 +259,7 @@ final class PCC_WooOTEC_Pro_Sync {
             );
 
             if (is_wp_error($inserted) || empty($inserted['term_id'])) {
-                PCC_WooOTEC_Pro_Logger::error('No se pudo crear categoria', array('moodle_id' => $moodle_id));
+                Woo_OTEC_Moodle_Logger::error('No se pudo crear categoria', array('moodle_id' => $moodle_id));
                 return null;
             }
 
@@ -328,7 +339,7 @@ final class PCC_WooOTEC_Pro_Sync {
         $product->set_downloadable(false);
         $product->set_catalog_visibility('visible');
         $product->set_sku('MOODLE-' . (int) $course->id);
-        $product->set_regular_price((string) PCC_WooOTEC_Pro_Core::instance()->get_option('default_price', '49000'));
+        $product->set_regular_price((string) Woo_OTEC_Moodle_Core::instance()->get_option('default_price', '49000'));
         $product->set_attributes($this->build_product_attributes($product, $course_data));
 
         $category_ids = $this->resolve_category_ids((int) ($course->categoryid ?? 0));
@@ -343,7 +354,7 @@ final class PCC_WooOTEC_Pro_Sync {
             return $description;
         }
 
-        return (string) PCC_WooOTEC_Pro_Core::instance()->get_option('fallback_description', 'Curso sincronizado automaticamente desde Moodle.');
+        return (string) Woo_OTEC_Moodle_Core::instance()->get_option('fallback_description', 'Curso sincronizado automaticamente desde Moodle.');
     }
 
     private function resolve_category_ids(int $moodle_category_id): array {
@@ -375,10 +386,10 @@ final class PCC_WooOTEC_Pro_Sync {
         if (!empty($course->teacher) && $course->teacher !== 'No asignado' && !str_contains($course->teacher, 'muchos cursos')) {
             $teacher = $course->teacher;
         } else {
-            $teacher_names = PCC_WooOTEC_Pro_API::instance()->get_course_teachers((int) $course->id);
+            $teacher_names = Woo_OTEC_Moodle_API::instance()->get_course_teachers((int) $course->id);
             $teacher = !empty($teacher_names)
                 ? implode(', ', $teacher_names)
-                : (string) PCC_WooOTEC_Pro_Core::instance()->get_option('default_instructor', 'No asignado');
+                : (string) Woo_OTEC_Moodle_Core::instance()->get_option('default_instructor', 'No asignado');
         }
 
         $start_timestamp = isset($course->startdate) ? (is_numeric($course->startdate) ? (int) $course->startdate : strtotime($course->startdate)) : 0;
@@ -394,11 +405,11 @@ final class PCC_WooOTEC_Pro_Sync {
             'modality'  => ucfirst((string) ($course->modality ?? 'online')),
         );
 
-        return PCC_WooOTEC_Pro_Mapper::instance()->map_course_data($data);
+        return Woo_OTEC_Moodle_Mapper::instance()->map_course_data($data);
     }
 
     private function build_product_attributes(WC_Product $product, array $course_data): array {
-        $mappings = PCC_WooOTEC_Pro_Mapper::instance()->get_mappings();
+        $mappings = Woo_OTEC_Moodle_Mapper::instance()->get_mappings();
         $managed_targets = array_column($mappings, 'target');
 
         $attributes = array();
@@ -462,7 +473,7 @@ final class PCC_WooOTEC_Pro_Sync {
             }
         }
 
-        $default_image_id = (int) PCC_WooOTEC_Pro_Core::instance()->get_option('default_image_id', 0);
+        $default_image_id = (int) Woo_OTEC_Moodle_Core::instance()->get_option('default_image_id', 0);
         if ($default_image_id > 0) {
             set_post_thumbnail($product_id, $default_image_id);
         }
@@ -477,7 +488,7 @@ final class PCC_WooOTEC_Pro_Sync {
 
                 $mimetype = !empty($file->mimetype) ? (string) $file->mimetype : '';
                 if ($mimetype === '' || str_starts_with($mimetype, 'image/')) {
-                    return add_query_arg('token', PCC_WooOTEC_Pro_API::instance()->get_token(), (string) $file->fileurl);
+                    return add_query_arg('token', Woo_OTEC_Moodle_API::instance()->get_token(), (string) $file->fileurl);
                 }
             }
         }
@@ -496,7 +507,7 @@ final class PCC_WooOTEC_Pro_Sync {
 
         $tmp = download_url($url, 30);
         if (is_wp_error($tmp)) {
-            PCC_WooOTEC_Pro_Logger::error('No se pudo descargar imagen remota', array('url' => $url, 'error' => $tmp->get_error_message()));
+            Woo_OTEC_Moodle_Logger::error('No se pudo descargar imagen remota', array('url' => $url, 'error' => $tmp->get_error_message()));
             return 0;
         }
 
@@ -548,7 +559,7 @@ final class PCC_WooOTEC_Pro_Sync {
 
         if (is_wp_error($attachment_id)) {
             wp_delete_file($tmp);
-            PCC_WooOTEC_Pro_Logger::error('No se pudo adjuntar imagen al producto', array('error' => $attachment_id->get_error_message(), 'filename' => $filename));
+            Woo_OTEC_Moodle_Logger::error('No se pudo adjuntar imagen al producto', array('error' => $attachment_id->get_error_message(), 'filename' => $filename));
             return 0;
         }
 
@@ -566,6 +577,6 @@ final class PCC_WooOTEC_Pro_Sync {
             'products_updated'     => (int) ($result['products_updated'] ?? 0),
         );
 
-        PCC_WooOTEC_Pro_Core::instance()->update_option('last_sync', $payload);
+        Woo_OTEC_Moodle_Core::instance()->update_option('last_sync', $payload);
     }
 }

@@ -21,27 +21,26 @@ if (!defined('ABSPATH')) {
 }
 
 // Constantes base
-define('PCC_WOOOTEC_VERSION', '2.1.0');
-define('PCC_WOOOTEC_PRO_VERSION', PCC_WOOOTEC_VERSION);
-define('PCC_WOOOTEC_PRO_FILE', __FILE__);
-define('PCC_WOOOTEC_PRO_BASENAME', plugin_basename(__FILE__));
-define('PCC_WOOOTEC_PRO_PATH', plugin_dir_path(__FILE__));
-define('PCC_WOOOTEC_PRO_URL', plugin_dir_url(__FILE__));
+define('WOO_OTEC_MOODLE_VERSION', '2.1.0');
+define('WOO_OTEC_MOODLE_FILE', __FILE__);
+define('WOO_OTEC_MOODLE_BASENAME', plugin_basename(__FILE__));
+define('WOO_OTEC_MOODLE_PATH', plugin_dir_path(__FILE__));
+define('WOO_OTEC_MOODLE_URL', plugin_dir_url(__FILE__));
 
 // Core
-require_once PCC_WOOOTEC_PRO_PATH . 'includes/class-core.php';
+require_once WOO_OTEC_MOODLE_PATH . 'includes/class-core.php';
 
 // Hooks de activacion
-register_activation_hook(PCC_WOOOTEC_PRO_FILE, 'pcc_woootec_install');
-register_deactivation_hook(PCC_WOOOTEC_PRO_FILE, array('PCC_WooOTEC_Pro_Core', 'deactivate'));
+register_activation_hook(WOO_OTEC_MOODLE_FILE, 'woo_otec_moodle_install');
+register_deactivation_hook(WOO_OTEC_MOODLE_FILE, array('Woo_OTEC_Moodle_Core', 'deactivate'));
 
-function pcc_woootec_install(): void {
-    PCC_WooOTEC_Pro_Core::activate();
+function woo_otec_moodle_install(): void {
+    Woo_OTEC_Moodle_Core::activate();
 
-    if (class_exists('PCC_WooOTEC_Pro_Logger')) {
-        PCC_WooOTEC_Pro_Logger::get_directory();
+    if (class_exists('Woo_OTEC_Moodle_Logger')) {
+        Woo_OTEC_Moodle_Logger::get_directory();
     }
 }
 
 // Carga del nucleo del plugin
-PCC_WooOTEC_Pro_Core::instance()->boot();
+Woo_OTEC_Moodle_Core::instance()->boot();

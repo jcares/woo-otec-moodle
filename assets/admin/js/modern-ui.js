@@ -119,7 +119,7 @@
 
             // Initial tab
             if (tabs.length) {
-                const defaultTab = pccWoootecAdmin && pccWoootecAdmin.defaultTab ? pccWoootecAdmin.defaultTab : '';
+                const defaultTab = wooOtecMoodleAdmin && wooOtecMoodleAdmin.defaultTab ? wooOtecMoodleAdmin.defaultTab : '';
                 const requestedTab = defaultTab ? $('.pcc-tab[data-tab="' + defaultTab + '"]').first() : $();
                 const currentTab = requestedTab.length ? requestedTab : tabs.filter('.is-active').first();
                 setActiveTab(currentTab.length ? currentTab : tabs.first());
@@ -162,9 +162,9 @@
 
             $(document).on('click', '[data-email-preview]', function() {
                 setFeedback('Generando vista previa...', '');
-                $.post(pccWoootecAdmin.ajaxUrl, {
-                    action: 'pcc_woootec_email_preview',
-                    nonce: pccWoootecAdmin.emailNonce
+                $.post(wooOtecMoodleAdmin.ajaxUrl, {
+                    action: 'woo_otec_moodle_email_preview',
+                    nonce: wooOtecMoodleAdmin.emailNonce
                 }).done(function(res) {
                     if (res.success) {
                         $('[data-email-preview-box]').html(res.data.html || '');
@@ -176,11 +176,11 @@
             });
 
             $(document).on('click', '[data-email-send-test]', function() {
-                const recipient = $('#pcc_woootec_pro_email_test_recipient').val();
+                const recipient = $('#woo_otec_moodle_email_test_recipient').val();
                 setFeedback('Enviando...', '');
-                $.post(pccWoootecAdmin.ajaxUrl, {
-                    action: 'pcc_woootec_send_test_email',
-                    nonce: pccWoootecAdmin.emailNonce,
+                $.post(wooOtecMoodleAdmin.ajaxUrl, {
+                    action: 'woo_otec_moodle_send_test_email',
+                    nonce: wooOtecMoodleAdmin.emailNonce,
                     recipient: recipient
                 }).done(function(res) {
                     if (res.success) {
@@ -194,7 +194,7 @@
 
         // --- Template Tools Logic ---
         initTemplateTools: function() {
-            $(document).on('change', '#pcc_woootec_pro_template_reference', function() {
+            $(document).on('change', '#woo_otec_moodle_template_reference', function() {
                 const productId = $(this).val();
                 const $container = $('[data-template-fields]');
                 if (!$container.length) return;
@@ -205,9 +205,9 @@
                 }
 
                 $container.html('<p class="description">Cargando...</p>');
-                $.post(pccWoootecAdmin.ajaxUrl, {
-                    action: 'pcc_woootec_template_fields',
-                    nonce: pccWoootecAdmin.templateNonce,
+                $.post(wooOtecMoodleAdmin.ajaxUrl, {
+                    action: 'woo_otec_moodle_template_fields',
+                    nonce: wooOtecMoodleAdmin.templateNonce,
                     product_id: productId
                 }).done(function(res) {
                     if (res.success) {
@@ -240,9 +240,9 @@
             $container.html('<div class="pcc-loading-spinner">Obteniendo categorías...</div>');
 
             $.ajax({
-                url: pccWoootecAdmin.ajaxUrl,
+                url: wooOtecMoodleAdmin.ajaxUrl,
                 type: 'POST',
-                data: { action: 'pcc_woootec_get_categories', nonce: pccWoootecAdmin.nonce },
+                data: { action: 'woo_otec_moodle_get_categories', nonce: wooOtecMoodleAdmin.nonce },
                 success: function(res) {
                     if (res.success) {
                         self.categories = res.data;
@@ -286,11 +286,11 @@
             $container.html('<div class="pcc-loading-spinner">Buscando profesores en las categorías seleccionadas...</div>');
 
             $.ajax({
-                url: pccWoootecAdmin.ajaxUrl,
+                url: wooOtecMoodleAdmin.ajaxUrl,
                 type: 'POST',
                 data: { 
-                    action: 'pcc_woootec_get_teachers', 
-                    nonce: pccWoootecAdmin.nonce,
+                    action: 'woo_otec_moodle_get_teachers', 
+                    nonce: wooOtecMoodleAdmin.nonce,
                     categories: self.selectedCategories
                 },
                 success: function(res) {
@@ -328,11 +328,11 @@
             $container.html('<div class="pcc-loading-spinner">Obteniendo cursos...</div>');
 
             $.ajax({
-                url: pccWoootecAdmin.ajaxUrl,
+                url: wooOtecMoodleAdmin.ajaxUrl,
                 type: 'POST',
                 data: {
-                    action: 'pcc_woootec_get_courses',
-                    nonce: pccWoootecAdmin.nonce,
+                    action: 'woo_otec_moodle_get_courses',
+                    nonce: wooOtecMoodleAdmin.nonce,
                     categories: self.selectedCategories
                 },
                 success: function(res) {
@@ -454,11 +454,11 @@
             $progressBar.css('width', '50%').text('Sincronizando con Moodle...');
 
             $.ajax({
-                url: pccWoootecAdmin.ajaxUrl,
+                url: wooOtecMoodleAdmin.ajaxUrl,
                 type: 'POST',
                 data: {
-                    action: 'pcc_woootec_execute_wizard_sync',
-                    nonce: pccWoootecAdmin.nonce,
+                    action: 'woo_otec_moodle_execute_wizard_sync',
+                    nonce: wooOtecMoodleAdmin.nonce,
                     categories: self.selectedCategories,
                     courses: self.editedCourses
                 },
@@ -485,7 +485,7 @@
         testSSO: function() {
             const $btn = $('#pcc-test-sso-connection');
             const $result = $('#sso-test-result');
-            const url = $('#pcc_woootec_pro_sso_base_url').val();
+            const url = $('#woo_otec_moodle_sso_base_url').val();
 
             if (!url) { alert('Ingresa una URL base SSO.'); return; }
 
@@ -493,9 +493,9 @@
             $result.removeClass('success error').text('Verificando...');
 
             $.ajax({
-                url: pccWoootecAdmin.ajaxUrl,
+                url: wooOtecMoodleAdmin.ajaxUrl,
                 type: 'POST',
-                data: { action: 'pcc_woootec_test_sso', nonce: pccWoootecAdmin.nonce, url: url },
+                data: { action: 'woo_otec_moodle_test_sso', nonce: wooOtecMoodleAdmin.nonce, url: url },
                 success: function(res) {
                     $btn.prop('disabled', false).text('Probar conexión');
                     if (res.success) {
@@ -522,9 +522,9 @@
             $result.html('<p>Comprimiendo...</p>');
 
             $.ajax({
-                url: pccWoootecAdmin.ajaxUrl,
+                url: wooOtecMoodleAdmin.ajaxUrl,
                 type: 'POST',
-                data: { action: 'pcc_woootec_generate_zip', nonce: pccWoootecAdmin.nonce },
+                data: { action: 'woo_otec_moodle_generate_zip', nonce: wooOtecMoodleAdmin.nonce },
                 success: function(res) {
                     $btn.prop('disabled', false).text('Generar ZIP');
                     if (res.success) $result.html(`<p style="color:green;">${res.data.message} <a href="${res.data.url}" class="button button-small" target="_blank">Descargar</a></p>`);

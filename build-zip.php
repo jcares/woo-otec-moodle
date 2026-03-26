@@ -9,9 +9,9 @@ if (!is_dir($pluginsDir)) {
     mkdir($pluginsDir, 0755, true);
 }
 
-// Renombrar pcc-woootec-chile antiguo a la nueva nomenclatura
-if (file_exists($pluginsDir . '/pcc-woootec-chile.zip')) {
-    rename($pluginsDir . '/pcc-woootec-chile.zip', $pluginsDir . '/pcc-woootec-chile-' . date('Ymd-His') . '.zip');
+// Renombrar woo-otec-moodle antiguo a la nueva nomenclatura
+if (file_exists($pluginsDir . '/woo-otec-moodle.zip')) {
+    rename($pluginsDir . '/woo-otec-moodle.zip', $pluginsDir . '/woo-otec-moodle-' . date('Ymd-His') . '.zip');
 }
 
 $zipName = 'woo-otec-moodle.zip';

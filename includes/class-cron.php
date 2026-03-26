@@ -4,8 +4,8 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-final class PCC_WooOTEC_Pro_Cron {
-    public const HOOK_SYNC = 'pcc_woootec_pro_hourly_sync';
+final class Woo_OTEC_Moodle_Cron {
+    public const HOOK_SYNC = 'woo_otec_moodle_hourly_sync';
 
     public static function boot(): void {
         add_filter('cron_schedules', array(__CLASS__, 'register_schedule'));
@@ -18,8 +18,8 @@ final class PCC_WooOTEC_Pro_Cron {
     }
 
     public static function register_schedule(array $schedules): array {
-        if (!isset($schedules['pcc_woootec_hourly'])) {
-            $schedules['pcc_woootec_hourly'] = array(
+        if (!isset($schedules['woo_otec_moodle_hourly'])) {
+            $schedules['woo_otec_moodle_hourly'] = array(
                 'interval' => HOUR_IN_SECONDS,
                 'display'  => 'PCC WooOTEC Chile PRO - Cada hora',
             );
@@ -30,7 +30,7 @@ final class PCC_WooOTEC_Pro_Cron {
 
     public static function ensure_scheduled(): void {
         if (!wp_next_scheduled(self::HOOK_SYNC)) {
-            wp_schedule_event(time() + 300, 'pcc_woootec_hourly', self::HOOK_SYNC);
+            wp_schedule_event(time() + 300, 'woo_otec_moodle_hourly', self::HOOK_SYNC);
         }
     }
 
@@ -43,6 +43,6 @@ final class PCC_WooOTEC_Pro_Cron {
     }
 
     public static function run_sync(): void {
-        PCC_WooOTEC_Pro_Sync::instance()->run(false);
+        Woo_OTEC_Moodle_Sync::instance()->run(false);
     }
 }

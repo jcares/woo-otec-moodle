@@ -1,8 +1,0 @@
-[2026-03-23T22:33:03+00:00] [ERROR] Excepcion Moodle | {"function":"core_enrol_get_enrolled_users","exception":"webservice_access_exception","errorcode":"accessexception","message":"Excepci\u00f3n al control de acceso"}
-[2026-03-23T22:33:09+00:00] [ERROR] No se pudo adjuntar imagen al producto | {"error":"Lo siento, no tienes permisos para subir este tipo de archivo."}
-[2026-03-23T23:29:36+00:00] [ERROR] No se pudo adjuntar imagen al producto | {"error":"Lo siento, no tienes permisos para subir este tipo de archivo.","filename":"curso-2.png"}
-[2026-03-24T01:35:59+00:00] [ERROR] Error HTTP Moodle | {"function":"core_webservice_get_site_info","error":"cURL error 6: Could not resolve host: cipresalto.cl"}
-[2026-03-24T01:36:39+00:00] [ERROR] Error HTTP Moodle | {"function":"core_webservice_get_site_info","error":"cURL error 6: Could not resolve host: cipresalto.cl"}
-[2026-03-24T01:37:29+00:00] [ERROR] Error HTTP Moodle | {"function":"core_webservice_get_site_info","error":"cURL error 6: Could not resolve host: cipresalto.cl"}
-[2026-03-24T02:05:56+00:00] [ERROR] Error HTTP Moodle | {"function":"core_course_get_courses_by_field","error":"cURL error 28: Failed to connect to cipresalto.cl port 443 after 10010 ms: Timeout was reached"}
-[2026-03-24T02:06:42+00:00] [ERROR] Error HTTP Moodle | {"function":"core_course_get_categories","error":"cURL error 28: Failed to connect to cipresalto.cl port 443 after 10010 ms: Timeout was reached"}

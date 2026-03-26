@@ -25,9 +25,9 @@ $step = isset($_GET['step']) ? (int) $_GET['step'] : 1;
         <!-- Content -->
         <div class="pcc-wizard-content">
             <form method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>">
-                <input type="hidden" name="action" value="pcc_woootec_asistente_save">
+                <input type="hidden" name="action" value="woo_otec_moodle_asistente_save">
                 <input type="hidden" name="step" value="<?php echo esc_attr($step); ?>">
-                <?php wp_nonce_field('pcc_woootec_asistente_save', 'wizard_nonce'); ?>
+                <?php wp_nonce_field('woo_otec_moodle_asistente_save', 'wizard_nonce'); ?>
 
                 <div class="pcc-wizard-step-body">
                     <?php
@@ -38,7 +38,7 @@ $step = isset($_GET['step']) ? (int) $_GET['step'] : 1;
                         4 => '4-parametros.php',
                         5 => '5-finalizar.php'
                     );
-                    $step_file = PCC_WOOOTEC_PRO_PATH . 'admin/asistente/views/' . ($archivos[$step] ?? '1-conexion.php');
+                    $step_file = WOO_OTEC_MOODLE_PATH . 'admin/asistente/views/' . ($archivos[$step] ?? '1-conexion.php');
                     if (file_exists($step_file)) {
                         include $step_file;
                     } else {
@@ -49,7 +49,7 @@ $step = isset($_GET['step']) ? (int) $_GET['step'] : 1;
 
                 <div class="pcc-wizard-footer">
                     <?php if ($step > 1 && $step < 5): ?>
-                        <a href="<?php echo esc_url(admin_url('admin.php?page=pcc-woootec-asistente&step=' . ($step - 1))); ?>" class="button button-secondary pcc-btn-back">Volver Atrás</a>
+                        <a href="<?php echo esc_url(admin_url('admin.php?page=woo-otec-asistente&step=' . ($step - 1))); ?>" class="button button-secondary pcc-btn-back">Volver Atrás</a>
                     <?php endif; ?>
 
                     <?php if ($step < 5): ?>

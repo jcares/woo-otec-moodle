@@ -3,7 +3,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-$api = PCC_WooOTEC_Pro_API::instance();
+$api = Woo_OTEC_Moodle_API::instance();
 $connection_ok = $api->test_connection();
 ?>
 <h3>Paso 2: Comprobar Conexión</h3>

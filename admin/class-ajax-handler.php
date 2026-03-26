@@ -6,12 +6,12 @@ if (!defined('ABSPATH')) {
 
 /**
  * Gestiona todas las peticiones AJAX del panel de administración.
- * Extraído de PCC_WooOTEC_Pro_Admin para separar responsabilidades.
+ * Extraído de Woo_OTEC_Moodle_Admin para separar responsabilidades.
  */
-final class PCC_WooOTEC_Pro_Ajax_Handler {
-    private static ?PCC_WooOTEC_Pro_Ajax_Handler $instance = null;
+final class Woo_OTEC_Moodle_Ajax_Handler {
+    private static ?Woo_OTEC_Moodle_Ajax_Handler $instance = null;
 
-    public static function instance(): PCC_WooOTEC_Pro_Ajax_Handler {
+    public static function instance(): Woo_OTEC_Moodle_Ajax_Handler {
         if (self::$instance === null) {
             self::$instance = new self();
         }
@@ -23,17 +23,17 @@ final class PCC_WooOTEC_Pro_Ajax_Handler {
     }
 
     public function boot(): void {
-        add_action('admin_post_pcc_woootec_run_sync', array($this, 'handle_manual_sync'));
-        add_action('wp_ajax_pcc_woootec_email_preview', array($this, 'handle_email_preview'));
-        add_action('wp_ajax_pcc_woootec_send_test_email', array($this, 'handle_send_test_email'));
-        add_action('wp_ajax_pcc_woootec_template_fields', array($this, 'handle_template_fields_ajax'));
-        add_action('wp_ajax_pcc_woootec_get_categories', array($this, 'handle_get_categories'));
-        add_action('wp_ajax_pcc_woootec_get_teachers', array($this, 'handle_get_teachers'));
-        add_action('wp_ajax_pcc_woootec_get_courses', array($this, 'handle_get_courses'));
-        add_action('wp_ajax_pcc_woootec_execute_wizard_sync', array($this, 'handle_execute_wizard_sync'));
-        add_action('wp_ajax_pcc_woootec_test_sso', array($this, 'handle_test_sso'));
-        add_action('wp_ajax_pcc_woootec_export_logs', array($this, 'handle_export_logs'));
-        add_action('wp_ajax_pcc_woootec_generate_zip', array($this, 'handle_generate_zip'));
+        add_action('admin_post_woo_otec_moodle_run_sync', array($this, 'handle_manual_sync'));
+        add_action('wp_ajax_woo_otec_moodle_email_preview', array($this, 'handle_email_preview'));
+        add_action('wp_ajax_woo_otec_moodle_send_test_email', array($this, 'handle_send_test_email'));
+        add_action('wp_ajax_woo_otec_moodle_template_fields', array($this, 'handle_template_fields_ajax'));
+        add_action('wp_ajax_woo_otec_moodle_get_categories', array($this, 'handle_get_categories'));
+        add_action('wp_ajax_woo_otec_moodle_get_teachers', array($this, 'handle_get_teachers'));
+        add_action('wp_ajax_woo_otec_moodle_get_courses', array($this, 'handle_get_courses'));
+        add_action('wp_ajax_woo_otec_moodle_execute_wizard_sync', array($this, 'handle_execute_wizard_sync'));
+        add_action('wp_ajax_woo_otec_moodle_test_sso', array($this, 'handle_test_sso'));
+        add_action('wp_ajax_woo_otec_moodle_export_logs', array($this, 'handle_export_logs'));
+        add_action('wp_ajax_woo_otec_moodle_generate_zip', array($this, 'handle_generate_zip'));
     }
 
     // -------------------------------------------------------------------------
@@ -45,12 +45,12 @@ final class PCC_WooOTEC_Pro_Ajax_Handler {
             wp_die('No autorizado.');
         }
 
-        check_admin_referer('pcc_woootec_run_sync');
+        check_admin_referer('woo_otec_moodle_run_sync');
 
-        $result   = PCC_WooOTEC_Pro_Sync::instance()->run(true);
+        $result   = Woo_OTEC_Moodle_Sync::instance()->run(true);
         $redirect = add_query_arg(
             array(
-                'page'   => 'pcc-woootec-chile',
+                'page'   => 'woo-otec-moodle',
                 'tab'    => 'sync',
                 'status' => $result['status'],
             ),
@@ -70,9 +70,9 @@ final class PCC_WooOTEC_Pro_Ajax_Handler {
             wp_send_json_error(array('message' => 'No autorizado.'), 403);
         }
 
-        check_ajax_referer('pcc_woootec_email_tools', 'nonce');
+        check_ajax_referer('woo_otec_moodle_email_tools', 'nonce');
 
-        $html = PCC_WooOTEC_Pro_Enroll::instance()->render_email_preview();
+        $html = Woo_OTEC_Moodle_Enroll::instance()->render_email_preview();
         wp_send_json_success(array('html' => $html));
     }
 
@@ -81,10 +81,10 @@ final class PCC_WooOTEC_Pro_Ajax_Handler {
             wp_send_json_error(array('message' => 'No autorizado.'), 403);
         }
 
-        check_ajax_referer('pcc_woootec_email_tools', 'nonce');
+        check_ajax_referer('woo_otec_moodle_email_tools', 'nonce');
 
         $recipient = sanitize_email((string) wp_unslash($_POST['recipient'] ?? ''));
-        $result    = PCC_WooOTEC_Pro_Enroll::instance()->send_test_email($recipient);
+        $result    = Woo_OTEC_Moodle_Enroll::instance()->send_test_email($recipient);
 
         if (is_wp_error($result)) {
             wp_send_json_error(array('message' => $result->get_error_message()), 400);
@@ -102,15 +102,15 @@ final class PCC_WooOTEC_Pro_Ajax_Handler {
             wp_send_json_error(array('message' => 'No autorizado.'), 403);
         }
 
-        check_ajax_referer('pcc_woootec_template_fields', 'nonce');
+        check_ajax_referer('woo_otec_moodle_template_fields', 'nonce');
 
         $product_id = isset($_POST['product_id']) ? absint($_POST['product_id']) : 0;
         if ($product_id <= 0) {
             wp_send_json_error(array('message' => 'Producto no valido.'), 400);
         }
 
-        $selected_fields = (array) PCC_WooOTEC_Pro_Core::instance()->get_option('template_fields', array());
-        $html            = PCC_WooOTEC_Pro_Settings::instance()->render_template_fields_markup($product_id, $selected_fields, false);
+        $selected_fields = (array) Woo_OTEC_Moodle_Core::instance()->get_option('template_fields', array());
+        $html            = Woo_OTEC_Moodle_Settings::instance()->render_template_fields_markup($product_id, $selected_fields, false);
         $allowed         = array(
             'label' => array('class' => true),
             'input' => array('type' => true, 'id' => true, 'name' => true, 'value' => true, 'checked' => true),
@@ -126,9 +126,9 @@ final class PCC_WooOTEC_Pro_Ajax_Handler {
     // -------------------------------------------------------------------------
 
     public function handle_get_categories(): void {
-        check_ajax_referer('pcc_woootec_sync_stage', 'nonce');
+        check_ajax_referer('woo_otec_moodle_sync_stage', 'nonce');
 
-        $categories = PCC_WooOTEC_Pro_API::instance()->get_categories();
+        $categories = Woo_OTEC_Moodle_API::instance()->get_categories();
         if (is_wp_error($categories)) {
             wp_send_json_error($categories->get_error_message());
         }
@@ -152,7 +152,7 @@ final class PCC_WooOTEC_Pro_Ajax_Handler {
     }
 
     public function handle_get_teachers(): void {
-        check_ajax_referer('pcc_woootec_sync_stage', 'nonce');
+        check_ajax_referer('woo_otec_moodle_sync_stage', 'nonce');
 
         $category_ids = isset($_POST['categories']) ? array_map('absint', (array) $_POST['categories']) : array();
         if (empty($category_ids)) {
@@ -160,7 +160,7 @@ final class PCC_WooOTEC_Pro_Ajax_Handler {
         }
 
         $teachers          = array();
-        $api               = PCC_WooOTEC_Pro_API::instance();
+        $api               = Woo_OTEC_Moodle_API::instance();
         $courses_processed = 0;
         $max_courses       = 50;
 
@@ -195,7 +195,7 @@ final class PCC_WooOTEC_Pro_Ajax_Handler {
     }
 
     public function handle_get_courses(): void {
-        check_ajax_referer('pcc_woootec_sync_stage', 'nonce');
+        check_ajax_referer('woo_otec_moodle_sync_stage', 'nonce');
         set_time_limit(120);
 
         $category_ids = isset($_POST['categories']) ? array_map('absint', (array) $_POST['categories']) : array();
@@ -204,7 +204,7 @@ final class PCC_WooOTEC_Pro_Ajax_Handler {
         }
 
         $courses                  = array();
-        $api                      = PCC_WooOTEC_Pro_API::instance();
+        $api                      = Woo_OTEC_Moodle_API::instance();
         $total_courses_count      = 0;
         $max_courses_for_teachers = 40;
 
@@ -234,7 +234,7 @@ final class PCC_WooOTEC_Pro_Ajax_Handler {
                         $c['teacher'] = 'Sincronizar para asignar';
                     }
 
-                    $existing_product_id = PCC_WooOTEC_Pro_Sync::instance()->find_product_id($course_id);
+                    $existing_product_id = Woo_OTEC_Moodle_Sync::instance()->find_product_id($course_id);
                     if ($existing_product_id > 0) {
                         $thumb_id      = get_post_thumbnail_id($existing_product_id);
                         $c['image_id'] = $thumb_id > 0 ? $thumb_id : 0;
@@ -254,7 +254,7 @@ final class PCC_WooOTEC_Pro_Ajax_Handler {
     }
 
     public function handle_execute_wizard_sync(): void {
-        check_ajax_referer('pcc_woootec_sync_stage', 'nonce');
+        check_ajax_referer('woo_otec_moodle_sync_stage', 'nonce');
 
         if (!class_exists('WooCommerce')) {
             wp_send_json_error('WooCommerce no está activo.');
@@ -269,14 +269,14 @@ final class PCC_WooOTEC_Pro_Ajax_Handler {
             wp_send_json_error('No hay datos para sincronizar.');
         }
 
-        $sync    = PCC_WooOTEC_Pro_Sync::instance();
+        $sync    = Woo_OTEC_Moodle_Sync::instance();
         $results = array('created' => 0, 'updated' => 0, 'errors' => 0);
 
-        PCC_WooOTEC_Pro_Logger::log('Iniciando sincronización desde asistente...', PCC_WooOTEC_Pro_Logger::SYNC_LOG);
+        Woo_OTEC_Moodle_Logger::log('Iniciando sincronización desde asistente...', Woo_OTEC_Moodle_Logger::SYNC_LOG);
 
         try {
             if (!empty($categories)) {
-                $moodle_cats = PCC_WooOTEC_Pro_API::instance()->get_categories();
+                $moodle_cats = Woo_OTEC_Moodle_API::instance()->get_categories();
                 if (!is_wp_error($moodle_cats)) {
                     $to_sync = array();
                     foreach ($moodle_cats as $cat) {
@@ -306,10 +306,10 @@ final class PCC_WooOTEC_Pro_Ajax_Handler {
                 'timestamp'        => current_time('mysql'),
             ));
 
-            PCC_WooOTEC_Pro_Logger::log($msg, PCC_WooOTEC_Pro_Logger::SYNC_LOG);
+            Woo_OTEC_Moodle_Logger::log($msg, Woo_OTEC_Moodle_Logger::SYNC_LOG);
             wp_send_json_success($msg);
         } catch (Throwable $e) {
-            PCC_WooOTEC_Pro_Logger::log('Error fatal en sincronización asistente: ' . $e->getMessage(), PCC_WooOTEC_Pro_Logger::ERROR_LOG);
+            Woo_OTEC_Moodle_Logger::log('Error fatal en sincronización asistente: ' . $e->getMessage(), Woo_OTEC_Moodle_Logger::ERROR_LOG);
             wp_send_json_error('Error en el servidor: ' . $e->getMessage());
         }
     }
@@ -319,7 +319,7 @@ final class PCC_WooOTEC_Pro_Ajax_Handler {
     // -------------------------------------------------------------------------
 
     public function handle_test_sso(): void {
-        check_ajax_referer('pcc_woootec_sync_stage', 'nonce');
+        check_ajax_referer('woo_otec_moodle_sync_stage', 'nonce');
 
         $url = esc_url_raw($_POST['url'] ?? '');
         if (empty($url)) {
@@ -348,30 +348,30 @@ final class PCC_WooOTEC_Pro_Ajax_Handler {
             wp_die('No autorizado.');
         }
 
-        check_admin_referer('pcc_woootec_export_logs', 'nonce');
+        check_admin_referer('woo_otec_moodle_export_logs', 'nonce');
 
-        $log_content = PCC_WooOTEC_Pro_Logger::read_full(PCC_WooOTEC_Pro_Logger::ERROR_LOG);
+        $log_content = Woo_OTEC_Moodle_Logger::read_full(Woo_OTEC_Moodle_Logger::ERROR_LOG);
 
         header('Content-Type: text/plain');
-        header('Content-Disposition: attachment; filename="pcc-woootec-logs-' . date('Y-m-d-His') . '.txt"');
+        header('Content-Disposition: attachment; filename="woo-otec-logs-' . date('Y-m-d-His') . '.txt"');
         echo $log_content;
         exit;
     }
 
     public function handle_generate_zip(): void {
-        check_ajax_referer('pcc_woootec_sync_stage', 'nonce');
+        check_ajax_referer('woo_otec_moodle_sync_stage', 'nonce');
 
         if (!current_user_can('manage_options')) {
             wp_send_json_error('No autorizado.');
         }
 
-        $plugin_dir = PCC_WOOOTEC_PRO_PATH;
-        $zip_name   = 'pcc-woootec-chile.zip';
+        $plugin_dir = WOO_OTEC_MOODLE_PATH;
+        $zip_name   = 'woo-otec-moodle.zip';
         $zip_path   = $plugin_dir . $zip_name;
 
         if (file_exists($zip_path)) {
             $timestamp = date('Ymd-His');
-            $new_name  = 'pcc-woootec-chile-' . $timestamp . '.zip';
+            $new_name  = 'woo-otec-moodle-' . $timestamp . '.zip';
             rename($zip_path, $plugin_dir . $new_name);
         }
 
@@ -388,13 +388,14 @@ final class PCC_WooOTEC_Pro_Ajax_Handler {
         foreach ($files as $name => $file) {
             if (!$file->isDir()) {
                 $file_path     = $file->getRealPath();
-                $relative_path = 'pcc-woootec-chile/' . substr($file_path, strlen($plugin_dir));
+                $relative_path = 'woo-otec-moodle/' . substr($file_path, strlen($plugin_dir));
+                $relative_path = str_replace('\\', '/', $relative_path); // <-- FIX CRITICO: Forzar slash de Unix para el ZIP
 
                 if (strpos($file_path, '.git') !== false ||
                     strpos($file_path, 'node_modules') !== false ||
                     strpos($file_path, 'logs') !== false ||
                     basename($file_path) === $zip_name ||
-                    strpos(basename($file_path), 'pcc-woootec-chile-20') === 0) {
+                    strpos(basename($file_path), 'woo-otec-moodle-20') === 0) {
                     continue;
                 }
 
@@ -406,7 +407,7 @@ final class PCC_WooOTEC_Pro_Ajax_Handler {
 
         wp_send_json_success(array(
             'message' => 'Archivo ZIP generado correctamente.',
-            'url'     => PCC_WOOOTEC_PRO_URL . $zip_name,
+            'url'     => WOO_OTEC_MOODLE_URL . $zip_name,
         ));
     }
 }

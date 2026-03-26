@@ -4,12 +4,12 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-final class PCC_WooOTEC_Pro_Enroll {
-    public const RETRY_HOOK = 'pcc_woootec_retry_enrollment';
+final class Woo_OTEC_Moodle_Enroll {
+    public const RETRY_HOOK = 'woo_otec_moodle_retry_enrollment';
 
-    private static ?PCC_WooOTEC_Pro_Enroll $instance = null;
+    private static ?Woo_OTEC_Moodle_Enroll $instance = null;
 
-    public static function instance(): PCC_WooOTEC_Pro_Enroll {
+    public static function instance(): Woo_OTEC_Moodle_Enroll {
         if (self::$instance === null) {
             self::$instance = new self();
         }
@@ -31,7 +31,7 @@ final class PCC_WooOTEC_Pro_Enroll {
     }
 
     public function handle_completed_order(int $order_id): void {
-        PCC_WooOTEC_Pro_Logger::info('Hook de orden completada disparado', array('order_id' => $order_id));
+        Woo_OTEC_Moodle_Logger::info('Hook de orden completada disparado', array('order_id' => $order_id));
         $this->process_order($order_id, false, false);
     }
 
@@ -46,7 +46,7 @@ final class PCC_WooOTEC_Pro_Enroll {
     }
 
     public function maybe_redirect_after_purchase(): void {
-        if (PCC_WooOTEC_Pro_Core::instance()->get_option('redirect_after_purchase', 'no') !== 'yes') {
+        if (Woo_OTEC_Moodle_Core::instance()->get_option('redirect_after_purchase', 'no') !== 'yes') {
             return;
         }
 
@@ -73,7 +73,7 @@ final class PCC_WooOTEC_Pro_Enroll {
 
     public function render_email_preview(): string {
         $sample = $this->get_sample_email_data();
-        return PCC_WooOTEC_Pro_Mailer::instance()->render_template($sample, true);
+        return Woo_OTEC_Moodle_Mailer::instance()->render_template($sample, true);
     }
 
     public function send_test_email(string $recipient): bool|WP_Error {
@@ -82,16 +82,16 @@ final class PCC_WooOTEC_Pro_Enroll {
             return new WP_Error('pcc_invalid_test_email', 'Debes indicar un correo de prueba valido.');
         }
 
-        $subject = PCC_WooOTEC_Pro_Mailer::instance()->render_subject($this->get_sample_email_data());
+        $subject = Woo_OTEC_Moodle_Mailer::instance()->render_subject($this->get_sample_email_data());
         $body = $this->render_email_preview();
-        $sent = PCC_WooOTEC_Pro_Mailer::instance()->send($recipient, $subject, $body);
+        $sent = Woo_OTEC_Moodle_Mailer::instance()->send($recipient, $subject, $body);
 
         if (!$sent) {
-            PCC_WooOTEC_Pro_Logger::error('Fallo envio de correo de prueba', array('recipient' => $recipient));
+            Woo_OTEC_Moodle_Logger::error('Fallo envio de correo de prueba', array('recipient' => $recipient));
             return new WP_Error('pcc_test_email_failed', 'No fue posible enviar el correo de prueba.');
         }
 
-        PCC_WooOTEC_Pro_Logger::info('Correo de prueba enviado', array('recipient' => $recipient));
+        Woo_OTEC_Moodle_Logger::info('Correo de prueba enviado', array('recipient' => $recipient));
         return true;
     }
 
@@ -131,25 +131,25 @@ final class PCC_WooOTEC_Pro_Enroll {
             return false;
         }
 
-        PCC_WooOTEC_Pro_Logger::info('Compra detectada', array('order_id' => $order_id, 'retry' => $is_retry));
+        Woo_OTEC_Moodle_Logger::info('Compra detectada', array('order_id' => $order_id, 'retry' => $is_retry));
 
         $learner = $this->resolve_learner_data($order);
         if (!$learner) {
-            PCC_WooOTEC_Pro_Logger::error('No fue posible resolver datos del alumno', array('order_id' => $order_id));
+            Woo_OTEC_Moodle_Logger::error('No fue posible resolver datos del alumno', array('order_id' => $order_id));
             return false;
         }
 
         $course_ids = $this->get_order_course_ids($order);
         if (empty($course_ids)) {
-            PCC_WooOTEC_Pro_Logger::info('La orden no contiene cursos de Moodle. Saltando matricula.', array('order_id' => $order_id));
+            Woo_OTEC_Moodle_Logger::info('La orden no contiene cursos de Moodle. Saltando matricula.', array('order_id' => $order_id));
             $order->update_meta_data('_pcc_moodle_enrollment_complete', '1');
             $order->save();
             return true;
         }
 
-        $moodle_result = PCC_WooOTEC_Pro_API::instance()->get_or_create_user($learner);
+        $moodle_result = Woo_OTEC_Moodle_API::instance()->get_or_create_user($learner);
         if (is_wp_error($moodle_result)) {
-            PCC_WooOTEC_Pro_Logger::error('Error al crear/reutilizar usuario Moodle', array('order_id' => $order_id, 'error' => $moodle_result->get_error_message()));
+            Woo_OTEC_Moodle_Logger::error('Error al crear/reutilizar usuario Moodle', array('order_id' => $order_id, 'error' => $moodle_result->get_error_message()));
             $this->schedule_retry($order);
             return false;
         }
@@ -162,9 +162,9 @@ final class PCC_WooOTEC_Pro_Enroll {
         $order->update_meta_data('_pcc_moodle_user_id', (string) $moodle_user_id);
 
         if (!empty($moodle_result['created'])) {
-            PCC_WooOTEC_Pro_Logger::info('Usuario Moodle creado', array('order_id' => $order_id, 'email' => $learner['email'], 'moodle_user_id' => $moodle_user_id));
+            Woo_OTEC_Moodle_Logger::info('Usuario Moodle creado', array('order_id' => $order_id, 'email' => $learner['email'], 'moodle_user_id' => $moodle_user_id));
         } else {
-            PCC_WooOTEC_Pro_Logger::info('Usuario Moodle reutilizado', array('order_id' => $order_id, 'email' => $learner['email'], 'moodle_user_id' => $moodle_user_id));
+            Woo_OTEC_Moodle_Logger::info('Usuario Moodle reutilizado', array('order_id' => $order_id, 'email' => $learner['email'], 'moodle_user_id' => $moodle_user_id));
         }
 
         $already = $order->get_meta('_pcc_moodle_enrolled_courses');
@@ -180,17 +180,17 @@ final class PCC_WooOTEC_Pro_Enroll {
                 continue;
             }
 
-            $enroll_ok = PCC_WooOTEC_Pro_API::instance()->enroll_user($moodle_user_id, $course_id);
+            $enroll_ok = Woo_OTEC_Moodle_API::instance()->enroll_user($moodle_user_id, $course_id);
             if ($enroll_ok) {
                 $enrolled[] = $course_id;
-                PCC_WooOTEC_Pro_Logger::info('Matricula exitosa', array('order_id' => $order_id, 'course_id' => $course_id, 'moodle_user_id' => $moodle_user_id));
+                Woo_OTEC_Moodle_Logger::info('Matricula exitosa', array('order_id' => $order_id, 'course_id' => $course_id, 'moodle_user_id' => $moodle_user_id));
             } else {
                 $failed[] = $course_id;
-                PCC_WooOTEC_Pro_Logger::error('Matricula fallida', array('order_id' => $order_id, 'course_id' => $course_id, 'moodle_user_id' => $moodle_user_id));
+                Woo_OTEC_Moodle_Logger::error('Matricula fallida', array('order_id' => $order_id, 'course_id' => $course_id, 'moodle_user_id' => $moodle_user_id));
             }
         }
 
-        $urls = PCC_WooOTEC_Pro_SSO::instance()->store_order_urls($order, $this->build_virtual_wp_user($learner), $enrolled);
+        $urls = Woo_OTEC_Moodle_SSO::instance()->store_order_urls($order, $this->build_virtual_wp_user($learner), $enrolled);
         $order->update_meta_data('_pcc_moodle_enrolled_courses', array_values(array_unique($enrolled)));
         $order->update_meta_data('_pcc_moodle_enrollment_complete', empty($failed) ? '1' : '0');
         $order->update_meta_data('_pcc_moodle_enrollment_last', array(
@@ -275,7 +275,7 @@ final class PCC_WooOTEC_Pro_Enroll {
     }
 
     private function schedule_retry(WC_Order $order): void {
-        $limit = max(1, (int) PCC_WooOTEC_Pro_Core::instance()->get_option('retry_limit', 3));
+        $limit = max(1, (int) Woo_OTEC_Moodle_Core::instance()->get_option('retry_limit', 3));
         $attempts = (int) $order->get_meta('_pcc_retry_attempts');
 
         if ($attempts >= $limit) {
@@ -295,36 +295,36 @@ final class PCC_WooOTEC_Pro_Enroll {
     }
 
     private function send_order_access_email(WC_Order $order, bool $force = false, ?array $learner = null, ?string $password = null, ?array $urls = null): bool {
-        $email_enabled = PCC_WooOTEC_Pro_Core::instance()->get_option('email_enabled', 'yes');
+        $email_enabled = Woo_OTEC_Moodle_Core::instance()->get_option('email_enabled', 'yes');
         
         if ($email_enabled !== 'yes') {
-            PCC_WooOTEC_Pro_Logger::info('Envio de email saltado: deshabilitado en configuracion', array('order_id' => $order->get_id()));
+            Woo_OTEC_Moodle_Logger::info('Envio de email saltado: deshabilitado en configuracion', array('order_id' => $order->get_id()));
             return false;
         }
 
         if (!$force && !$order->get_meta('_pcc_moodle_enrollment_complete')) {
-            PCC_WooOTEC_Pro_Logger::info('Envio de email saltado: matricula aun no completada', array('order_id' => $order->get_id()));
+            Woo_OTEC_Moodle_Logger::info('Envio de email saltado: matricula aun no completada', array('order_id' => $order->get_id()));
             return false;
         }
 
         if (!$force && $order->get_meta('_pcc_access_email_sent')) {
-            PCC_WooOTEC_Pro_Logger::info('Envio de email saltado: ya fue enviado anteriormente', array('order_id' => $order->get_id()));
+            Woo_OTEC_Moodle_Logger::info('Envio de email saltado: ya fue enviado anteriormente', array('order_id' => $order->get_id()));
             return false;
         }
 
         $learner = $learner ?: $this->resolve_learner_data($order);
         if (!$learner) {
-            PCC_WooOTEC_Pro_Logger::error('No se pudo enviar email: no hay datos del alumno', array('order_id' => $order->get_id()));
+            Woo_OTEC_Moodle_Logger::error('No se pudo enviar email: no hay datos del alumno', array('order_id' => $order->get_id()));
             return false;
         }
 
         $urls = is_array($urls) ? $urls : (array) $order->get_meta('_pcc_moodle_access_urls');
         $data = $this->build_email_data($order, $learner, $password, $urls);
-        $subject = PCC_WooOTEC_Pro_Mailer::instance()->render_subject($data);
-        $body = PCC_WooOTEC_Pro_Mailer::instance()->render_template($data, false);
+        $subject = Woo_OTEC_Moodle_Mailer::instance()->render_subject($data);
+        $body = Woo_OTEC_Moodle_Mailer::instance()->render_template($data, false);
         
-        PCC_WooOTEC_Pro_Logger::info('Intentando enviar email de acceso', array('order_id' => $order->get_id(), 'email' => $learner['email']));
-        $sent = PCC_WooOTEC_Pro_Mailer::instance()->send((string) $learner['email'], $subject, $body);
+        Woo_OTEC_Moodle_Logger::info('Intentando enviar email de acceso', array('order_id' => $order->get_id(), 'email' => $learner['email']));
+        $sent = Woo_OTEC_Moodle_Mailer::instance()->send((string) $learner['email'], $subject, $body);
 
         if ($sent) {
             $order->update_meta_data('_pcc_access_email_sent', '1');
@@ -332,11 +332,11 @@ final class PCC_WooOTEC_Pro_Enroll {
                 $order->update_meta_data('_pcc_generated_password', $password);
             }
             $order->save();
-            PCC_WooOTEC_Pro_Logger::info('Correo de acceso enviado exitosamente', array('order_id' => $order->get_id(), 'email' => $learner['email']));
+            Woo_OTEC_Moodle_Logger::info('Correo de acceso enviado exitosamente', array('order_id' => $order->get_id(), 'email' => $learner['email']));
             return true;
         }
 
-        PCC_WooOTEC_Pro_Logger::error('Fallo critico al enviar correo de acceso (wp_mail devolvio false)', array('order_id' => $order->get_id(), 'email' => $learner['email']));
+        Woo_OTEC_Moodle_Logger::error('Fallo critico al enviar correo de acceso (wp_mail devolvio false)', array('order_id' => $order->get_id(), 'email' => $learner['email']));
         return false;
     }
 
@@ -365,7 +365,7 @@ final class PCC_WooOTEC_Pro_Enroll {
             'nombre'     => 'Alumno Demo',
             'email'      => 'alumno@example.com',
             'password'   => 'TempPassword123!',
-            'url_acceso' => PCC_WooOTEC_Pro_SSO::instance()->build_url('alumno@example.com', 123),
+            'url_acceso' => Woo_OTEC_Moodle_SSO::instance()->build_url('alumno@example.com', 123),
             'cursos'     => 'Curso Demo 1<br>Curso Demo 2',
             'sitio'      => wp_specialchars_decode(get_bloginfo('name'), ENT_QUOTES),
         );
