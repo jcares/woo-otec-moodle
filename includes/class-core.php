@@ -125,6 +125,14 @@ final class PCC_WooOTEC_Pro_Core {
                 }
             }
 
+            $wizard_file = PCC_WOOOTEC_PRO_PATH . 'admin/asistente/clase-asistente.php';
+            if (file_exists($wizard_file)) {
+                require_once $wizard_file;
+                if (class_exists('PCC_WooOTEC_Pro_Asistente')) {
+                    PCC_WooOTEC_Pro_Asistente::instance()->boot();
+                }
+            }
+
         }
 
         // FRONTEND

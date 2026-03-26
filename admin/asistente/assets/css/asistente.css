@@ -1,0 +1,126 @@
+.pcc-wizard-wrap {
+    max-width: 800px;
+    margin: 40px auto;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+}
+
+.pcc-wizard-container {
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    overflow: hidden;
+}
+
+.pcc-wizard-header {
+    background: #0d1b2a;
+    padding: 30px;
+    color: #fff;
+    text-align: center;
+}
+
+.pcc-wizard-logo h2 {
+    color: #fff;
+    font-size: 28px;
+    margin: 0;
+}
+
+.pcc-wizard-logo span {
+    color: #48cae4;
+    font-weight: 300;
+}
+
+.pcc-wizard-stepper {
+    margin-top: 25px;
+}
+
+.pcc-wizard-stepper ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+}
+
+.pcc-wizard-stepper li {
+    font-size: 14px;
+    color: #a9b3c1;
+    position: relative;
+    padding-bottom: 5px;
+}
+
+.pcc-wizard-stepper li.active {
+    color: #48cae4;
+    font-weight: bold;
+    border-bottom: 2px solid #48cae4;
+}
+
+.pcc-wizard-stepper li.done {
+    color: #fff;
+}
+
+.pcc-wizard-content {
+    padding: 40px;
+}
+
+.pcc-wizard-step-body h3 {
+    margin-top: 0;
+    font-size: 22px;
+    color: #2c3e50;
+}
+
+.pcc-wizard-footer {
+    margin-top: 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid #eee;
+    padding-top: 20px;
+}
+
+.pcc-btn-next,
+.pcc-btn-finish {
+    background: #2271b1 !important;
+    border-color: #2271b1 !important;
+    color: #fff !important;
+    padding: 6px 20px !important;
+    font-size: 15px !important;
+}
+
+.pcc-wizard-test-box {
+    padding: 20px;
+    border-radius: 6px;
+    margin: 20px 0;
+    display: flex;
+    align-items: flex-start;
+    gap: 15px;
+}
+
+.pcc-wizard-test-box.success {
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+}
+
+.pcc-wizard-test-box.success .dashicons {
+    color: #16a34a;
+    font-size: 30px;
+    line-height: 1;
+}
+
+.pcc-wizard-test-box.error {
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+}
+
+.pcc-wizard-test-box.error .dashicons {
+    color: #dc2626;
+    font-size: 30px;
+    line-height: 1;
+}
+
+.pcc-wizard-test-box h4 {
+    margin: 0 0 5px 0;
+}
+.pcc-wizard-test-box p {
+    margin: 0;
+}

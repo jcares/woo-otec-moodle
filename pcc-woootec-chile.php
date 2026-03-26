@@ -1,17 +1,19 @@
 <?php
 /**
- * Plugin Name: PCC WooOTEC Chile
- * Description: Integracion Moodle + WooCommerce
- * Version: 2.1.0
- * Author: JCares
- * License: GPLv2 or later
- * License URI: https://www.gnu.org/licenses/gpl-2.0.html
- * Requires PHP: 8.1
+ * Plugin Name:       Woo OTEC Moodle
+ * Plugin URI:        https://github.com/jcares/woo-otec-moodle
+ * Description:       Integración profesional entre Moodle y WooCommerce. Sincroniza cursos, inscribe alumnos y administra permisos automáticamente.
+ * Version:           2.1.0
  * Requires at least: 6.4
- * Text Domain: pcc-woootec-chile
- * Domain Path: /languages
+ * Requires PHP:      8.1
+ * Author:            JCares
+ * Author URI:        https://www.pccurico.cl
+ * License:           GPL v2 or later
+ * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
+ * Text Domain:       woo-otec-moodle
+ * Domain Path:       /languages
  * WC requires at least: 8.0
- * WC tested up to: 9.8
+ * WC tested up to:   9.8
  */
 
 if (!defined('ABSPATH')) {

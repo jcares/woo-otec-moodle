@@ -1,0 +1,35 @@
+# Prompt de Mejoras Arquitectónicas y de Código
+
+Copia y pega este prompt al asistente o agente cuando desees iterar mejoras de código en el proyecto:
+
+***
+
+Eres un desarrollador experto en WordPress y PHP 8. Revisa e implementa las siguientes mejoras arquitectónicas en el plugin `Woo OTEC Moodle` asegurándote de no romper las integraciones actuales:
+
+1. **Inconsistencia de Nombres y Estructura de Directorios:**
+   - El archivo principal del plugin se llama `pcc-woootec-chile.php`, pero el README y la carpeta asumen un enfoque hacia "Moodle" (`pcc-woootec-moodle.php`).
+   - El README dice que las clases principales están bajo la carpeta `core/`, pero en realidad están desarrolladas dentro de la carpeta `includes/`.
+   - **Tarea:** Ajusta y renombra de manera consistente. Actualiza el *Text Domain* a `woo-otec-moodle` e implementa los cambios en cabeceras de todos los archivos y constantes (ej. cambiar `PCC_WOOOTEC_PRO_...` si conviene una nomencaltura más genérica o alineada).
+
+2. **[COMPLETADO] Falta de Setup Wizard (Asistente de configuración):**
+   - El Asistente de configuración ya fue implementado exitosamente.
+
+3. **Demasiadas responsabilidades en `class-admin.php`:**
+   - Actualmente `class-admin.php` es una "clase Dios" (`God Class`) con más de 800 líneas. Maneja inicialización del menú, registro de configuraciones, varios AJAX endpoints no relacionados, la exportación de logs y manejo del ZIP.
+   - **Tarea:** Refactoriza este archivo dividiéndolo en clases más pequeñas y con roles específicos (Principio de Responsabilidad Única - SRP). Por ejemplo, crear rutas como `admin/class-ajax-handlers.php`, `admin/class-tools.php` (para exportación y generación de zip) y `admin/class-settings.php`.
+
+4. **Optimización con Inyección de Dependencias, Singletons e Inicializadores:**
+   - Actualmente, cada clase usa `self::$instance` (Singleton pattern rígido). Esto hace que las pruebas unitarias (Testing) sean muy difíciles y genera acoplamiento.
+   - **Tarea:** Implementa un contenedor de servicios sencillo o refactoriza el core (`class-core.php`) para encolar la inicialización de los componentes inyectando dependencias entre ellos cuando corresponda, preferentemente evitando el mal uso del Singleton donde no sea estrictamente necesario mantener el estado único de larga duración (ej., llamadas de utilidad transaccional).
+
+5. **Mejora en Manejo de Errores de API de Moodle:**
+   - En `class-api.php`, los errores y respuestas se manejan mediante condicionales esparcidos, usando cadenas string nativas para revisar excepciones en el log.
+   - **Tarea:** Introduce una capa o clase dedicada para mapearlas excepciones específicas de Moodle `PCC_Moodle_Exception` que herede de `Exception` para capturarlas de una manera más genérica en un bloque `try/catch` global en el `class-sync.php`.
+
+Implementa las mejoras un paso a la vez, creando ramas nuevas para cada una para asegurar robustez. Empieza con la tarea #1 (Nombres) o #3 (Refactorización de admin) según tu criterio técnico.
+
+> **Regla Crítica del Arquitecto:** Trata de ir integrando los cambios en los archivos ya creados (refactorizando) para que el proyecto NO crezca innecesariamente con demasiados archivos nuevos dispersos. Consolida la funcionalidad para que el plugin se mantenga compacto y fácil de administrar.
+
+> **Regla Permanente para Pruebas (Siempre):** Siempre que se implementen mejoras o nuevas funcionalidades y se pida realizar validaciones, SE DEBE generar obligatoriamente la actualización del archivo ZIP instalable para WordPress. Este se guarda en `/plugins/pcc-woootec-chile.zip`, renombrando siempre cualquier zip anterior para conservar el respaldo.
+
+***

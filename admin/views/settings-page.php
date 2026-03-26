@@ -53,6 +53,10 @@ $tabs = array(
         </div>
     </div>
 
+    <div style="margin-top: 15px; margin-bottom: 15px; text-align: right;">
+        <a href="<?php echo esc_url(admin_url('admin.php?page=pcc-woootec-asistente')); ?>" class="button button-primary button-large" style="background:#2271b1; border-color:#2271b1;">💫 Iniciar Asistente de Configuración</a>
+    </div>
+
     <?php if ($status !== '') : ?>
         <div class="notice notice-<?php echo $status === 'success' ? 'success' : 'warning'; ?> is-dismissible">
             <p>

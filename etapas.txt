@@ -1,0 +1,35 @@
+# Estado de Funcionalidades (Woo OTEC Moodle)
+
+## ✅ Etapas Completadas (Listas)
+- [x] **Integración completa WooCommerce -> Moodle**: Implementado a través de `class-api.php` y enlazado en `class-admin.php`.
+- [x] **Creación automática de usuarios en Moodle**: Implementado en `class-enroll.php` (método `get_or_create_user`).
+- [x] **Matriculación automática en cursos**: Implementado en `class-enroll.php` e integrado con el flujo de compra de WooCommerce.
+- [x] **Sincronización en tiempo real**: Implementado en `class-sync.php` (permite traer cursos de Moodle a WooCommerce).
+- [x] **Logs detallados de operaciones**: Implementado de forma robusta en `class-logger.php`.
+- [x] **Manejo de roles**: Configurable desde las opciones en `class-admin.php` (`student_role_id`).
+- [x] **Configuración de precios por defecto**: Configurable en los ajustes generales (`default_price`).
+- [x] **Asignación automática de instructor**: Soportado en el código base y configuración (`default_instructor`).
+- [x] **Arquitectura modular y escalable**: En gran parte cumplido mediante el uso de clases segregadas en el directorio `includes/`.
+
+## ❌ Etapas Faltantes (No encontradas respecto al Readme)
+- [x] **Setup Wizard Profesional (Asistente inicial)**: 
+  - Archivos creados en `admin/wizard/` bajo la rama `feature/setup-wizard`.
+  - Inyectado en WordPress y disponible a través de la URI `admin.php?page=pcc-woootec-setup`.
+
+- [ ] **Soporte multi-curso por producto (Roadmap)**:
+  - Estipulado en el roadmap, pero sujeto a integrarse pronto.
+  - **Recomendación de versión/rama:** Crear rama `feature/multi-course-support`. Esta característica requerirá cambios en cómo se estructuran y recorren las plantillas de WooCommerce y en qué instante se hace la matriculación (cambiando relaciones 1:1 a 1:N). Podría romper la integración actual si se hace en la rama `main`.
+
+- [ ] **Panel de analítica (Roadmap)**:
+  - **Recomendación de versión/rama:** Crear rama `feature/analytics-dashboard`. Esencial para crear un lugar en `admin/views/` independiente.
+
+---
+### 💡 Comentarios sobre control de versiones
+
+Para trabajar de manera segura y no romper la funcionalidad que ya está **en producción y operativa**, recomiendo usar la estrategia **Git Flow**:
+
+1. **Mantén `main` protegida:** Solo para código listo para producción.
+2. **Crea la rama `develop`:** A partir de `main`. En esta rama integrarás todo el trabajo antes del paso a producción.
+3. Para desarrollar el **Setup Wizard**, ejecuta: `git checkout -b feature/setup-wizard develop`.
+4. Una vez la funcionalidad esté probada, crea y aprueba un *Pull Request* hacia `develop`. 
+5. Repite lo mismo para integraciones más profundas (multi-cursos).
