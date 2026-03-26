@@ -483,8 +483,9 @@ $tabs = array(
                                 </td>
                             </tr>
                         </table>
-                        <div class="pcc-email-tools" style="margin-top: 20px;">
+                        <div class="pcc-email-tools" style="margin-top: 20px; display: flex; gap: 10px; align-items: center;">
                             <button type="button" class="button" data-email-preview>Vista previa</button>
+                            <input type="email" id="woo_otec_moodle_email_test_recipient" class="regular-text" placeholder="Correo para enviar prueba" style="max-width: 250px;">
                             <button type="button" class="button button-secondary" data-email-send-test>Enviar prueba</button>
                         </div>
                         <div class="pcc-email-feedback" data-email-feedback></div>

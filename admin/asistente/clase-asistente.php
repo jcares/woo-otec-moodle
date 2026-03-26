@@ -39,6 +39,7 @@ final class Woo_OTEC_Moodle_Asistente {
             return;
         }
 
+        wp_enqueue_media();
         wp_enqueue_style('woo-otec-wizard-css', WOO_OTEC_MOODLE_URL . 'admin/asistente/assets/css/asistente.css', array(), WOO_OTEC_MOODLE_VERSION);
     }
 
@@ -92,6 +93,9 @@ final class Woo_OTEC_Moodle_Asistente {
             }
             if (isset($_POST['default_instructor'])) {
                 Woo_OTEC_Moodle_Core::instance()->update_option('default_instructor', sanitize_text_field($_POST['default_instructor']));
+            }
+            if (isset($_POST['default_image_id'])) {
+                Woo_OTEC_Moodle_Core::instance()->update_option('default_image_id', absint($_POST['default_image_id']));
             }
             $next_step = 5;
         } else {
