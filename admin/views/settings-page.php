@@ -368,7 +368,7 @@ $tabs = array(
                         <p class="description">Configura cómo se muestran y vinculan los datos de Moodle.</p>
                         <?php
                         $reference_id = (int) $core->get_option('template_reference', 0);
-                        $reference_products = $this->get_template_reference_products();
+                        $reference_products = PCC_WooOTEC_Pro_Settings::instance()->get_template_reference_products();
                         $selected_fields = (array) $core->get_option('template_fields', array());
                         ?>
                         <table class="form-table">

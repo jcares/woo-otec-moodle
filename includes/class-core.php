@@ -117,6 +117,16 @@ final class PCC_WooOTEC_Pro_Core {
         // ADMIN
         if (is_admin()) {
 
+            $settings_file = PCC_WOOOTEC_PRO_PATH . 'admin/class-settings.php';
+            if (file_exists($settings_file)) {
+                require_once $settings_file;
+            }
+
+            $ajax_file = PCC_WOOOTEC_PRO_PATH . 'admin/class-ajax-handler.php';
+            if (file_exists($ajax_file)) {
+                require_once $ajax_file;
+            }
+
             $admin_file = PCC_WOOOTEC_PRO_PATH . 'admin/class-admin.php';
             if (file_exists($admin_file)) {
                 require_once $admin_file;
