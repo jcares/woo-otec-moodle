@@ -395,6 +395,10 @@ final class Woo_OTEC_Moodle_Sync {
         $start_timestamp = isset($course->startdate) ? (is_numeric($course->startdate) ? (int) $course->startdate : strtotime($course->startdate)) : 0;
         $end_timestamp = isset($course->enddate) ? (is_numeric($course->enddate) ? (int) $course->enddate : strtotime($course->enddate)) : 0;
 
+        $format_raw = (string) ($course->format ?? 'topics');
+        $format_map = array('topics' => 'Por temas', 'weeks' => 'Semanal', 'singleactivity' => 'Actividad única', 'social' => 'Social');
+        $format_nice = $format_map[$format_raw] ?? ucfirst($format_raw);
+
         $data = array(
             'fullname'  => (string) ($course->fullname ?? ''),
             'summary'   => $description,
@@ -403,6 +407,9 @@ final class Woo_OTEC_Moodle_Sync {
             'teacher'   => sanitize_text_field($teacher),
             'duration'  => (string) ($course->duration ?? ''),
             'modality'  => ucfirst((string) ($course->modality ?? 'online')),
+            'format'    => $format_nice,
+            'sence_code'=> '',
+            'total_hours'=> '',
         );
 
         return Woo_OTEC_Moodle_Mapper::instance()->map_course_data($data);
@@ -479,7 +486,7 @@ final class Woo_OTEC_Moodle_Sync {
         }
     }
 
-    private function find_moodle_image_url(object $course): string {
+    public function find_moodle_image_url(object $course): string {
         if (!empty($course->overviewfiles) && is_array($course->overviewfiles)) {
             foreach ($course->overviewfiles as $file) {
                 if (!is_object($file) || empty($file->fileurl)) {
@@ -488,13 +495,21 @@ final class Woo_OTEC_Moodle_Sync {
 
                 $mimetype = !empty($file->mimetype) ? (string) $file->mimetype : '';
                 if ($mimetype === '' || str_starts_with($mimetype, 'image/')) {
-                    return add_query_arg('token', Woo_OTEC_Moodle_API::instance()->get_token(), (string) $file->fileurl);
+                    $url = (string) $file->fileurl;
+                    if (str_contains($url, 'pluginfile.php') && !str_contains($url, 'token=')) {
+                        $url = add_query_arg('token', Woo_OTEC_Moodle_API::instance()->get_token(), $url);
+                    }
+                    return $url;
                 }
             }
         }
 
         if (!empty($course->summary) && preg_match('/<img[^>]+src=["\']([^"\']+)["\']/i', (string) $course->summary, $matches)) {
-            return html_entity_decode((string) $matches[1], ENT_QUOTES, 'UTF-8');
+            $url = html_entity_decode((string) $matches[1], ENT_QUOTES, 'UTF-8');
+            if (str_contains($url, 'pluginfile.php') && !str_contains($url, 'token=')) {
+                $url = add_query_arg('token', Woo_OTEC_Moodle_API::instance()->get_token(), $url);
+            }
+            return $url;
         }
 
         return '';

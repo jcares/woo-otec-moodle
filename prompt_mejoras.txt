@@ -2,36 +2,186 @@
 
 Copia y pega este prompt al asistente o agente cuando desees iterar mejoras de código en el proyecto:
 
-***
+---
 
-Eres un desarrollador experto en WordPress y PHP 8. Revisa e implementa las siguientes mejoras arquitectónicas en el plugin `Woo OTEC Moodle` asegurándote de no romper las integraciones actuales:
+Eres un desarrollador experto en WordPress y PHP 8. Revisa e implementa las siguientes mejoras arquitectónicas en el plugin `Woo OTEC Moodle` asegurándote de no romper las integraciones actuales.
 
-1. **[COMPLETADO] Inconsistencia de Nombres y Estructura de Directorios:**
-   - El archivo principal del plugin se llama `woo-otec-moodle.php`, pero el README y la carpeta asumen un enfoque hacia "Moodle" (`woo-otec-moodle.php`).
-   - El README dice que las clases principales están bajo la carpeta `core/`, pero en realidad están desarrolladas dentro de la carpeta `includes/`.
-   - **Tarea:** Ajusta y renombra de manera consistente. Actualiza el *Text Domain* a `woo-otec-moodle` e implementa los cambios en cabeceras de todos los archivos y constantes (ej. cambiar `WOO_OTEC_MOODLE_...` si conviene una nomencaltura más genérica o alineada).
+El objetivo principal en esta etapa es **estabilizar completamente el plugin, mejorar su arquitectura interna y asegurar funcionamiento correcto en producción antes de agregar sistemas comerciales (licencias, updates, etc.)**.
 
-2. **[COMPLETADO] Falta de Setup Wizard (Asistente de configuración):**
-   - El Asistente de configuración ya fue implementado exitosamente.
+---
 
-3. **[COMPLETADO] Demasiadas responsabilidades en `class-admin.php`:**
-   - Actualmente `class-admin.php` es una "clase Dios" (`God Class`) con más de 800 líneas. Maneja inicialización del menú, registro de configuraciones, varios AJAX endpoints no relacionados, la exportación de logs y manejo del ZIP.
-   - **Tarea:** Refactoriza este archivo dividiéndolo en clases más pequeñas y con roles específicos (Principio de Responsabilidad Única - SRP). Por ejemplo, crear rutas como `admin/class-ajax-handlers.php`, `admin/class-tools.php` (para exportación y generación de zip) y `admin/class-settings.php`.
+## 1. **[PRIORIDAD ALTA] Consistencia de Nombres y Estructura**
 
-4. **[COMPLETADO] Optimización con Inyección de Dependencias, Singletons e Inicializadores:**
-   - Actualmente, cada clase usa `self::$instance` (Singleton pattern rígido). Esto hace que las pruebas unitarias (Testing) sean muy difíciles y genera acoplamiento.
-   - **Tarea:** Implementa un contenedor de servicios sencillo o refactoriza el core (`class-core.php`) para encolar la inicialización de los componentes inyectando dependencias entre ellos cuando corresponda, preferentemente evitando el mal uso del Singleton donde no sea estrictamente necesario mantener el estado único de larga duración (ej., llamadas de utilidad transaccional).
+* El archivo principal es `woo-otec-moodle.php`
+* El Text Domain debe ser `woo-otec-moodle`
+* Todas las constantes, clases y prefijos deben estar alineados
+* El README debe reflejar la estructura real (`includes/`, no `core/`)
 
-5. **[COMPLETADO] Mejora en Manejo de Errores de API de Moodle:**
-   - En `class-api.php`, los errores y respuestas se manejan mediante condicionales esparcidos, usando cadenas string nativas para revisar excepciones en el log.
-   - **Tarea:** Introduce una capa o clase dedicada para mapearlas excepciones específicas de Moodle `PCC_Moodle_Exception` que herede de `Exception` para capturarlas de una manera más genérica en un bloque `try/catch` global en el `class-sync.php`.
+**Tarea:**
 
-Implementa las mejoras un paso a la vez, creando ramas nuevas para cada una para asegurar robustez. Empieza con la tarea #1 (Nombres) o #3 (Refactorización de admin) según tu criterio técnico.
+* Unificar naming en todo el plugin
+* Revisar includes, rutas, hooks y autoload
+* Eliminar inconsistencias históricas
 
-> **Regla Crítica del Arquitecto:** Trata de ir integrando los cambios en los archivos ya creados (refactorizando) para que el proyecto NO crezca innecesariamente con demasiados archivos nuevos dispersos. Consolida la funcionalidad para que el plugin se mantenga compacto y fácil de administrar.
+---
 
-> **Regla Permanente para Pruebas (Siempre):** Siempre que se implementen mejoras o nuevas funcionalidades y se pida realizar validaciones, SE DEBE generar obligatoriamente la actualización del archivo ZIP instalable para WordPress. Este se guarda en `/plugins/woo-otec-moodle.zip`, renombrando siempre cualquier zip anterior para conservar el respaldo.
+## 2. **[PRIORIDAD ALTA] Estabilidad General del Plugin**
 
-> **[¡CRÍTICO!] Regla de Generación de ZIP (Slashes en Windows):** Cuando generes el archivo `.zip` usando PowerShell u otro script automático, **SIEMPRE, OBLIGATORIAMENTE, DEBES ASEGURARTE** de reemplazar los backslashes de Windows (`\`) por forward slashes de Unix (`/`) antes de inyectar las rutas al archivo ZIP. De lo contrario, WordPress fallará al extraer el ZIP porque tratará los backslashes como parte del nombre del archivo y no como separadores de directorio.
+* Validar que el plugin:
 
-***
+  * Se active sin errores
+  * No genere warnings/notices
+  * No rompa el admin de WordPress
+  * No genere errores AJAX
+  * No tenga conflictos con WooCommerce
+
+**Tarea:**
+
+* Revisar hooks (`add_action`, `add_filter`)
+* Validar nonces en AJAX
+* Sanitización y escaping completo (`sanitize_text_field`, `esc_html`, etc.)
+* Manejo de errores consistente
+
+---
+
+## 3. **[PRIORIDAD ALTA] Refactorización de `class-admin.php`**
+
+Actualmente es una clase monolítica.
+
+**Tarea: dividir en:**
+
+* `admin/class-settings.php`
+* `admin/class-ajax-handlers.php`
+* `admin/class-tools.php`
+
+**Objetivo:**
+
+* Aplicar SRP (Single Responsibility Principle)
+* Mejorar mantenibilidad
+* Reducir acoplamiento
+
+---
+
+## 4. **[PRIORIDAD MEDIA] Mejora de Arquitectura (Core del Plugin)**
+
+* Reducir uso innecesario de Singletons
+* Centralizar carga en `class-core.php`
+
+**Tarea:**
+
+* Implementar inicialización ordenada de servicios
+* Inyección de dependencias cuando sea posible
+* Evitar instancias globales innecesarias
+
+---
+
+## 5. **[PRIORIDAD MEDIA] Manejo de Errores de Moodle**
+
+Actualmente los errores están dispersos.
+
+**Tarea:**
+
+* Crear clase `PCC_Moodle_Exception`
+* Implementar manejo con `try/catch`
+* Centralizar errores en `class-sync.php`
+
+---
+
+## 6. **[PRIORIDAD MEDIA] Limpieza y Optimización General**
+
+* Eliminar código muerto
+* Eliminar duplicaciones
+* Revisar includes innecesarios
+* Optimizar consultas y procesos
+
+---
+
+## 7. **[PRIORIDAD MEDIA] Validación de Estructura del Plugin**
+
+Estructura esperada:
+
+woo-otec-moodle/
+├── admin/
+├── includes/
+├── public/
+├── assets/
+├── woo-otec-moodle.php
+
+**Tarea:**
+
+* Validar que todo esté correctamente organizado
+* Evitar archivos fuera de contexto
+* Mantener estructura limpia y profesional
+
+---
+
+## 8. **[PRIORIDAD BAJA - POSTERIOR] Sistema de Licencias y Auto-Update**
+
+⚠️ **IMPORTANTE: ESTE PUNTO NO DEBE IMPLEMENTARSE TODAVÍA**
+
+Se implementará SOLO cuando el plugin esté:
+
+* Estable
+* Funcional
+* Sin errores
+* Listo para producción
+
+En ese momento se integrará:
+
+* Sistema de licencias
+* Validación por dominio
+* Auto-update remoto
+* API externa
+
+---
+
+## 9. **Regla Crítica del Arquitecto**
+
+* Refactorizar sobre el código existente
+* No inflar el proyecto con archivos innecesarios
+* Mantener el plugin compacto, claro y mantenible
+
+---
+
+## 10. **Regla Permanente para Pruebas**
+
+Después de cada mejora relevante:
+
+* Generar el ZIP instalable:
+
+/plugins/woo-otec-moodle.zip
+
+* Mantener backups automáticos
+* Validar instalación real en WordPress
+
+---
+
+## 11. **Regla CRÍTICA de ZIP (Compatibilidad WordPress)**
+
+Siempre asegurar:
+
+str_replace('\', '/', $path);
+
+Antes de agregar archivos al ZIP.
+
+Motivo:
+
+* WordPress falla al extraer rutas con `\`
+* Solo acepta `/` como separador válido
+
+---
+
+## 12. **Orden de Implementación (OBLIGATORIO)**
+
+Seguir este orden estricto:
+
+1. Consistencia de nombres (#1)
+2. Estabilidad del plugin (#2)
+3. Refactorización admin (#3)
+4. Arquitectura core (#4)
+5. Manejo de errores (#5)
+6. Limpieza general (#6)
+7. Validación estructura (#7)
+8. (Último) Licencias y updates (#8)
+
+---

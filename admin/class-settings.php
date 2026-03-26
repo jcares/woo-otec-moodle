@@ -69,6 +69,10 @@ final class Woo_OTEC_Moodle_Settings {
             'email_template'       => array($this, 'sanitize_email_template'),
             'email_test_recipient' => 'sanitize_email',
             'retry_limit'          => 'absint',
+            'pcc_color_primary'    => 'sanitize_hex_color',
+            'pcc_color_secondary'  => 'sanitize_hex_color',
+            'pcc_color_text'       => 'sanitize_hex_color',
+            'pcc_color_accent'     => 'sanitize_hex_color',
             'template_style'       => 'sanitize_text_field',
             'template_reference'   => 'absint',
         );

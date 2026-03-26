@@ -33,6 +33,7 @@ $tabs = array(
     'sync'     => 'Sincronización',
     'sso'      => 'Acceso Logins Alumno',
     'templates'=> 'Metadatos Moodle',
+    'appearance'=> 'Apariencia y Colores',
     'emails'   => 'Configurar Emails',
     'logs'     => 'Registro de errores',
 );
@@ -379,7 +380,7 @@ $tabs = array(
                                         <?php $current_style = $core->get_option('template_style', 'classic'); ?>
                                         <option value="classic" <?php selected($current_style, 'classic'); ?>>Classic (WooCommerce Default)</option>
                                         <option value="academy" <?php selected($current_style, 'academy'); ?>>Academy (Moderna/LMS)</option>
-                                        <option value="market" <?php selected($current_style, 'market'); ?>>Market (Grid compacta)</option>
+                                        <option value="pccurico" <?php selected($current_style, 'pccurico'); ?>>PCCurico</option>
                                     </select>
                                 </td>
                             </tr>
@@ -394,6 +395,21 @@ $tabs = array(
                                             </option>
                                         <?php endforeach; ?>
                                     </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Campos Visibles a Mostrar</th>
+                                <td>
+                                    <div data-template-fields>
+                                        <?php
+                                        if ($reference_id > 0) {
+                                            Woo_OTEC_Moodle_Settings::instance()->render_template_fields_markup($reference_id, $selected_fields, true);
+                                        } else {
+                                            echo '<p class="description">Selecciona un curso para listar los metadatos disponibles.</p>';
+                                        }
+                                        ?>
+                                    </div>
+                                    <p class="pcc-field-help">Selecciona qué metadatos deseas que se listen en la página del producto final al ser importado o actualizado.</p>
                                 </td>
                             </tr>
                         </table>
@@ -516,6 +532,41 @@ $tabs = array(
                 <!-- Submit Button -->
                 <div class="pcc-settings-actions" style="margin-top: 20px;">
                     <?php submit_button('Guardar configuración', 'primary', 'submit', false); ?>
+                    <!-- Appearance Tab -->
+                    <section class="pcc-tab-panel <?php echo $active_tab === 'appearance' ? 'is-active' : ''; ?>" id="pcc-panel-appearance" data-panel="appearance" role="tabpanel">
+                        <h3>Apariencia y Colores</h3>
+                        <p class="description">Ajusta los tonos visuales de las plantillas y elementos integrados.</p>
+                        <table class="form-table">
+                            <tr>
+                                <th scope="row"><label for="woo_otec_moodle_pcc_color_primary">Color Primario</label></th>
+                                <td>
+                                    <input type="color" id="woo_otec_moodle_pcc_color_primary" name="woo_otec_moodle_pcc_color_primary" value="<?php echo esc_attr((string) $core->get_option('pcc_color_primary', '#023E25')); ?>" class="regular-text">
+                                    <p class="pcc-field-help">Usado en botones, iconos, y marcas destacadas.</p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="row"><label for="woo_otec_moodle_pcc_color_secondary">Color Secundario</label></th>
+                                <td>
+                                    <input type="color" id="woo_otec_moodle_pcc_color_secondary" name="woo_otec_moodle_pcc_color_secondary" value="<?php echo esc_attr((string) $core->get_option('pcc_color_secondary', '#6EC1E4')); ?>" class="regular-text">
+                                    <p class="pcc-field-help">Usado para encabezados y acentos estructurales.</p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="row"><label for="woo_otec_moodle_pcc_color_text">Color de Texto</label></th>
+                                <td>
+                                    <input type="color" id="woo_otec_moodle_pcc_color_text" name="woo_otec_moodle_pcc_color_text" value="<?php echo esc_attr((string) $core->get_option('pcc_color_text', '#7A7A7A')); ?>" class="regular-text">
+                                    <p class="pcc-field-help">Tono genérico empleado en párrafos y descripciones largas.</p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="row"><label for="woo_otec_moodle_pcc_color_accent">Color de Acento</label></th>
+                                <td>
+                                    <input type="color" id="woo_otec_moodle_pcc_color_accent" name="woo_otec_moodle_pcc_color_accent" value="<?php echo esc_attr((string) $core->get_option('pcc_color_accent', '#61CE70')); ?>" class="regular-text">
+                                    <p class="pcc-field-help">Usado para llamadas a la acción, viñetas activas o de validación.</p>
+                                </td>
+                            </tr>
+                        </table>
+                    </section>
                 </div>
             </main>
         </div>

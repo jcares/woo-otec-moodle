@@ -233,6 +233,21 @@ final class Woo_OTEC_Moodle_Frontend {
         wp_enqueue_style('dashicons');
         $deps = array();
         wp_enqueue_style('woo-otec-frontend', WOO_OTEC_MOODLE_URL . 'assets/css/frontend.css', $deps, WOO_OTEC_MOODLE_VERSION);
+        
+        $core = Woo_OTEC_Moodle_Core::instance();
+        $primary   = $core->get_option('pcc_color_primary', '#023E25');
+        $secondary = $core->get_option('pcc_color_secondary', '#6EC1E4');
+        $text      = $core->get_option('pcc_color_text', '#7A7A7A');
+        $accent    = $core->get_option('pcc_color_accent', '#61CE70');
+
+        $custom_css = "
+        :root {
+            --pcc-primary-color: {$primary};
+            --pcc-secondary-color: {$secondary};
+            --pcc-text-color: {$text};
+            --pcc-accent-color: {$accent};
+        }";
+        wp_add_inline_style('woo-otec-frontend', $custom_css);
     }
 
     public function render_my_courses_shortcode(): string {

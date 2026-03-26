@@ -25,13 +25,16 @@ final class Woo_OTEC_Moodle_Mapper {
      */
     public function get_default_mappings(): array {
         return array(
-            'fullname'  => array('target' => 'post_title', 'label' => 'Nombre del curso', 'enabled' => 'yes'),
-            'summary'   => array('target' => 'post_content', 'label' => 'Descripción / Temario', 'enabled' => 'yes'),
-            'startdate' => array('target' => '_start_date', 'label' => 'Fecha de Inicio', 'enabled' => 'yes'),
-            'enddate'   => array('target' => '_end_date', 'label' => 'Fecha de Término', 'enabled' => 'yes'),
-            'teacher'   => array('target' => '_instructor', 'label' => 'Relator / Docente', 'enabled' => 'yes'),
-            'duration'  => array('target' => '_duration', 'label' => 'Duración Cronológica', 'enabled' => 'yes'),
-            'modality'  => array('target' => '_modality', 'label' => 'Modalidad de Estudio', 'enabled' => 'yes'),
+            'fullname'    => array('target' => 'post_title', 'label' => 'Nombre del curso', 'enabled' => 'yes'),
+            'summary'     => array('target' => 'post_content', 'label' => 'Descripción / Temario', 'enabled' => 'yes'),
+            'startdate'   => array('target' => '_start_date', 'label' => 'Fecha de Inicio', 'enabled' => 'yes'),
+            'enddate'     => array('target' => '_end_date', 'label' => 'Fecha de Término', 'enabled' => 'yes'),
+            'teacher'     => array('target' => '_instructor', 'label' => 'Relator / Docente', 'enabled' => 'yes'),
+            'duration'    => array('target' => '_duration', 'label' => 'Duración Cronológica', 'enabled' => 'yes'),
+            'modality'    => array('target' => '_modality', 'label' => 'Modalidad de Estudio', 'enabled' => 'yes'),
+            'format'      => array('target' => '_course_format', 'label' => 'Estructura del curso', 'enabled' => 'yes'),
+            'sence_code'  => array('target' => '_sence_code', 'label' => 'Código SENCE', 'enabled' => 'yes'),
+            'total_hours' => array('target' => '_total_hours', 'label' => 'Horas SENCE Totales', 'enabled' => 'yes'),
         );
     }
 

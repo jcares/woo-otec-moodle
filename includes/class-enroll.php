@@ -22,6 +22,7 @@ final class Woo_OTEC_Moodle_Enroll {
 
     public function boot(): void {
         add_action('woocommerce_order_status_completed', array($this, 'handle_completed_order'));
+        add_action('woocommerce_order_status_processing', array($this, 'handle_completed_order'));
         add_action('template_redirect', array($this, 'maybe_redirect_after_purchase'));
         add_action(self::RETRY_HOOK, array($this, 'retry_enrollment'));
         add_action('woocommerce_thankyou', array($this, 'render_thankyou_actions'), 20);
@@ -31,7 +32,7 @@ final class Woo_OTEC_Moodle_Enroll {
     }
 
     public function handle_completed_order(int $order_id): void {
-        Woo_OTEC_Moodle_Logger::info('Hook de orden completada disparado', array('order_id' => $order_id));
+        Woo_OTEC_Moodle_Logger::info('Hook de orden completada (o processing) disparado', array('order_id' => $order_id));
         $this->process_order($order_id, false, false);
     }
 
@@ -127,11 +128,11 @@ final class Woo_OTEC_Moodle_Enroll {
             return false;
         }
 
-        if ($order->get_status() !== 'completed') {
+        if (!in_array($order->get_status(), array('completed', 'processing'), true)) {
             return false;
         }
 
-        Woo_OTEC_Moodle_Logger::info('Compra detectada', array('order_id' => $order_id, 'retry' => $is_retry));
+        Woo_OTEC_Moodle_Logger::info('Compra detectada', array('order_id' => $order_id, 'retry' => $is_retry, 'status' => $order->get_status()));
 
         $learner = $this->resolve_learner_data($order);
         if (!$learner) {

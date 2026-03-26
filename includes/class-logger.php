@@ -51,17 +51,13 @@ final class Woo_OTEC_Moodle_Logger {
 
     public static function read_tail(string $filename, int $max_lines = 200): array {
         $file = self::get_file_path($filename);
-        $filesystem = self::get_filesystem();
-        if (!$filesystem) {
+
+        if (!file_exists($file)) {
             return array();
         }
 
-        if (!$filesystem->exists($file)) {
-            return array();
-        }
-
-        $contents = $filesystem->get_contents($file);
-        if ($contents === false) {
+        $contents = file_get_contents($file);
+        if ($contents === false || $contents === '') {
             return array();
         }
 
@@ -70,7 +66,7 @@ final class Woo_OTEC_Moodle_Logger {
             return array();
         }
 
-        $lines = array_values(array_filter($lines, static fn($line) => $line !== ''));
+        $lines = array_values(array_filter($lines, static fn($line) => trim($line) !== ''));
         return array_slice($lines, -1 * $max_lines);
     }
 
@@ -83,31 +79,14 @@ final class Woo_OTEC_Moodle_Logger {
         );
 
         if (!empty($context)) {
-            $line .= ' | ' . wp_json_encode(self::sanitize_context($context));
+            $line .= ' | ' . wp_json_encode(self::sanitize_context($context), JSON_UNESCAPED_UNICODE);
         }
 
         $line .= PHP_EOL;
-
-        $filesystem = self::get_filesystem();
-        if (!$filesystem) {
-            return;
-        }
-
         $file = self::get_file_path($filename);
-        $existing = $filesystem->exists($file) ? $filesystem->get_contents($file) : '';
-        $payload = ($existing !== false ? (string) $existing : '') . $line;
 
-        $filesystem->put_contents($file, $payload, FS_CHMOD_FILE);
-    }
-
-    private static function get_filesystem(): mixed {
-        require_once ABSPATH . 'wp-admin/includes/file.php';
-        if (!WP_Filesystem()) {
-            return false;
-        }
-
-        global $wp_filesystem;
-        return $wp_filesystem ?: false;
+        // Native PHP append is much more reliable across disparate hosting environments
+        file_put_contents($file, $line, FILE_APPEND | LOCK_EX);
     }
 
     private static function sanitize_context(array $context): array {

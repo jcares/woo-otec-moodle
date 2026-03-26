@@ -100,11 +100,12 @@
                     panel.addClass('is-active').attr('hidden', false);
                 }
 
-                // History state
+                // History state & Referer for WP Save
                 if (window.history && window.history.replaceState) {
                     const url = new URL(window.location.href);
                     url.searchParams.set('tab', target);
                     window.history.replaceState({}, '', url.toString());
+                    $('input[name="_wp_http_referer"]').val(url.toString());
                 }
 
                 // Trigger category load if needed

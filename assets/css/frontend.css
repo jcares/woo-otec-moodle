@@ -75,7 +75,7 @@
     font-size: 20px;
     width: 20px;
     height: 20px;
-    color: #0d6efd; /* Bootstrap primary */
+    color: var(--pcc-primary-color);
 }
 
 .pcc-meta-content {
@@ -86,7 +86,7 @@
 .pcc-meta-label {
     font-size: 11px;
     text-transform: uppercase;
-    color: #64748b;
+    color: var(--pcc-text-color);
     font-weight: 700;
     letter-spacing: 0.025em;
     line-height: 1.2;
@@ -94,7 +94,7 @@
 
 .pcc-meta-value {
     font-size: 13px;
-    color: #1e293b;
+    color: var(--pcc-secondary-color);
     font-weight: 600;
 }
 
@@ -112,11 +112,11 @@
     margin-top: 0;
     margin-bottom: 15px;
     font-size: 1.2rem;
-    color: #1e293b;
+    color: var(--pcc-secondary-color);
 }
 
 .pcc-course-single-meta.pcc-style-academy {
-    border-left: 4px solid #0d6efd;
+    border-left: 4px solid var(--pcc-primary-color);
 }
 
 /* Template Market */

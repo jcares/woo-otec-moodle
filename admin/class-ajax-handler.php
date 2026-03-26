@@ -241,7 +241,7 @@ final class Woo_OTEC_Moodle_Ajax_Handler {
                         $c['image_url'] = $thumb_id > 0 ? wp_get_attachment_image_url($thumb_id, 'thumbnail') : '';
                     } else {
                         $c['image_id']  = 0;
-                        $c['image_url'] = '';
+                        $c['image_url'] = Woo_OTEC_Moodle_Sync::instance()->find_moodle_image_url((object)$c);
                     }
 
                     $courses[] = $c;
