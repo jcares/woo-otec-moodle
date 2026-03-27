@@ -1,0 +1,149 @@
+.pcc-my-courses {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 12px;
+}
+
+.pcc-course-card {
+    border: 1px solid #dee2e6;
+    border-radius: 0.75rem;
+    overflow: hidden;
+}
+
+.pcc-course-card__image {
+    display: block;
+    width: 100%;
+    height: 190px;
+    object-fit: cover;
+}
+
+.pcc-access-box {
+    margin: 24px 0;
+    padding: 20px;
+    border: 1px solid #dbeafe;
+    border-radius: 16px;
+    background: linear-gradient(135deg, #eff6ff 0%, #f8fafc 100%);
+}
+
+.pcc-access-links {
+    list-style: none;
+    padding: 0;
+    margin: 16px 0 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+/* Template Academy (Bootstrap-like Modern) */
+.pcc-style-academy {
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 15px;
+    background: #fff;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    transition: all 0.3s ease;
+}
+
+.pcc-style-academy:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+.pcc-style-academy .pcc-template-inner {
+    display: flex;
+    flex-direction: column;
+}
+
+.pcc-grid-layout {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 12px;
+    margin-top: 15px;
+}
+
+.pcc-meta-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+    background: #f8fafc;
+    border-radius: 8px;
+    border: 1px solid #f1f5f9;
+}
+
+.pcc-meta-item .dashicons {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+    color: var(--pcc-primary-color);
+}
+
+.pcc-meta-content {
+    display: flex;
+    flex-direction: column;
+}
+
+.pcc-meta-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    color: var(--pcc-text-color);
+    font-weight: 700;
+    letter-spacing: 0.025em;
+    line-height: 1.2;
+}
+
+.pcc-meta-value {
+    font-size: 13px;
+    color: var(--pcc-secondary-color);
+    font-weight: 600;
+}
+
+/* Single Product Meta Box */
+.pcc-course-single-meta {
+    margin: 20px 0;
+    padding: 24px;
+    border-radius: 12px;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+}
+
+.pcc-course-single-meta h3 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    font-size: 1.2rem;
+    color: var(--pcc-secondary-color);
+}
+
+.pcc-course-single-meta.pcc-style-academy {
+    border-left: 4px solid var(--pcc-primary-color);
+}
+
+/* Template Market */
+.pcc-style-market {
+    border: 1px solid #e0e0e0;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+}
+.pcc-style-market .pcc-template-inner {
+    padding: 10px;
+}
+.pcc-style-market .pcc-course-meta-fields {
+    border-top: 1px solid #eee;
+    padding-top: 8px;
+    margin-top: 8px;
+    color: #666;
+    font-size: 0.85em;
+}
+
+.pcc-meta-item span {
+    font-weight: bold;
+    color: #334155;
+}
+
+.pcc-course-single-meta {
+    margin-top: 18px;
+    padding: 16px;
+    border-radius: 16px;
+    border: 1px solid #e2e8f0;
+    background: #f8fafc;
+}

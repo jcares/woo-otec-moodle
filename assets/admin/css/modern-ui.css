@@ -1,0 +1,397 @@
+/**
+ * PCC WooOTEC Chile - Modern Admin UI
+ * Inspired by Flat Able Bootstrap Template
+ * Self-contained style to avoid conflicts
+ */
+
+:root {
+    --pcc-primary: #404e67;
+    --pcc-secondary: #6c757d;
+    --pcc-success: #2ed8b6;
+    --pcc-info: #4099ff;
+    --pcc-warning: #ffb64d;
+    --pcc-danger: #ff5370;
+    --pcc-dark: #303548;
+    --pcc-light: #f6f7fb;
+    --pcc-border: #e0e0e0;
+    --pcc-body-bg: #f2f7fb;
+    --pcc-card-shadow: 0 1px 20px 0 rgba(69, 90, 100, 0.08);
+}
+
+.pcc-admin-wrap {
+    margin: 20px 20px 20px 0;
+    font-family: 'Open Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    color: #404e67;
+}
+
+/* Horizontal Header */
+.pcc-brand-bar {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    background: #fff;
+    padding: 20px 30px;
+    border-radius: 8px;
+    box-shadow: var(--pcc-card-shadow);
+    margin-bottom: 30px;
+    gap: 20px;
+}
+
+.pcc-brand-bar__main {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.pcc-brand-bar__logo {
+    max-width: 150px;
+    height: auto;
+    flex-shrink: 0;
+}
+
+.pcc-brand-bar__main h1 {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--pcc-primary);
+    margin: 0;
+    overflow-wrap: break-word;
+}
+
+.pcc-brand-bar__meta {
+    text-align: right;
+    font-size: 12px;
+    color: #888;
+    flex-shrink: 0;
+}
+
+.pcc-brand-bar__meta span,
+.pcc-brand-bar__meta p {
+    display: block;
+    line-height: 1.4;
+    margin: 0;
+}
+
+/* Overview Grid */
+.pcc-overview-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.pcc-overview-card {
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    text-align: center;
+    border-left: 4px solid var(--pcc-primary);
+    box-shadow: var(--pcc-card-shadow);
+}
+
+.pcc-overview-card__label {
+    display: block;
+    font-size: 11px;
+    color: #888;
+    text-transform: uppercase;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+.pcc-overview-card__value {
+    display: block;
+    font-size: 18px;
+    color: var(--pcc-primary);
+    font-weight: 700;
+}
+
+.pcc-overview-card p {
+    margin: 5px 0 0;
+    font-size: 12px;
+    color: #999;
+}
+
+/* Dashboard Layout */
+.pcc-dashboard-layout {
+    display: flex;
+    gap: 25px;
+    align-items: flex-start;
+}
+
+.pcc-dashboard-sidebar {
+    flex: 0 0 250px;
+    position: sticky;
+    top: 50px;
+}
+
+.pcc-dashboard-main {
+    flex: 1;
+    min-width: 0;
+}
+
+/* Sidebar Menu (Tabs) */
+.pcc-tabs {
+    display: flex;
+    flex-direction: column;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: var(--pcc-card-shadow);
+    overflow: hidden;
+}
+
+.pcc-tab {
+    background: none;
+    border: none;
+    padding: 15px 20px;
+    cursor: pointer;
+    font-weight: 600;
+    color: #404e67;
+    text-align: left;
+    border-left: 4px solid transparent;
+    border-bottom: 1px solid #f6f7fb;
+    transition: all 0.3s ease;
+}
+
+.pcc-tab:last-child { border-bottom: none; }
+
+.pcc-tab.is-active {
+    background: #f6f7fb;
+    border-left: 4px solid var(--pcc-primary);
+    color: var(--pcc-primary);
+}
+
+.pcc-tab:hover:not(.is-active) {
+    background: #fafafa;
+    border-left: 4px solid #ddd;
+}
+
+/* Modern Card Content */
+.pcc-card {
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: var(--pcc-card-shadow);
+    padding: 25px;
+    margin-bottom: 30px;
+}
+
+.pcc-tab-panel {
+    display: none;
+}
+
+.pcc-tab-panel.is-active {
+    display: block;
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Form Styles */
+.pcc-tab-panel h3 {
+    margin-top: 0;
+    font-size: 20px;
+    color: var(--pcc-primary);
+}
+
+.pcc-field-help {
+    font-size: 12px;
+    color: #777;
+    font-style: italic;
+    margin-top: 5px;
+}
+
+.form-table th {
+    width: 250px;
+    padding: 20px 10px 20px 0;
+    font-weight: 600;
+    color: var(--pcc-primary);
+}
+
+.form-table td input[type="text"],
+.form-table td input[type="url"],
+.form-table td input[type="password"],
+.form-table td input[type="number"],
+.form-table td textarea,
+.form-table td select {
+    width: 100%;
+    max-width: 450px;
+    padding: 8px 12px;
+    border: 1px solid var(--pcc-border);
+    border-radius: 4px;
+    background: #fff;
+}
+
+.form-table td textarea {
+    max-width: 100%;
+}
+
+/* Buttons */
+.button-primary {
+    background: var(--pcc-primary) !important;
+    border-color: var(--pcc-primary) !important;
+    color: #fff !important;
+    box-shadow: 0 2px 6px rgba(64, 78, 103, 0.2);
+}
+
+.button-secondary {
+    background: var(--pcc-secondary) !important;
+    border-color: var(--pcc-secondary) !important;
+    color: #fff !important;
+}
+
+/* Wizard Component */
+.pcc-wizard-steps {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 30px;
+    background: var(--pcc-light);
+    padding: 15px;
+    border-radius: 8px;
+}
+
+.pcc-step {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: #888;
+}
+
+.pcc-step-num {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: #ddd;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.pcc-step.is-active .pcc-step-num { background: var(--pcc-primary); }
+.pcc-step.is-active { color: var(--pcc-primary); font-weight: bold; }
+.pcc-step.is-completed .pcc-step-num { background: var(--pcc-success); }
+.pcc-step.is-completed { color: var(--pcc-success); }
+
+.pcc-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+}
+
+.pcc-table th, .pcc-table td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #eee;
+}
+
+.pcc-table th { background: var(--pcc-light); color: var(--pcc-primary); font-weight: 600; }
+
+/* Sync Results UI */
+.pcc-sync-result-box {
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 30px;
+    box-shadow: var(--pcc-card-shadow);
+}
+
+.pcc-sync-result-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #f0f0f0;
+    padding-bottom: 10px;
+    margin-bottom: 15px;
+}
+
+.pcc-sync-result-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 15px;
+}
+
+.pcc-sync-result-item {
+    text-align: center;
+    padding: 10px;
+    background: #f8fafc;
+    border-radius: 6px;
+}
+
+.pcc-sync-result-item span {
+    display: block;
+    font-size: 11px;
+    color: #888;
+    text-transform: uppercase;
+    font-weight: 700;
+}
+
+.pcc-sync-result-item strong {
+    display: block;
+    font-size: 18px;
+    color: var(--pcc-primary);
+}
+
+.pcc-sync-result-item.success strong { color: var(--pcc-success); }
+.pcc-sync-result-item.warning strong { color: var(--pcc-warning); }
+
+/* Progress Bar */
+.pcc-progress {
+    height: 20px;
+    background: #eee;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.pcc-progress-bar {
+    height: 100%;
+    background: var(--pcc-primary);
+    color: #fff;
+    text-align: center;
+    line-height: 20px;
+    font-size: 11px;
+    transition: width 0.3s ease;
+}
+
+/* Log Viewer */
+.pcc-log-view, .pcc-log-viewer {
+    background: #1e1e1e;
+    color: #d4d4d4;
+    padding: 15px;
+    border-radius: 4px;
+    font-family: 'Consolas', monospace;
+    font-size: 12px;
+    max-height: 400px;
+    overflow-y: auto;
+    overflow-x: hidden; /* Prevent horizontal scroll */
+    white-space: pre-wrap; /* Wrap long lines */
+    word-break: break-all; /* Force break long strings */
+    line-height: 1.5;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+    .pcc-dashboard-layout { flex-direction: column; }
+    .pcc-dashboard-sidebar { flex: 1; width: 100%; position: static; }
+    .pcc-tabs { flex-direction: row; overflow-x: auto; white-space: nowrap; }
+    .pcc-tab { border-left: none; border-bottom: 4px solid transparent; flex: 1; text-align: center; }
+    .pcc-tab.is-active { border-bottom: 4px solid var(--pcc-primary); }
+}
+
+@media (max-width: 768px) {
+    .pcc-brand-bar { flex-direction: column; text-align: center; gap: 15px; padding: 20px; }
+    .pcc-brand-bar__main { flex-direction: column; width: 100%; }
+    .pcc-brand-bar__logo { max-width: 120px; }
+    .pcc-brand-bar__meta { text-align: center; width: 100%; border-top: 1px solid #eee; padding-top: 10px; }
+    .pcc-overview-grid { grid-template-columns: 1fr; }
+    .form-table th { width: 100%; display: block; padding-bottom: 5px; }
+    .form-table td { display: block; width: 100%; padding-left: 0; }
+}
