@@ -21,7 +21,7 @@ final class PCC_WooOTEC_Pro_Cron {
         if (!isset($schedules['pcc_woootec_hourly'])) {
             $schedules['pcc_woootec_hourly'] = array(
                 'interval' => HOUR_IN_SECONDS,
-                'display'  => 'PCC WooOTEC Chile PRO - Cada hora',
+                'display'  => 'PCC WooOTEC Moodle PRO - Cada hora',
             );
         }
 

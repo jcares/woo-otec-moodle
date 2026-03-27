@@ -1,6 +1,6 @@
 <?php
 /**
- * Plugin Name: PCC WooOTEC Chile
+ * Plugin Name: PCC WooOTEC Moodle
  * Description: Integracion Moodle + WooCommerce
  * Version: 2.1.0
  * Author: JCares
@@ -8,7 +8,7 @@
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  * Requires PHP: 8.1
  * Requires at least: 6.4
- * Text Domain: pcc-woootec-chile
+ * Text Domain: pcc-woootec-moodle
  * Domain Path: /languages
  * WC requires at least: 8.0
  * WC tested up to: 9.8

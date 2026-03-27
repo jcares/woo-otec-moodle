@@ -41,18 +41,18 @@ final class PCC_WooOTEC_Pro_Admin {
 
     public function register_menu(): void {
         add_menu_page(
-            'PCC WooOTEC Chile',
-            'PCC WooOTEC Chile',
+            'PCC WooOTEC Moodle',
+            'PCC WooOTEC Moodle',
             'manage_options',
-            'pcc-woootec-chile',
+            'pcc-woootec-moodle',
             array($this, 'render_settings_page'),
             'dashicons-welcome-learn-more',
             25
         );
 
-        add_submenu_page('pcc-woootec-chile', 'Configuracion', 'Configuracion', 'manage_options', 'pcc-woootec-chile', array($this, 'render_settings_page'));
-        add_submenu_page('pcc-woootec-chile', 'Sincronizacion', 'Sincronizacion', 'manage_options', 'pcc-woootec-chile-sync', array($this, 'render_sync_page'));
-        add_submenu_page('pcc-woootec-chile', 'Logs', 'Logs', 'manage_options', 'pcc-woootec-chile-logs', array($this, 'render_logs_page'));
+        add_submenu_page('pcc-woootec-moodle', 'Configuracion', 'Configuracion', 'manage_options', 'pcc-woootec-moodle', array($this, 'render_settings_page'));
+        add_submenu_page('pcc-woootec-moodle', 'Sincronizacion', 'Sincronizacion', 'manage_options', 'pcc-woootec-moodle-sync', array($this, 'render_sync_page'));
+        add_submenu_page('pcc-woootec-moodle', 'Logs', 'Logs', 'manage_options', 'pcc-woootec-moodle-logs', array($this, 'render_logs_page'));
     }
 
     public function register_settings(): void {
@@ -156,7 +156,7 @@ final class PCC_WooOTEC_Pro_Admin {
     }
 
     public function enqueue_assets(string $hook): void {
-        if (strpos($hook, 'pcc-woootec-chile') === false) {
+        if (strpos($hook, 'pcc-woootec-moodle') === false) {
             return;
         }
 
@@ -186,7 +186,7 @@ final class PCC_WooOTEC_Pro_Admin {
         $result = PCC_WooOTEC_Pro_Sync::instance()->run(true);
         $redirect = add_query_arg(
             array(
-                'page'   => 'pcc-woootec-chile',
+                'page'   => 'pcc-woootec-moodle',
                 'tab'    => 'sync',
                 'status' => $result['status'],
             ),
@@ -217,7 +217,7 @@ final class PCC_WooOTEC_Pro_Admin {
         wp_safe_redirect(
             add_query_arg(
                 array(
-                    'page' => 'pcc-woootec-chile',
+                    'page' => 'pcc-woootec-moodle',
                     'tab'  => 'sync',
                 ),
                 admin_url('admin.php')
@@ -230,7 +230,7 @@ final class PCC_WooOTEC_Pro_Admin {
         wp_safe_redirect(
             add_query_arg(
                 array(
-                    'page' => 'pcc-woootec-chile',
+                    'page' => 'pcc-woootec-moodle',
                     'tab'  => 'sync',
                 ),
                 admin_url('admin.php')
@@ -549,12 +549,12 @@ final class PCC_WooOTEC_Pro_Admin {
         }
 
         $plugin_dir = PCC_WOOOTEC_PRO_PATH;
-        $zip_name = 'pcc-woootec-chile.zip';
+        $zip_name = 'pcc-woootec-moodle.zip';
         $zip_path = $plugin_dir . $zip_name;
 
         if (file_exists($zip_path)) {
             $timestamp = date('Ymd-His');
-            $new_name = 'pcc-woootec-chile-' . $timestamp . '.zip';
+            $new_name = 'pcc-woootec-moodle-' . $timestamp . '.zip';
             rename($zip_path, $plugin_dir . $new_name);
         }
 
@@ -571,14 +571,14 @@ final class PCC_WooOTEC_Pro_Admin {
         foreach ($files as $name => $file) {
             if (!$file->isDir()) {
                 $file_path = $file->getRealPath();
-                $relative_path = 'pcc-woootec-chile/' . substr($file_path, strlen($plugin_dir));
+                $relative_path = 'pcc-woootec-moodle/' . substr($file_path, strlen($plugin_dir));
 
                 // Excluir archivos innecesarios
                 if (strpos($file_path, '.git') !== false || 
                     strpos($file_path, 'node_modules') !== false || 
                     strpos($file_path, 'logs') !== false ||
                     basename($file_path) === $zip_name ||
-                    strpos(basename($file_path), 'pcc-woootec-chile-20') === 0) {
+                    strpos(basename($file_path), 'pcc-woootec-moodle-20') === 0) {
                     continue;
                 }
 

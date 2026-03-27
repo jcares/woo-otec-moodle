@@ -1,5 +1,5 @@
 /**
- * PCC WooOTEC Chile - Modern Admin JS
+ * PCC WooOTEC Moodle - Modern Admin JS
  * Handles Wizard, SSO Test, Tabs, Media Picker, and Email Tools
  */
 (function($) {

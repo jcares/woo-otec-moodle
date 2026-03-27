@@ -108,7 +108,7 @@ final class PCC_WooOTEC_Pro_Core {
     }
 
     public function load_textdomain(): void {
-        load_plugin_textdomain('pcc-woootec-chile', false, dirname(PCC_WOOOTEC_PRO_BASENAME) . '/languages');
+        load_plugin_textdomain('pcc-woootec-moodle', false, dirname(PCC_WOOOTEC_PRO_BASENAME) . '/languages');
     }
 
     public function register_runtime(): void {

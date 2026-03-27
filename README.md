@@ -33,7 +33,7 @@ Plataformas e-learning con WooCommerce
 Venta de capacitaciones certificadas
 
 🏗️ Estructura del Plugin
-pcc-woootec-chile/
+pcc-woootec-moodle/
 │
 ├── includes/
 │   ├── class-core.php
@@ -57,7 +57,7 @@ pcc-woootec-chile/
 ├── assets/
 ├── languages/
 ├── logs/
-└── pcc-woootec-chile.php
+└── pcc-woootec-moodle.php
 
 🔌 Requisitos
 WordPress 6.0+

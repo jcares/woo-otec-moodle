@@ -18,14 +18,14 @@
 - **Impacto:** Las traducciones en `languages/` pueden no cargarse nunca, afectando i18n.
 - **Trabajo propuesto:**
   - Registrar `load_textdomain()` en un hook apropiado (por ejemplo `plugins_loaded` o durante `init` en el flujo de arranque).
-  - Validar que el dominio `pcc-woootec-chile` cargue correctamente archivos `.mo`.
+  - Validar que el dominio `pcc-woootec-moodle` cargue correctamente archivos `.mo`.
 - **Criterios de aceptación:**
   - El text domain se carga en un entorno WordPress real y las cadenas traducibles responden al locale activo.
 
 ## 3) Tarea de corrección de discrepancia en comentarios/documentación
 **Título sugerido:** Alinear README con la estructura real del plugin.
 
-- **Problema detectado:** El `README.md` documenta carpetas/clases (`core/`, `class-hooks.php`, `pcc-woootec-moodle.php`) que no coinciden con el árbol actual (`includes/`, `public/class-frontend.php`, `pcc-woootec-chile.php`).
+- **Problema detectado:** El `README.md` documenta carpetas/clases (`core/`, `class-hooks.php`, `pcc-woootec-moodle.php`) que no coinciden con el árbol actual (`includes/`, `public/class-frontend.php`, `pcc-woootec-moodle.php`).
 - **Impacto:** Onboarding más lento y mayor probabilidad de errores de mantenimiento.
 - **Trabajo propuesto:**
   - Actualizar la sección “Estructura del Plugin” para reflejar rutas y nombres reales.
