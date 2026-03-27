@@ -102,6 +102,7 @@ final class PCC_WooOTEC_Pro_Core {
 
     private function register_hooks(): void {
 
+        add_action('plugins_loaded', array($this, 'load_textdomain'));
         add_action('init', array($this, 'register_runtime'));
         add_action('before_woocommerce_init', array($this, 'declare_woocommerce_compatibility'));
     }

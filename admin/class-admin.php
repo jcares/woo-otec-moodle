@@ -164,7 +164,7 @@ final class PCC_WooOTEC_Pro_Admin {
         wp_enqueue_style('pcc-woootec-modern-ui', PCC_WOOOTEC_PRO_URL . 'assets/admin/css/modern-ui.css', array(), PCC_WOOOTEC_PRO_VERSION);
         wp_enqueue_script('pcc-woootec-modern-ui', PCC_WOOOTEC_PRO_URL . 'assets/admin/js/modern-ui.js', array('jquery'), PCC_WOOOTEC_PRO_VERSION, true);
 
-        // LocalizaciÃ³n base
+        // Localización base
         $local = array(
             'ajaxUrl' => admin_url('admin-ajax.php'),
             'nonce'   => wp_create_nonce('pcc_woootec_sync_stage'),

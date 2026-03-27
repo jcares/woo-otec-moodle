@@ -33,33 +33,37 @@ Plataformas e-learning con WooCommerce
 Venta de capacitaciones certificadas
 
 🏗️ Estructura del Plugin
-pcc-woootec-moodle/
+pcc-woootec-chile/
 │
-├── core/
+├── includes/
 │   ├── class-core.php
 │   ├── class-api.php
 │   ├── class-logger.php
+│   ├── class-sync.php
+│   ├── class-enroll.php
+│   └── class-cron.php
 │
 ├── admin/
 │   ├── class-admin.php
-│   ├── wizard/
-│   ├── views/
+│   └── views/
 │
 ├── public/
-│   ├── class-hooks.php
+│   ├── class-frontend.php
+│   └── templates/
 │
 ├── config/
 │   └── defaults.php
 │
+├── assets/
+├── languages/
 ├── logs/
-│
-└── pcc-woootec-moodle.php
+└── pcc-woootec-chile.php
 
 🔌 Requisitos
 WordPress 6.0+
 WooCommerce 7.0+
 Moodle 3.9+ (API REST habilitada)
-PHP 7.4 o superior
+PHP 8.1 o superior
 Token de servicio web en Moodle
 
 ⚙️ Instalación
