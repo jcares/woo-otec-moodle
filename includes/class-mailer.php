@@ -19,7 +19,7 @@ final class Woo_OTEC_Moodle_Mailer {
     }
 
     public function render_subject(array $data): string {
-        $subject = (string) Woo_OTEC_Moodle_Core::instance()->get_option('email_subject', 'Acceso a tus cursos en {{sitio}}');
+        $subject = (string) Woo_OTEC_Moodle_Core::instance()->get_option('email_subject', __('Access your courses on {{sitio}}', 'woo-otec-moodle'));
         return wp_strip_all_tags($this->replace_template_variables($subject, $data));
     }
 
@@ -91,16 +91,16 @@ final class Woo_OTEC_Moodle_Mailer {
         $core = Woo_OTEC_Moodle_Core::instance();
 
         $site = (string) ($data['sitio'] ?? wp_specialchars_decode(get_bloginfo('name'), ENT_QUOTES));
-        $hello_name = trim((string) ($data['nombre'] ?? 'Alumno'));
+        $hello_name = trim((string) ($data['nombre'] ?? __('Student', 'woo-otec-moodle')));
         $email = (string) ($data['email'] ?? '');
         $password = (string) ($data['password'] ?? '');
         $courses = (string) ($data['cursos'] ?? '');
         $access_url = esc_url((string) ($data['url_acceso'] ?? ''));
 
-        $heading = sanitize_text_field((string) $core->get_option('email_builder_heading', 'Tus accesos ya estan listos'));
-        $intro = sanitize_textarea_field((string) $core->get_option('email_builder_intro', 'Tu compra fue confirmada correctamente. Aqui tienes los datos para ingresar a tu plataforma.'));
-        $button_text = sanitize_text_field((string) $core->get_option('email_builder_button_text', 'Acceder a mis cursos'));
-        $footer = sanitize_textarea_field((string) $core->get_option('email_builder_footer', 'Si necesitas ayuda, responde este correo y te apoyaremos.'));
+        $heading = sanitize_text_field((string) $core->get_option('email_builder_heading', __('Your access details are ready', 'woo-otec-moodle')));
+        $intro = sanitize_textarea_field((string) $core->get_option('email_builder_intro', __('Your purchase has been confirmed successfully. Here are your access details for the platform.', 'woo-otec-moodle')));
+        $button_text = sanitize_text_field((string) $core->get_option('email_builder_button_text', __('Access my courses', 'woo-otec-moodle')));
+        $footer = sanitize_textarea_field((string) $core->get_option('email_builder_footer', __('If you need help, reply to this email and we will gladly assist you.', 'woo-otec-moodle')));
 
         $primary = sanitize_hex_color((string) $core->get_option('email_color_primary', '#0f3d5e')) ?: '#0f3d5e';
         $accent = sanitize_hex_color((string) $core->get_option('email_color_accent', '#1f9d6f')) ?: '#1f9d6f';
@@ -128,22 +128,22 @@ final class Woo_OTEC_Moodle_Mailer {
           <tr>
             <td style="background:' . $primary . ';padding:28px 34px;text-align:center;color:#ffffff;">
               ' . $logo_html . '
-              <p style="margin:0 0 8px;font-size:12px;letter-spacing:.08em;text-transform:uppercase;opacity:.9;">Bienvenido a {{sitio}}</p>
+              <p style="margin:0 0 8px;font-size:12px;letter-spacing:.08em;text-transform:uppercase;opacity:.9;">' . esc_html__('Welcome to {{sitio}}', 'woo-otec-moodle') . '</p>
               <h1 style="margin:0;font-size:26px;line-height:1.3;color:#ffffff;">' . esc_html($heading) . '</h1>
             </td>
           </tr>
           <tr>
             <td style="padding:26px 34px 10px;">
-              <p style="margin:0 0 12px;font-size:16px;">Hola {{nombre}},</p>
+              <p style="margin:0 0 12px;font-size:16px;">' . esc_html__('Hello {{nombre}},', 'woo-otec-moodle') . '</p>
               <p style="margin:0 0 12px;font-size:15px;line-height:1.6;">' . nl2br(esc_html($intro)) . '</p>
             </td>
           </tr>
           <tr>
             <td style="padding:0 34px 12px;">
               <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border:1px solid #e4ebf2;border-radius:12px;background:#f8fbff;">
-                <tr><td style="padding:14px 16px;border-bottom:1px solid #e4ebf2;"><strong>Usuario:</strong><br>{{email}}</td></tr>
-                <tr><td style="padding:14px 16px;border-bottom:1px solid #e4ebf2;"><strong>Contrasena:</strong><br>{{password}}</td></tr>
-                <tr><td style="padding:14px 16px;"><strong>Cursos:</strong><br>{{cursos}}</td></tr>
+                <tr><td style="padding:14px 16px;border-bottom:1px solid #e4ebf2;"><strong>' . esc_html__('User:', 'woo-otec-moodle') . '</strong><br>{{email}}</td></tr>
+                <tr><td style="padding:14px 16px;border-bottom:1px solid #e4ebf2;"><strong>' . esc_html__('Password:', 'woo-otec-moodle') . '</strong><br>{{password}}</td></tr>
+                <tr><td style="padding:14px 16px;"><strong>' . esc_html__('Courses:', 'woo-otec-moodle') . '</strong><br>{{cursos}}</td></tr>
               </table>
             </td>
           </tr>
@@ -154,7 +154,7 @@ final class Woo_OTEC_Moodle_Mailer {
           </tr>
           <tr>
             <td style="padding:10px 34px 24px;">
-              <p style="margin:0;font-size:13px;line-height:1.7;color:#44576a;">Si el boton no funciona, copia este enlace en tu navegador:<br><a href="{{url_acceso}}" style="color:' . $primary . ';text-decoration:none;word-break:break-all;">{{url_acceso}}</a></p>
+              <p style="margin:0;font-size:13px;line-height:1.7;color:#44576a;">' . esc_html__('If the button does not work, copy this link into your browser:', 'woo-otec-moodle') . '<br><a href="{{url_acceso}}" style="color:' . $primary . ';text-decoration:none;word-break:break-all;">{{url_acceso}}</a></p>
             </td>
           </tr>
           <tr>

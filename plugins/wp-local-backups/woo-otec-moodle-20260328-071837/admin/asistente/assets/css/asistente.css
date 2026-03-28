@@ -1,0 +1,203 @@
+.pcc-wizard-wrap {
+    max-width: 880px;
+    margin: 32px auto;
+    font-family: "Segoe UI", Roboto, Arial, sans-serif;
+}
+
+.pcc-wizard-container {
+    background: #fff;
+    border-radius: 16px;
+    border: 1px solid #d7e3ee;
+    box-shadow: 0 16px 30px rgba(18, 55, 83, 0.09);
+    overflow: hidden;
+}
+
+.pcc-wizard-header {
+    background: linear-gradient(135deg, #0f3552 0%, #1a5b84 100%);
+    padding: 28px 24px 20px;
+    color: #fff;
+    text-align: center;
+}
+
+.pcc-wizard-logo h2 {
+    color: #fff;
+    font-size: 30px;
+    line-height: 1.2;
+    margin: 0;
+    letter-spacing: -.01em;
+}
+
+.pcc-wizard-logo span {
+    color: #8dd5ff;
+    font-weight: 500;
+}
+
+.pcc-wizard-stepper {
+    margin-top: 18px;
+}
+
+.pcc-wizard-stepper ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+}
+
+.pcc-wizard-stepper li {
+    font-size: 12px;
+    color: #aac0d3;
+    border: 1px solid rgba(255,255,255,.26);
+    border-radius: 999px;
+    padding: 6px 10px;
+    background: rgba(255,255,255,.08);
+}
+
+.pcc-wizard-stepper li.active {
+    color: #0e3857;
+    background: #ffffff;
+    border-color: #ffffff;
+    font-weight: 700;
+}
+
+.pcc-wizard-stepper li.done {
+    color: #ddf3ff;
+    border-color: rgba(191, 233, 255, .5);
+    background: rgba(12, 35, 54, .25);
+}
+
+.pcc-wizard-content {
+    padding: 28px 30px;
+}
+
+.pcc-wizard-step-body h3 {
+    margin-top: 0;
+    margin-bottom: 10px;
+    font-size: 24px;
+    color: #16384f;
+}
+
+.pcc-wizard-step-body p {
+    color: #4f6b80;
+    line-height: 1.6;
+}
+
+.pcc-wizard-step-body .form-table th {
+    color: #1d3f57;
+    font-weight: 700;
+}
+
+.pcc-wizard-step-body .form-table td input,
+.pcc-wizard-step-body .form-table td select,
+.pcc-wizard-step-body .form-table td textarea {
+    border-radius: 10px;
+    border: 1px solid #c8d8e6;
+    min-height: 40px;
+    padding: 8px 12px;
+}
+
+.pcc-wizard-step-body .form-table td input:focus,
+.pcc-wizard-step-body .form-table td select:focus,
+.pcc-wizard-step-body .form-table td textarea:focus {
+    border-color: #8fb6d2;
+    box-shadow: 0 0 0 3px rgba(17, 117, 180, 0.13);
+    outline: none;
+}
+
+.pcc-wizard-footer {
+    margin-top: 26px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    border-top: 1px solid #e3edf4;
+    padding-top: 18px;
+}
+
+.pcc-btn-next,
+.pcc-btn-finish {
+    background: #0f4f77 !important;
+    border-color: #0f4f77 !important;
+    color: #fff !important;
+    border-radius: 10px !important;
+    min-height: 40px !important;
+    padding: 8px 18px !important;
+    font-size: 14px !important;
+    font-weight: 700 !important;
+}
+
+.pcc-btn-next:hover,
+.pcc-btn-finish:hover {
+    background: #0b3f5f !important;
+    border-color: #0b3f5f !important;
+}
+
+.pcc-btn-back {
+    border-radius: 10px !important;
+    min-height: 40px !important;
+    padding: 8px 16px !important;
+}
+
+.pcc-wizard-test-box {
+    padding: 16px;
+    border-radius: 12px;
+    margin: 16px 0;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+}
+
+.pcc-wizard-test-box.success {
+    background: #effbf5;
+    border: 1px solid #bde7cf;
+}
+
+.pcc-wizard-test-box.success .dashicons {
+    color: #148f63;
+    font-size: 28px;
+}
+
+.pcc-wizard-test-box.error {
+    background: #fff1f1;
+    border: 1px solid #f5c5c8;
+}
+
+.pcc-wizard-test-box.error .dashicons {
+    color: #c93a46;
+    font-size: 28px;
+}
+
+.pcc-wizard-test-box h4 {
+    margin: 0 0 5px 0;
+    color: #17374d;
+}
+
+.pcc-wizard-test-box p {
+    margin: 0;
+}
+
+@media (max-width: 760px) {
+    .pcc-wizard-wrap {
+        margin: 16px auto;
+    }
+
+    .pcc-wizard-content {
+        padding: 18px;
+    }
+
+    .pcc-wizard-stepper ul {
+        justify-content: flex-start;
+    }
+
+    .pcc-wizard-footer {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .pcc-wizard-footer .button {
+        width: 100%;
+        text-align: center;
+    }
+}

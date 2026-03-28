@@ -29,7 +29,7 @@ final class Woo_OTEC_Moodle_Sync {
         );
 
         if (!class_exists('WooCommerce')) {
-            $result['message'] = 'WooCommerce no esta activo.';
+            $result['message'] = __('WooCommerce is not active.', 'woo-otec-moodle');
             $this->update_last_sync($result);
             return $result;
         }
@@ -40,7 +40,7 @@ final class Woo_OTEC_Moodle_Sync {
 
             $courses = Woo_OTEC_Moodle_API::instance()->get_courses();
             if (is_wp_error($courses) || empty($courses)) {
-                $result['message']            = is_wp_error($courses) ? $courses->get_error_message() : 'No se pudieron obtener cursos desde Moodle.';
+                $result['message']            = is_wp_error($courses) ? $courses->get_error_message() : __('Courses could not be retrieved from Moodle.', 'woo-otec-moodle');
                 $result['categories_created'] = $category_result['created'];
                 $result['categories_updated'] = $category_result['updated'];
                 $this->update_last_sync($result);
@@ -50,7 +50,7 @@ final class Woo_OTEC_Moodle_Sync {
             $course_result = $this->sync_courses($courses);
 
             $result['status']             = 'success';
-            $result['message']            = 'Sincronizacion completada.';
+            $result['message']            = __('Synchronization completed.', 'woo-otec-moodle');
             $result['categories_created'] = $category_result['created'];
             $result['categories_updated'] = $category_result['updated'];
             $result['products_created']   = $course_result['created'];
@@ -65,7 +65,7 @@ final class Woo_OTEC_Moodle_Sync {
                 }
             }
         } catch (PCC_Moodle_Exception $e) {
-            $result['message'] = 'Error de conexion con Moodle: ' . $e->getMessage();
+            $result['message'] = __('Moodle connection error:', 'woo-otec-moodle') . ' ' . $e->getMessage();
             Woo_OTEC_Moodle_Logger::error('Fallo global de sincronizacion', [
                 'error_code' => $e->get_error_code(),
                 'function'   => $e->get_moodle_function(),
@@ -176,7 +176,14 @@ final class Woo_OTEC_Moodle_Sync {
 
         // Omitir el curso con ID 1 (Site Home / Front Page en Moodle)
         if ($moodle_id <= 1) {
-            return array('status' => 'ignored', 'message' => "Curso ID $moodle_id ignorado (Sistema/Site Home)");
+            return array(
+                'status' => 'ignored',
+                'message' => sprintf(
+                    /* translators: %d: Moodle course ID */
+                    __('Course ID %d ignored (system or site home).', 'woo-otec-moodle'),
+                    $moodle_id
+                ),
+            );
         }
 
         // Asegurar que image_id este disponible en el objeto
@@ -189,20 +196,48 @@ final class Woo_OTEC_Moodle_Sync {
         if ($product_id > 0) {
             $course_data = $this->build_course_sync_data($course_obj, $product_id);
             $this->update_product($product_id, $course_obj, $course_data);
-            return array('status' => 'updated', 'message' => "Curso actualizado ID Moodle $moodle_id");
+            return array(
+                'status' => 'updated',
+                'message' => sprintf(
+                    /* translators: %d: Moodle course ID */
+                    __('Updated course with Moodle ID %d.', 'woo-otec-moodle'),
+                    $moodle_id
+                ),
+            );
         }
 
         $course_data = $this->build_course_sync_data($course_obj, 0);
         $product_id = $this->create_product($course_obj, $course_data);
         if ($product_id > 0) {
-            return array('status' => 'created', 'message' => "Curso creado ID Moodle $moodle_id");
+            return array(
+                'status' => 'created',
+                'message' => sprintf(
+                    /* translators: %d: Moodle course ID */
+                    __('Created course with Moodle ID %d.', 'woo-otec-moodle'),
+                    $moodle_id
+                ),
+            );
         }
 
         if ($product_id < 0) {
-            return array('status' => 'updated', 'message' => "Curso actualizado ID Moodle $moodle_id");
+            return array(
+                'status' => 'updated',
+                'message' => sprintf(
+                    /* translators: %d: Moodle course ID */
+                    __('Updated course with Moodle ID %d.', 'woo-otec-moodle'),
+                    $moodle_id
+                ),
+            );
         }
 
-        return array('status' => 'error', 'message' => "No se pudo sincronizar el curso ID Moodle $moodle_id");
+        return array(
+            'status' => 'error',
+            'message' => sprintf(
+                /* translators: %d: Moodle course ID */
+                __('The course with Moodle ID %d could not be synchronized.', 'woo-otec-moodle'),
+                $moodle_id
+            ),
+        );
     }
 
     public function find_product_id(int $moodle_course_id): int {
@@ -368,7 +403,7 @@ final class Woo_OTEC_Moodle_Sync {
     private function hydrate_product(WC_Product $product, object $course, array $course_data): void {
         $existing_name = $product->get_name();
         $new_name = trim((string) ($course_data['post_title'] ?? $course->fullname ?? ''));
-        $product->set_name($new_name !== '' ? $new_name : ($existing_name !== '' ? $existing_name : 'Curso Moodle'));
+        $product->set_name($new_name !== '' ? $new_name : ($existing_name !== '' ? $existing_name : __('Moodle course', 'woo-otec-moodle')));
 
         $product->set_slug('moodle-course-' . (int) $course->id);
 
@@ -411,7 +446,7 @@ final class Woo_OTEC_Moodle_Sync {
             return $description;
         }
 
-        return (string) Woo_OTEC_Moodle_Core::instance()->get_option('fallback_description', 'Curso sincronizado automaticamente desde Moodle.');
+        return (string) Woo_OTEC_Moodle_Core::instance()->get_option('fallback_description', __('Course synchronized automatically from Moodle.', 'woo-otec-moodle'));
     }
 
     private function resolve_category_ids(int $moodle_category_id): array {
@@ -428,6 +463,21 @@ final class Woo_OTEC_Moodle_Sync {
         update_post_meta($product_id, 'moodle_course_id', (int) $course->id);
         update_post_meta($product_id, '_pcc_synced', 1);
         update_post_meta($product_id, '_moodle_category_id', isset($course->categoryid) ? (int) $course->categoryid : 0);
+        if (!empty($course->shortname)) {
+            update_post_meta($product_id, '_course_shortname', sanitize_text_field((string) $course->shortname));
+        }
+        if (!empty($course->idnumber)) {
+            update_post_meta($product_id, '_course_code', sanitize_text_field((string) $course->idnumber));
+        }
+        if (!empty($course->lang)) {
+            update_post_meta($product_id, '_course_language', sanitize_text_field((string) $course->lang));
+        }
+        if (isset($course->visible)) {
+            update_post_meta($product_id, '_course_visibility', ((int) $course->visible) === 1 ? 'visible' : 'hidden');
+        }
+        if (!empty($course->categoryname)) {
+            update_post_meta($product_id, '_course_category_name', sanitize_text_field((string) $course->categoryname));
+        }
 
         // Metadatos base requeridos en la vista single-product.
         $start = (string) ($course_data['_start_date'] ?? $course_data['startdate'] ?? '');
@@ -486,7 +536,7 @@ final class Woo_OTEC_Moodle_Sync {
             $teacher_names = Woo_OTEC_Moodle_API::instance()->get_course_teachers((int) $course->id);
             $teacher = !empty($teacher_names)
                 ? implode(', ', $teacher_names)
-                : (string) Woo_OTEC_Moodle_Core::instance()->get_option('default_instructor', 'No asignado');
+                : (string) Woo_OTEC_Moodle_Core::instance()->get_option('default_instructor', __('Not assigned', 'woo-otec-moodle'));
         }
 
         $start_timestamp = isset($course->startdate) ? (is_numeric($course->startdate) ? (int) $course->startdate : strtotime($course->startdate)) : 0;
@@ -516,6 +566,11 @@ final class Woo_OTEC_Moodle_Sync {
             'format'    => $format_nice,
             'sections_count' => $sections_count > 0 ? (string) $sections_count : '',
             'certificate_available' => $certificate_enabled === 'yes' ? 'yes' : 'no',
+            'course_shortname' => (string) ($course->shortname ?? ''),
+            'course_code' => (string) ($course->idnumber ?? ''),
+            'course_language' => (string) ($course->lang ?? ''),
+            'course_visibility' => isset($course->visible) ? (((int) $course->visible) === 1 ? 'visible' : 'hidden') : '',
+            'course_category_name' => (string) ($course->categoryname ?? ''),
             'sence_code'=> '',
             'total_hours'=> '',
         );

@@ -80,7 +80,7 @@ final class Woo_OTEC_Moodle_Enroll {
     public function send_test_email(string $recipient): bool|WP_Error {
         $recipient = sanitize_email($recipient);
         if ($recipient === '') {
-            return new WP_Error('pcc_invalid_test_email', 'Debes indicar un correo de prueba valido.');
+            return new WP_Error('pcc_invalid_test_email', __('You must provide a valid test email.', 'woo-otec-moodle'));
         }
 
         $subject = Woo_OTEC_Moodle_Mailer::instance()->render_subject($this->get_sample_email_data());
@@ -89,7 +89,7 @@ final class Woo_OTEC_Moodle_Enroll {
 
         if (!$sent) {
             Woo_OTEC_Moodle_Logger::error('Fallo envio de correo de prueba', array('recipient' => $recipient));
-            return new WP_Error('pcc_test_email_failed', 'No fue posible enviar el correo de prueba.');
+            return new WP_Error('pcc_test_email_failed', __('The test email could not be sent.', 'woo-otec-moodle'));
         }
 
         Woo_OTEC_Moodle_Logger::info('Correo de prueba enviado', array('recipient' => $recipient));
@@ -118,7 +118,7 @@ final class Woo_OTEC_Moodle_Enroll {
     }
 
     public function register_order_actions(array $actions): array {
-        $actions['pcc_resend_course_email'] = 'PCC: reenviar correo de acceso';
+        $actions['pcc_resend_course_email'] = __('PCC: resend access email', 'woo-otec-moodle');
         return $actions;
     }
 
@@ -243,8 +243,8 @@ final class Woo_OTEC_Moodle_Enroll {
 
         return array(
             'wp_user_id' => 0,
-            'firstname'  => (string) ($order->get_billing_first_name() ?: 'Alumno'),
-            'lastname'   => (string) ($order->get_billing_last_name() ?: 'Alumno'),
+            'firstname'  => (string) ($order->get_billing_first_name() ?: __('Student', 'woo-otec-moodle')),
+            'lastname'   => (string) ($order->get_billing_last_name() ?: __('Student', 'woo-otec-moodle')),
             'email'      => $email,
             'display'    => trim((string) ($order->get_billing_first_name() . ' ' . $order->get_billing_last_name())),
         );
@@ -354,7 +354,7 @@ final class Woo_OTEC_Moodle_Enroll {
         return array(
             'nombre'      => trim((string) (($learner['firstname'] ?? '') . ' ' . ($learner['lastname'] ?? ''))),
             'email'       => (string) ($learner['email'] ?? ''),
-            'password'    => $password !== null && $password !== '' ? $password : 'Usa tu contrasena actual de Moodle',
+            'password'    => $password !== null && $password !== '' ? $password : __('Use your current Moodle password', 'woo-otec-moodle'),
             'url_acceso'  => !empty($urls) ? (string) reset($urls) : (string) $order->get_meta('_moodle_access_url'),
             'cursos'      => implode('<br>', array_map('esc_html', $course_names)),
             'sitio'       => wp_specialchars_decode(get_bloginfo('name'), ENT_QUOTES),
@@ -363,11 +363,11 @@ final class Woo_OTEC_Moodle_Enroll {
 
     private function get_sample_email_data(): array {
         return array(
-            'nombre'     => 'Alumno Demo',
-            'email'      => 'alumno@example.com',
+            'nombre'     => __('Demo student', 'woo-otec-moodle'),
+            'email'      => 'student@example.com',
             'password'   => 'TempPassword123!',
-            'url_acceso' => Woo_OTEC_Moodle_SSO::instance()->build_url('alumno@example.com', 123),
-            'cursos'     => 'Curso Demo 1<br>Curso Demo 2',
+            'url_acceso' => Woo_OTEC_Moodle_SSO::instance()->build_url('student@example.com', 123),
+            'cursos'     => __('Demo Course 1', 'woo-otec-moodle') . '<br>' . __('Demo Course 2', 'woo-otec-moodle'),
             'sitio'      => wp_specialchars_decode(get_bloginfo('name'), ENT_QUOTES),
         );
     }
@@ -380,16 +380,16 @@ final class Woo_OTEC_Moodle_Enroll {
             return;
         }
 
-        echo '<section class="pcc-access-box"><h2>Acceso a tus cursos</h2><p>Usa los siguientes accesos directos:</p>';
+        echo '<section class="pcc-access-box"><h2>' . esc_html__('Access your courses', 'woo-otec-moodle') . '</h2><p>' . esc_html__('Use the following direct access links:', 'woo-otec-moodle') . '</p>';
 
         if (!empty($urls)) {
             echo '<ul class="pcc-access-links">';
             foreach ($urls as $course_id => $url) {
-                echo '<li><a class="button" href="' . esc_url((string) $url) . '">Acceder al curso #' . (int) $course_id . '</a></li>';
+                echo '<li><a class="button" href="' . esc_url((string) $url) . '">' . esc_html__('Access course', 'woo-otec-moodle') . ' #' . (int) $course_id . '</a></li>';
             }
             echo '</ul>';
         } elseif ($single_url !== '') {
-            echo '<p><a class="button" href="' . esc_url($single_url) . '">Acceder al curso</a></p>';
+            echo '<p><a class="button" href="' . esc_url($single_url) . '">' . esc_html__('Access course', 'woo-otec-moodle') . '</a></p>';
         }
 
         echo '</section>';
