@@ -50,6 +50,8 @@ final class Woo_OTEC_Moodle_Admin {
             'ajaxUrl'       => admin_url('admin-ajax.php'),
             'nonce'         => wp_create_nonce('woo_otec_moodle_sync_stage'),
             'emailNonce'    => wp_create_nonce('woo_otec_moodle_email_tools'),
+            'configNonce'   => wp_create_nonce('woo_otec_moodle_export_config'),
+            'importConfigNonce' => wp_create_nonce('woo_otec_moodle_import_config'),
             'defaultTab'    => $this->get_default_tab(),
             'templateNonce' => wp_create_nonce('woo_otec_moodle_template_fields'),
         );
@@ -118,7 +120,7 @@ final class Woo_OTEC_Moodle_Admin {
     }
 
     private function get_default_tab(): string {
-        $allowed_tabs = array('general', 'sync', 'sso', 'templates', 'emails', 'logs');
+        $allowed_tabs = array('general', 'sync', 'sso', 'templates', 'appearance', 'emails', 'logs');
         $tab          = sanitize_key((string) ($_GET['tab'] ?? 'general'));
         return in_array($tab, $allowed_tabs, true) ? $tab : 'general';
     }

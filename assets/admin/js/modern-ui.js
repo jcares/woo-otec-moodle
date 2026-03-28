@@ -1,4 +1,4 @@
-/**
+﻿/**
  * PCC WooOTEC Chile - Modern Admin JS
  * Handles Wizard, SSO Test, Tabs, Media Picker, and Email Tools
  */
@@ -21,11 +21,28 @@
             this.initMediaPicker();
             this.initEmailTools();
             this.initTemplateTools();
+            this.initAppearanceTools();
             
             // Auto-load categories if sync tab is active on page load
             if ($('.pcc-tab[data-tab="sync"]').hasClass('is-active')) {
                 this.loadCategories();
             }
+        },
+
+        initAppearanceTools: function() {
+            const $selector = $('#woo_otec_moodle_appearance_profile');
+            if (!$selector.length) {
+                return;
+            }
+
+            function renderAppearanceGroup() {
+                const selected = $selector.val() || 'product';
+                $('.pcc-appearance-group').removeClass('is-active').hide();
+                $('.pcc-appearance-group[data-appearance-group="' + selected + '"]').addClass('is-active').show();
+            }
+
+            $(document).on('change', '#woo_otec_moodle_appearance_profile', renderAppearanceGroup);
+            renderAppearanceGroup();
         },
 
         bindEvents: function() {
@@ -39,7 +56,7 @@
                 });
 
                 if (self.selectedCategories.length === 0) {
-                    alert('Por favor, selecciona al menos una categoría.');
+                    alert('Por favor, selecciona al menos una categorÃ­a.');
                     return;
                 }
 
@@ -75,9 +92,13 @@
                 self.testSSO();
             });
 
-            // ZIP Generation
-            $(document).on('click', '#pcc-generate-zip', function() {
-                self.generateZIP();
+            // Config export
+            $(document).on('click', '#pcc-export-config', function() {
+                self.exportConfig();
+            });
+
+            $(document).on('click', '#pcc-import-config', function() {
+                self.importConfig();
             });
         },
 
@@ -195,29 +216,150 @@
 
         // --- Template Tools Logic ---
         initTemplateTools: function() {
+            const $container = $('[data-template-fields]');
+            const $preview = $('[data-template-live-preview]');
+            const $feedback = $('[data-template-feedback]');
+
+            function setTemplateFeedback(msg, isError) {
+                if (!$feedback.length) return;
+                $feedback.text(msg || '');
+                $feedback.toggleClass('is-error', !!isError);
+            }
+
+            function getSelectedFields() {
+                const selected = [];
+                $('[data-template-fields] input[type="checkbox"]:checked').each(function() {
+                    selected.push($(this).val());
+                });
+                return selected;
+            }
+
+            function getFieldLabel(metaKey) {
+                let label = '';
+                $('[data-template-fields] input[type="checkbox"]').each(function() {
+                    const $chk = $(this);
+                    if (($chk.data('meta-key') || '').toString() === metaKey) {
+                        label = ($chk.data('meta-label') || '').toString();
+                    }
+                });
+                if (label) return label;
+                return metaKey.replace(/^_+/, '').replace(/[_-]+/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+            }
+
+            function getLiveValue(metaKey) {
+                const normalized = (metaKey || '').toString().toLowerCase().replace(/[^a-z0-9_]/g, '');
+                let value = '';
+                $('.pcc-mapping-manual-value').each(function() {
+                    const key = ($(this).data('meta-key') || '').toString().toLowerCase().replace(/[^a-z0-9_]/g, '');
+                    if (key === normalized && value === '') {
+                        value = ($(this).val() || '').toString().trim();
+                    }
+                });
+                return value || 'Sin valor en este curso';
+            }
+
+            function renderLivePreview() {
+                if (!$preview.length) return;
+                const selected = getSelectedFields();
+                if (!selected.length) {
+                    $preview.html('<p class="description">Marca al menos un campo para ver la vista previa.</p>');
+                    return;
+                }
+
+                let html = '<div class="pcc-template-live-list">';
+                selected.forEach(function(metaKey) {
+                    const label = getFieldLabel(metaKey);
+                    const value = getLiveValue(metaKey);
+                    html += '<div class="pcc-template-live-item">';
+                    html += '<span>' + $('<div>').text(label).html() + '</span>';
+                    html += '<strong>' + $('<div>').text(value).html() + '</strong>';
+                    html += '</div>';
+                });
+                html += '</div>';
+                $preview.html(html);
+            }
+
+            function updateMappingValues(mappingValues) {
+                if (!mappingValues) return;
+                $('.pcc-mapping-manual-value').each(function() {
+                    const $input = $(this);
+                    const keyByMeta = (($input.data('meta-key') || '').toString()).toLowerCase().replace(/[^a-z0-9_]/g, '');
+                    const keyByMoodle = (($input.data('moodle-key') || '').toString()).toLowerCase().replace(/[^a-z0-9_]/g, '');
+                    const current = ($input.val() || '').toString().trim();
+                    if (current !== '') return;
+                    const val = mappingValues[keyByMeta] || mappingValues[keyByMoodle] || '';
+                    if (val !== '') {
+                        $input.val(val);
+                    }
+                });
+            }
+
+            function persistTemplateConfig(productId, selectedFields, silent) {
+                if (!productId) return;
+                if (!silent) {
+                    setTemplateFeedback('Actualizando configuracion...', false);
+                }
+
+                $.post(wooOtecMoodleAdmin.ajaxUrl, {
+                    action: 'woo_otec_moodle_save_template_config',
+                    nonce: wooOtecMoodleAdmin.templateNonce,
+                    product_id: productId,
+                    selected_fields: selectedFields || []
+                }).done(function(res) {
+                    if (!res.success) {
+                        setTemplateFeedback('No se pudo actualizar la configuracion.', true);
+                        return;
+                    }
+
+                    if (res.data.fields_html) {
+                        $container.html(res.data.fields_html);
+                    }
+                    updateMappingValues(res.data.mapping_values || {});
+                    renderLivePreview();
+                    setTemplateFeedback('Cambios guardados automaticamente.', false);
+                }).fail(function() {
+                    setTemplateFeedback('Error de conexion al guardar configuracion.', true);
+                });
+            }
+
             $(document).on('change', '#woo_otec_moodle_template_reference', function() {
                 const productId = $(this).val();
-                const $container = $('[data-template-fields]');
                 if (!$container.length) return;
 
                 if (!productId) {
                     $container.html('<p class="description">Selecciona un curso para listar los metadatos disponibles.</p>');
+                    if ($preview.length) {
+                        $preview.html('<p class="description">Selecciona un curso y marca los campos para ver la vista previa.</p>');
+                    }
                     return;
                 }
 
-                $container.html('<p class="description">Cargando...</p>');
-                $.post(wooOtecMoodleAdmin.ajaxUrl, {
-                    action: 'woo_otec_moodle_template_fields',
-                    nonce: wooOtecMoodleAdmin.templateNonce,
-                    product_id: productId
-                }).done(function(res) {
-                    if (res.success) {
-                        $container.html(res.data.html || '');
-                    } else {
-                        $container.html('<p class="description">Error al cargar metadatos.</p>');
-                    }
-                });
+                $container.html('<p class="description">Cargando metadatos...</p>');
+                if ($preview.length) {
+                    $preview.html('<p class="description">Generando vista previa...</p>');
+                }
+                persistTemplateConfig(productId, getSelectedFields(), true);
             });
+
+            $(document).on('change', '[data-template-fields] input[type="checkbox"]', function() {
+                const productId = $('#woo_otec_moodle_template_reference').val();
+                if (!productId) {
+                    return;
+                }
+                persistTemplateConfig(productId, getSelectedFields(), false);
+            });
+
+            $(document).on('input', '.pcc-mapping-manual-value', function() {
+                renderLivePreview();
+            });
+
+            // Cargar vista en vivo inicial si ya hay curso seleccionado.
+            const initialProductId = $('#woo_otec_moodle_template_reference').val();
+            if (initialProductId) {
+                persistTemplateConfig(initialProductId, getSelectedFields(), true);
+            } else {
+                renderLivePreview();
+            }
         },
 
         // --- Wizard Helper Methods ---
@@ -238,7 +380,7 @@
         loadCategories: function() {
             const self = this;
             const $container = $('#pcc-categories-list-container');
-            $container.html('<div class="pcc-loading-spinner">Obteniendo categorías...</div>');
+            $container.html('<div class="pcc-loading-spinner">Obteniendo categorÃ­as...</div>');
 
             $.ajax({
                 url: wooOtecMoodleAdmin.ajaxUrl,
@@ -254,7 +396,7 @@
                     }
                 },
                 error: function(xhr) {
-                    $container.html('<div class="notice notice-error"><p>Error de conexión al servidor (AJAX). Revisa el log de PHP.</p></div>');
+                    $container.html('<div class="notice notice-error"><p>Error de conexiÃ³n al servidor (AJAX). Revisa el log de PHP.</p></div>');
                 }
             });
         },
@@ -284,7 +426,7 @@
         loadTeachers: function() {
             const self = this;
             const $container = $('#pcc-teachers-list-container');
-            $container.html('<div class="pcc-loading-spinner">Buscando profesores en las categorías seleccionadas...</div>');
+            $container.html('<div class="pcc-loading-spinner">Buscando profesores en las categorÃ­as seleccionadas...</div>');
 
             $.ajax({
                 url: wooOtecMoodleAdmin.ajaxUrl,
@@ -303,7 +445,7 @@
                     }
                 },
                 error: function() {
-                    $container.html('<div class="notice notice-error"><p>Error de conexión al buscar profesores.</p></div>');
+                    $container.html('<div class="notice notice-error"><p>Error de conexiÃ³n al buscar profesores.</p></div>');
                 }
             });
         },
@@ -311,7 +453,7 @@
         renderTeachers: function() {
             const $container = $('#pcc-teachers-list-container');
             if (this.teachers.length === 0) {
-                $container.html('<div class="notice notice-warning"><p>No se encontraron profesores para estas categorías. Puedes continuar, pero los cursos se asignarán al instructor por defecto.</p></div>');
+                $container.html('<div class="notice notice-warning"><p>No se encontraron profesores para estas categorÃ­as. Puedes continuar, pero los cursos se asignarÃ¡n al instructor por defecto.</p></div>');
                 return;
             }
 
@@ -346,9 +488,9 @@
                     }
                 },
                 error: function(xhr, status, error) {
-                    let msg = 'Error de conexión al servidor.';
+                    let msg = 'Error de conexiÃ³n al servidor.';
                     if (status === 'timeout') {
-                        msg = 'La solicitud tardó demasiado. Es posible que tengas muchos cursos en Moodle. Intenta seleccionar menos categorías.';
+                        msg = 'La solicitud tardÃ³ demasiado. Es posible que tengas muchos cursos en Moodle. Intenta seleccionar menos categorÃ­as.';
                     }
                     $container.html('<div class="notice notice-error"><p>' + msg + '</p></div>');
                 }
@@ -357,7 +499,7 @@
 
         renderCoursesTable: function() {
             const $container = $('#pcc-courses-table-container');
-            let html = '<table class="pcc-table"><thead><tr><th>Título</th><th>Modalidad</th><th>Duración</th><th>Inicio/Fin</th><th>Profesor</th><th>Imagen</th></tr></thead><tbody>';
+            let html = '<table class="pcc-table"><thead><tr><th>TÃ­tulo</th><th>Modalidad</th><th>DuraciÃ³n</th><th>Inicio/Fin</th><th>Profesor</th><th>Imagen</th></tr></thead><tbody>';
             
             this.courses.forEach((course, index) => {
                 html += `<tr data-course-index="${index}">
@@ -385,7 +527,7 @@
                 </tr>
                 <tr>
                     <td colspan="6">
-                        <textarea class="pcc-course-syllabus" placeholder="Temario/Descripción">${course.summary || ''}</textarea>
+                        <textarea class="pcc-course-syllabus" placeholder="Temario/DescripciÃ³n">${course.summary || ''}</textarea>
                     </td>
                 </tr>`;
             });
@@ -418,7 +560,7 @@
                 const $row = $(this);
                 const $nextRow = $row.next('tr');
                 
-                // Extraer solo los campos necesarios para reducir el tamaño del payload
+                // Extraer solo los campos necesarios para reducir el tamaÃ±o del payload
                 const source = self.courses[index];
                 const course = {
                     id: source.id,
@@ -430,25 +572,49 @@
                     enddate: $row.find('.pcc-course-end').val(),
                     teacher: $row.find('.pcc-course-teacher').val(),
                     image_id: $row.find('.pcc-course-image-id').val(),
-                    summary: $nextRow.find('.pcc-course-syllabus').val()
+                    summary: $nextRow.find('.pcc-course-syllabus').val(),
+                    certificate_enabled: source.certificate_enabled === 'yes' ? 'yes' : 'no'
                 };
                 
                 self.editedCourses.push(course);
             });
         },
 
-        renderSummary: function() {
-            $('#pcc-sync-summary-container').html(`<ul>
-                <li><strong>Categorías seleccionadas:</strong> ${this.selectedCategories.length}</li>
+                renderSummary: function() {
+            let html = `<ul>
+                <li><strong>Categorias seleccionadas:</strong> ${this.selectedCategories.length}</li>
                 <li><strong>Profesores detectados:</strong> ${this.teachers.length}</li>
                 <li><strong>Cursos a sincronizar:</strong> ${this.editedCourses.length}</li>
-            </ul>`);
-        },
+            </ul>`;
 
+            html += `<h4>Certificado de finalizacion por curso</h4>
+            <p class="description">Activa solo en los cursos que entregan certificado.</p>
+            <table class="pcc-table">
+                <thead><tr><th>Curso</th><th style="width: 180px;">Certificado</th></tr></thead>
+                <tbody>`;
+
+            this.editedCourses.forEach((course, index) => {
+                const checked = course.certificate_enabled === 'yes' ? 'checked' : '';
+                html += `<tr>
+                    <td>${course.fullname || ('Curso ' + (index + 1))}</td>
+                    <td><label><input type="checkbox" class="pcc-certificate-toggle" data-course-index="${index}" ${checked}> Entrega certificado</label></td>
+                </tr>`;
+            });
+
+            html += `</tbody></table>`;
+            $('#pcc-sync-summary-container').html(html);
+        },
         executeSync: function() {
             const self = this;
             const $btn = $('#pcc-btn-execute-sync');
             const $progressBar = $('.pcc-progress-bar');
+
+            $('.pcc-certificate-toggle').each(function() {
+                const idx = parseInt($(this).data('course-index'), 10);
+                if (!Number.isNaN(idx) && self.editedCourses[idx]) {
+                    self.editedCourses[idx].certificate_enabled = $(this).is(':checked') ? 'yes' : 'no';
+                }
+            });
 
             $btn.prop('disabled', true).text('Procesando datos...');
             $('.pcc-progress').show();
@@ -465,19 +631,19 @@
                 },
                 success: function(res) {
                     if (res.success) {
-                        $progressBar.css('width', '100%').text('100% - ¡Completado!');
-                        alert(res.data || 'Sincronización completada.');
+                        $progressBar.css('width', '100%').text('100% - Â¡Completado!');
+                        alert(res.data || 'SincronizaciÃ³n completada.');
                         location.reload();
                     } else {
-                        const errorMsg = res.data || 'Error desconocido durante la sincronización.';
+                        const errorMsg = res.data || 'Error desconocido durante la sincronizaciÃ³n.';
                         alert('Error: ' + errorMsg);
-                        $btn.prop('disabled', false).text('Ejecutar sincronización');
+                        $btn.prop('disabled', false).text('Ejecutar sincronizaciÃ³n');
                         $progressBar.css('width', '0%').text('0%');
                     }
                 },
                 error: function(xhr, status, error) {
-                    alert('Error de conexión al servidor: ' + error);
-                    $btn.prop('disabled', false).text('Ejecutar sincronización');
+                    alert('Error de conexiÃ³n al servidor: ' + error);
+                    $btn.prop('disabled', false).text('Ejecutar sincronizaciÃ³n');
                     $progressBar.css('width', '0%').text('0%');
                 }
             });
@@ -498,9 +664,9 @@
                 type: 'POST',
                 data: { action: 'woo_otec_moodle_test_sso', nonce: wooOtecMoodleAdmin.nonce, url: url },
                 success: function(res) {
-                    $btn.prop('disabled', false).text('Probar conexión');
+                    $btn.prop('disabled', false).text('Probar conexiÃ³n');
                     if (res.success) {
-                        $result.addClass('success').text('¡Éxito!');
+                        $result.addClass('success').text('Â¡Ã‰xito!');
                     } else {
                         let errorMsg = res.data;
                         if (typeof errorMsg === 'string' && errorMsg.includes('Could not resolve host')) {
@@ -510,26 +676,74 @@
                     }
                 },
                 error: function() {
-                    $btn.prop('disabled', false).text('Probar conexión');
-                    $result.addClass('error').text('Error de comunicación con el servidor.');
+                    $btn.prop('disabled', false).text('Probar conexiÃ³n');
+                    $result.addClass('error').text('Error de comunicaciÃ³n con el servidor.');
                 }
             });
         },
 
-        generateZIP: function() {
-            const $btn = $('#pcc-generate-zip');
-            const $result = $('#pcc-zip-result');
-            $btn.prop('disabled', true).text('Generando...');
-            $result.html('<p>Comprimiendo...</p>');
+        exportConfig: function() {
+            const $btn = $('#pcc-export-config');
+            const $result = $('#pcc-config-export-result');
+            const params = new URLSearchParams({
+                action: 'woo_otec_moodle_export_config',
+                nonce: wooOtecMoodleAdmin.configNonce
+            });
+
+            $btn.prop('disabled', true).text('Preparando...');
+            $result.html('<p>Generando archivo de configuracion...</p>');
+
+            window.location.href = `${wooOtecMoodleAdmin.ajaxUrl}?${params.toString()}`;
+
+            window.setTimeout(function() {
+                $btn.prop('disabled', false).text('Descargar configuracion actual');
+                $result.html('<p style="color:green;">La descarga fue solicitada. Revisa tu navegador si el archivo no baja de inmediato.</p>');
+            }, 800);
+        },
+
+        importConfig: function() {
+            const $btn = $('#pcc-import-config');
+            const $result = $('#pcc-config-import-result');
+            const fileInput = document.getElementById('pcc-import-config-file');
+
+            if (!fileInput || !fileInput.files || !fileInput.files.length) {
+                $result.html('<p style="color:red;">Selecciona un archivo JSON antes de importar.</p>');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('action', 'woo_otec_moodle_import_config');
+            formData.append('nonce', wooOtecMoodleAdmin.importConfigNonce);
+            formData.append('config_file', fileInput.files[0]);
+
+            $btn.prop('disabled', true).text('Importando...');
+            $result.html('<p>Aplicando configuracion...</p>');
 
             $.ajax({
                 url: wooOtecMoodleAdmin.ajaxUrl,
                 type: 'POST',
-                data: { action: 'woo_otec_moodle_generate_zip', nonce: wooOtecMoodleAdmin.nonce },
+                data: formData,
+                processData: false,
+                contentType: false,
                 success: function(res) {
-                    $btn.prop('disabled', false).text('Generar ZIP');
-                    if (res.success) $result.html(`<p style="color:green;">${res.data.message} <a href="${res.data.url}" class="button button-small" target="_blank">Descargar</a></p>`);
-                    else $result.html(`<p style="color:red;">Error: ${res.data}</p>`);
+                    $btn.prop('disabled', false).text('Importar configuracion');
+                    if (res.success) {
+                        $result.html('<p style="color:green;">' + (res.data.message || 'Configuracion importada correctamente.') + ' Recargando...</p>');
+                        window.setTimeout(function() {
+                            window.location.reload();
+                        }, 900);
+                    } else {
+                        const msg = (res.data && res.data.message) ? res.data.message : 'No se pudo importar la configuracion.';
+                        $result.html('<p style="color:red;">' + msg + '</p>');
+                    }
+                },
+                error: function(xhr) {
+                    $btn.prop('disabled', false).text('Importar configuracion');
+                    let msg = 'Error al importar la configuracion.';
+                    if (xhr.responseJSON && xhr.responseJSON.data && xhr.responseJSON.data.message) {
+                        msg = xhr.responseJSON.data.message;
+                    }
+                    $result.html('<p style="color:red;">' + msg + '</p>');
                 }
             });
         }
@@ -540,3 +754,4 @@
     });
 
 })(jQuery);
+

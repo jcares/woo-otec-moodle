@@ -5,8 +5,8 @@ if (!defined('ABSPATH')) {
 }
 
 /**
- * Gestiona todas las peticiones AJAX del panel de administración.
- * Extraído de Woo_OTEC_Moodle_Admin para separar responsabilidades.
+ * Gestiona todas las peticiones AJAX del panel de administracion.
+ * Extraido de Woo_OTEC_Moodle_Admin para separar responsabilidades.
  */
 final class Woo_OTEC_Moodle_Ajax_Handler {
     private static ?Woo_OTEC_Moodle_Ajax_Handler $instance = null;
@@ -27,17 +27,19 @@ final class Woo_OTEC_Moodle_Ajax_Handler {
         add_action('wp_ajax_woo_otec_moodle_email_preview', array($this, 'handle_email_preview'));
         add_action('wp_ajax_woo_otec_moodle_send_test_email', array($this, 'handle_send_test_email'));
         add_action('wp_ajax_woo_otec_moodle_template_fields', array($this, 'handle_template_fields_ajax'));
+        add_action('wp_ajax_woo_otec_moodle_save_template_config', array($this, 'handle_save_template_config'));
         add_action('wp_ajax_woo_otec_moodle_get_categories', array($this, 'handle_get_categories'));
         add_action('wp_ajax_woo_otec_moodle_get_teachers', array($this, 'handle_get_teachers'));
         add_action('wp_ajax_woo_otec_moodle_get_courses', array($this, 'handle_get_courses'));
         add_action('wp_ajax_woo_otec_moodle_execute_wizard_sync', array($this, 'handle_execute_wizard_sync'));
         add_action('wp_ajax_woo_otec_moodle_test_sso', array($this, 'handle_test_sso'));
         add_action('wp_ajax_woo_otec_moodle_export_logs', array($this, 'handle_export_logs'));
-        add_action('wp_ajax_woo_otec_moodle_generate_zip', array($this, 'handle_generate_zip'));
+        add_action('wp_ajax_woo_otec_moodle_export_config', array($this, 'handle_export_config'));
+        add_action('wp_ajax_woo_otec_moodle_import_config', array($this, 'handle_import_config'));
     }
 
     // -------------------------------------------------------------------------
-    // Sincronización manual (admin_post)
+    // Sincronizacion manual (admin_post)
     // -------------------------------------------------------------------------
 
     public function handle_manual_sync(): void {
@@ -121,11 +123,133 @@ final class Woo_OTEC_Moodle_Ajax_Handler {
         wp_send_json_success(array('html' => wp_kses($html, $allowed)));
     }
 
+    public function handle_save_template_config(): void {
+        $this->assert_ajax_permissions();
+        check_ajax_referer('woo_otec_moodle_template_fields', 'nonce');
+
+        $product_id = isset($_POST['product_id']) ? absint($_POST['product_id']) : 0;
+        if ($product_id <= 0) {
+            wp_send_json_error(array('message' => 'Producto no valido.'), 400);
+        }
+
+        Woo_OTEC_Moodle_Core::instance()->update_option('template_reference', $product_id);
+
+        $selected_fields = null;
+        if (isset($_POST['selected_fields'])) {
+            $incoming = (array) wp_unslash($_POST['selected_fields']);
+            $selected_fields = array_values(array_filter(array_map('sanitize_text_field', $incoming)));
+            Woo_OTEC_Moodle_Core::instance()->update_option('template_fields', $selected_fields);
+        } else {
+            $selected_fields = (array) Woo_OTEC_Moodle_Core::instance()->get_option('template_fields', array());
+        }
+
+        $fields_html = Woo_OTEC_Moodle_Settings::instance()->render_template_fields_markup($product_id, $selected_fields, false);
+        $allowed = array(
+            'div'   => array('class' => true),
+            'label' => array('class' => true),
+            'input' => array('type' => true, 'id' => true, 'name' => true, 'value' => true, 'checked' => true, 'data-meta-key' => true, 'data-meta-label' => true),
+            'span'  => array(),
+            'p'     => array('class' => true),
+        );
+
+        $mapping_values = $this->get_mapping_example_values($product_id);
+        $preview_html = $this->build_template_preview_html($product_id, $selected_fields);
+
+        wp_send_json_success(array(
+            'message'        => 'Configuracion actualizada.',
+            'fields_html'    => wp_kses($fields_html, $allowed),
+            'mapping_values' => $mapping_values,
+            'preview_html'   => $preview_html,
+        ));
+    }
+
+    private function get_mapping_example_values(int $product_id): array {
+        $product = wc_get_product($product_id);
+        if (!$product instanceof WC_Product) {
+            return array();
+        }
+
+        $mapper = Woo_OTEC_Moodle_Mapper::instance();
+        $mappings = $mapper->get_mappings();
+        $result = array();
+
+        foreach ($mappings as $moodle_key => $config) {
+            $target = (string) ($config['target'] ?? '');
+            $value = '';
+            if ($target === 'post_title') {
+                $value = (string) $product->get_name();
+            } elseif ($target === 'post_content') {
+                $value = wp_trim_words((string) $product->get_description(), 10);
+            } else {
+                $value = (string) $product->get_meta($target);
+                if ($value === '') {
+                    $value = (string) $product->get_meta(ltrim($target, '_'));
+                }
+            }
+
+            $normalized_moodle = sanitize_key((string) $moodle_key);
+            $normalized_target = sanitize_key((string) $target);
+            $final_value = $value !== '' ? $value : 'Vacio';
+
+            if ($normalized_moodle !== '') {
+                $result[$normalized_moodle] = $final_value;
+            }
+            if ($normalized_target !== '') {
+                $result[$normalized_target] = $final_value;
+            }
+        }
+
+        return $result;
+    }
+
+    private function build_template_preview_html(int $product_id, array $selected_fields): string {
+        $product = wc_get_product($product_id);
+        if (!$product instanceof WC_Product) {
+            return '<p class="description">No fue posible cargar el curso seleccionado.</p>';
+        }
+
+        $labels = Woo_OTEC_Moodle_Settings::instance()->get_meta_labels_map();
+        if (empty($selected_fields)) {
+            return '<p class="description">Marca al menos un campo para ver la vista previa.</p>';
+        }
+
+        $html = '<div class="pcc-template-live-list">';
+        foreach ($selected_fields as $meta_key) {
+            $meta_key = sanitize_text_field((string) $meta_key);
+            if ($meta_key === '') {
+                continue;
+            }
+
+            $label = $labels[$meta_key] ?? ucfirst(str_replace(array('_', '-'), ' ', ltrim($meta_key, '_')));
+            $value = (string) $product->get_meta($meta_key);
+            if ($value === '' && str_starts_with($meta_key, '_')) {
+                $value = (string) $product->get_meta(ltrim($meta_key, '_'));
+            }
+            if ($value === '') {
+                $value = 'Sin valor en este curso';
+            }
+
+            $html .= '<div class="pcc-template-live-item">';
+            $html .= '<span>' . esc_html($label) . '</span>';
+            $html .= '<strong>' . esc_html($value) . '</strong>';
+            $html .= '</div>';
+        }
+        $html .= '</div>';
+
+        return wp_kses($html, array(
+            'div'    => array('class' => true),
+            'span'   => array(),
+            'strong' => array(),
+            'p'      => array('class' => true),
+        ));
+    }
+
     // -------------------------------------------------------------------------
-    // Asistente de sincronización
+    // Asistente de sincronizacion
     // -------------------------------------------------------------------------
 
     public function handle_get_categories(): void {
+        $this->assert_ajax_permissions();
         check_ajax_referer('woo_otec_moodle_sync_stage', 'nonce');
 
         $categories = Woo_OTEC_Moodle_API::instance()->get_categories();
@@ -152,11 +276,12 @@ final class Woo_OTEC_Moodle_Ajax_Handler {
     }
 
     public function handle_get_teachers(): void {
+        $this->assert_ajax_permissions();
         check_ajax_referer('woo_otec_moodle_sync_stage', 'nonce');
 
         $category_ids = isset($_POST['categories']) ? array_map('absint', (array) $_POST['categories']) : array();
         if (empty($category_ids)) {
-            wp_send_json_error('No se seleccionaron categorías.');
+            wp_send_json_error('No se seleccionaron categorias.');
         }
 
         $teachers          = array();
@@ -187,7 +312,7 @@ final class Woo_OTEC_Moodle_Ajax_Handler {
         }
 
         if ($courses_processed >= $max_courses) {
-            $teachers[] = '(Detección limitada por cantidad de cursos)';
+            $teachers[] = '(Deteccion limitada por cantidad de cursos)';
         }
 
         sort($teachers);
@@ -195,12 +320,13 @@ final class Woo_OTEC_Moodle_Ajax_Handler {
     }
 
     public function handle_get_courses(): void {
+        $this->assert_ajax_permissions();
         check_ajax_referer('woo_otec_moodle_sync_stage', 'nonce');
         set_time_limit(120);
 
         $category_ids = isset($_POST['categories']) ? array_map('absint', (array) $_POST['categories']) : array();
         if (empty($category_ids)) {
-            wp_send_json_error('No se seleccionaron categorías.');
+            wp_send_json_error('No se seleccionaron categorias.');
         }
 
         $courses                  = array();
@@ -239,9 +365,11 @@ final class Woo_OTEC_Moodle_Ajax_Handler {
                         $thumb_id      = get_post_thumbnail_id($existing_product_id);
                         $c['image_id'] = $thumb_id > 0 ? $thumb_id : 0;
                         $c['image_url'] = $thumb_id > 0 ? wp_get_attachment_image_url($thumb_id, 'thumbnail') : '';
+                        $c['certificate_enabled'] = get_post_meta($existing_product_id, '_certificate_available', true) === 'yes' ? 'yes' : 'no';
                     } else {
                         $c['image_id']  = 0;
                         $c['image_url'] = Woo_OTEC_Moodle_Sync::instance()->find_moodle_image_url((object)$c);
+                        $c['certificate_enabled'] = 'no';
                     }
 
                     $courses[] = $c;
@@ -254,10 +382,11 @@ final class Woo_OTEC_Moodle_Ajax_Handler {
     }
 
     public function handle_execute_wizard_sync(): void {
+        $this->assert_ajax_permissions();
         check_ajax_referer('woo_otec_moodle_sync_stage', 'nonce');
 
         if (!class_exists('WooCommerce')) {
-            wp_send_json_error('WooCommerce no está activo.');
+            wp_send_json_error('WooCommerce no esta activo.');
         }
 
         set_time_limit(300);
@@ -272,7 +401,7 @@ final class Woo_OTEC_Moodle_Ajax_Handler {
         $sync    = Woo_OTEC_Moodle_Sync::instance();
         $results = array('created' => 0, 'updated' => 0, 'errors' => 0);
 
-        Woo_OTEC_Moodle_Logger::log('Iniciando sincronización desde asistente...', Woo_OTEC_Moodle_Logger::SYNC_LOG);
+        Woo_OTEC_Moodle_Logger::log('Iniciando sincronizacion desde asistente...', Woo_OTEC_Moodle_Logger::SYNC_LOG);
 
         try {
             if (!empty($categories)) {
@@ -296,7 +425,7 @@ final class Woo_OTEC_Moodle_Ajax_Handler {
                 else $results['errors']++;
             }
 
-            $msg = sprintf('Sincronización completada: %d creados, %d actualizados, %d errores.', $results['created'], $results['updated'], $results['errors']);
+            $msg = sprintf('Sincronizacion completada: %d creados, %d actualizados, %d errores.', $results['created'], $results['updated'], $results['errors']);
 
             $sync->update_last_sync(array(
                 'status'           => $results['errors'] > 0 ? 'warning' : 'success',
@@ -309,7 +438,7 @@ final class Woo_OTEC_Moodle_Ajax_Handler {
             Woo_OTEC_Moodle_Logger::log($msg, Woo_OTEC_Moodle_Logger::SYNC_LOG);
             wp_send_json_success($msg);
         } catch (Throwable $e) {
-            Woo_OTEC_Moodle_Logger::log('Error fatal en sincronización asistente: ' . $e->getMessage(), Woo_OTEC_Moodle_Logger::ERROR_LOG);
+            Woo_OTEC_Moodle_Logger::log('Error fatal en sincronizacion asistente: ' . $e->getMessage(), Woo_OTEC_Moodle_Logger::ERROR_LOG);
             wp_send_json_error('Error en el servidor: ' . $e->getMessage());
         }
     }
@@ -319,11 +448,12 @@ final class Woo_OTEC_Moodle_Ajax_Handler {
     // -------------------------------------------------------------------------
 
     public function handle_test_sso(): void {
+        $this->assert_ajax_permissions();
         check_ajax_referer('woo_otec_moodle_sync_stage', 'nonce');
 
         $url = esc_url_raw($_POST['url'] ?? '');
         if (empty($url)) {
-            wp_send_json_error('URL no válida.');
+            wp_send_json_error('URL no valida.');
         }
 
         $response = wp_remote_get($url);
@@ -333,9 +463,9 @@ final class Woo_OTEC_Moodle_Ajax_Handler {
 
         $code = wp_remote_retrieve_response_code($response);
         if ($code >= 200 && $code < 400) {
-            wp_send_json_success('Conexión exitosa.');
+            wp_send_json_success('Conexion exitosa.');
         } else {
-            wp_send_json_error('La URL respondió con código: ' . $code);
+            wp_send_json_error('La URL respondio con codigo: ' . $code);
         }
     }
 
@@ -358,58 +488,138 @@ final class Woo_OTEC_Moodle_Ajax_Handler {
         exit;
     }
 
-    public function handle_generate_zip(): void {
-        check_ajax_referer('woo_otec_moodle_sync_stage', 'nonce');
-
+    public function handle_export_config(): void {
         if (!current_user_can('manage_options')) {
-            wp_send_json_error('No autorizado.');
+            wp_die('No autorizado.');
         }
 
-        $plugin_dir = WOO_OTEC_MOODLE_PATH;
-        $zip_name   = 'woo-otec-moodle.zip';
-        $zip_path   = $plugin_dir . $zip_name;
+        check_ajax_referer('woo_otec_moodle_export_config', 'nonce');
 
-        if (file_exists($zip_path)) {
-            $timestamp = date('Ymd-His');
-            $new_name  = 'woo-otec-moodle-' . $timestamp . '.zip';
-            rename($zip_path, $plugin_dir . $new_name);
+        $core = Woo_OTEC_Moodle_Core::instance();
+        $defaults = $core->get_defaults();
+        $settings = array();
+
+        foreach (array_keys($defaults) as $key) {
+            $settings[$key] = $core->get_option($key, $defaults[$key]);
         }
 
-        $zip = new ZipArchive();
-        if ($zip->open($zip_path, ZipArchive::CREATE | ZipArchive::OVERWRITE) !== true) {
-            wp_send_json_error('No se pudo crear el archivo ZIP.');
-        }
+        $settings['template_fields'] = get_option('woo_otec_moodle_template_fields', $settings['template_fields'] ?? array());
+        $settings['mappings'] = get_option('woo_otec_moodle_mappings', Woo_OTEC_Moodle_Mapper::instance()->get_default_mappings());
 
-        $files = new RecursiveIteratorIterator(
-            new RecursiveDirectoryIterator($plugin_dir),
-            RecursiveIteratorIterator::LEAVES_ONLY
+        $payload = array(
+            'plugin'      => 'Woo OTEC Moodle',
+            'version'     => defined('WOO_OTEC_MOODLE_VERSION') ? WOO_OTEC_MOODLE_VERSION : '',
+            'exported_at' => current_time('mysql'),
+            'site_url'    => home_url('/'),
+            'settings'    => $settings,
         );
 
-        foreach ($files as $name => $file) {
-            if (!$file->isDir()) {
-                $file_path     = $file->getRealPath();
-                $relative_path = 'woo-otec-moodle/' . substr($file_path, strlen($plugin_dir));
-                $relative_path = str_replace('\\', '/', $relative_path); // <-- FIX CRITICO: Forzar slash de Unix para el ZIP
+        $filename = 'woo-otec-moodle-config-' . date('Ymd-His') . '.json';
+        $json = wp_json_encode($payload, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
 
-                if (strpos($file_path, '.git') !== false ||
-                    strpos($file_path, 'node_modules') !== false ||
-                    strpos($file_path, DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR) !== false ||
-                    strpos($file_path, 'logs') !== false ||
-                    basename($file_path) === $zip_name ||
-                    basename($file_path) === 'test_cipresalto.php' ||
-                    strpos(basename($file_path), 'woo-otec-moodle-20') === 0) {
-                    continue;
-                }
-
-                $zip->addFile($file_path, $relative_path);
-            }
+        if (!is_string($json)) {
+            wp_die('No se pudo generar el archivo de configuracion.');
         }
 
-        $zip->close();
+        header('Content-Type: application/json; charset=utf-8');
+        header('Content-Disposition: attachment; filename="' . $filename . '"');
+        echo $json;
+        exit;
+    }
+
+    public function handle_import_config(): void {
+        $this->assert_ajax_permissions();
+        check_ajax_referer('woo_otec_moodle_import_config', 'nonce');
+
+        if (empty($_FILES['config_file']['tmp_name']) || !is_uploaded_file($_FILES['config_file']['tmp_name'])) {
+            wp_send_json_error(array('message' => 'Debes seleccionar un archivo JSON valido.'), 400);
+        }
+
+        $json = file_get_contents($_FILES['config_file']['tmp_name']);
+        if (!is_string($json) || trim($json) === '') {
+            wp_send_json_error(array('message' => 'No se pudo leer el archivo de configuracion.'), 400);
+        }
+
+        $decoded = json_decode($json, true);
+        if (!is_array($decoded) || !isset($decoded['settings']) || !is_array($decoded['settings'])) {
+            wp_send_json_error(array('message' => 'El archivo no tiene el formato esperado.'), 400);
+        }
+
+        $applied = $this->apply_imported_settings($decoded['settings']);
+        Woo_OTEC_Moodle_Logger::info('Configuracion importada desde JSON', array('updated_keys' => $applied));
 
         wp_send_json_success(array(
-            'message' => 'Archivo ZIP generado correctamente.',
-            'url'     => WOO_OTEC_MOODLE_URL . $zip_name,
+            'message' => 'Configuracion importada correctamente.',
+            'updated_keys' => $applied,
         ));
     }
+
+    private function apply_imported_settings(array $settings): array {
+        $core = Woo_OTEC_Moodle_Core::instance();
+        $defaults = $core->get_defaults();
+        $sanitizer = Woo_OTEC_Moodle_Settings::instance();
+        $updated = array();
+
+        $checkbox_fields = array('sso_enabled', 'auto_update', 'redirect_after_purchase', 'debug_enabled', 'email_enabled', 'email_builder_enabled');
+        $int_fields = array('student_role_id', 'default_image_id', 'email_logo_id', 'retry_limit', 'template_reference');
+        $url_fields = array('moodle_url', 'sso_base_url', 'github_release_url');
+        $email_fields = array('email_from_address', 'email_test_recipient');
+        $hex_fields = array('email_color_primary', 'email_color_accent', 'email_color_bg', 'pcc_color_primary', 'pcc_color_secondary', 'pcc_color_text', 'pcc_color_accent');
+        $textarea_fields = array('fallback_description', 'email_builder_intro', 'email_builder_footer');
+        $html_fields = array('email_template');
+
+        foreach (array_keys($defaults) as $key) {
+            if (!array_key_exists($key, $settings) || $key === 'last_sync') {
+                continue;
+            }
+
+            $value = $settings[$key];
+
+            if (in_array($key, $checkbox_fields, true)) {
+                $value = $sanitizer->sanitize_checkbox($value);
+            } elseif (in_array($key, $int_fields, true)) {
+                $value = absint($value);
+            } elseif (in_array($key, $url_fields, true)) {
+                $value = esc_url_raw((string) $value);
+            } elseif (in_array($key, $email_fields, true)) {
+                $value = sanitize_email((string) $value);
+            } elseif (in_array($key, $hex_fields, true)) {
+                $value = sanitize_hex_color((string) $value);
+            } elseif (in_array($key, $textarea_fields, true)) {
+                $value = sanitize_textarea_field((string) $value);
+            } elseif (in_array($key, $html_fields, true)) {
+                $value = $sanitizer->sanitize_email_template($value);
+            } else {
+                $value = is_scalar($value) ? sanitize_text_field((string) $value) : $defaults[$key];
+            }
+
+            $core->update_option($key, $value);
+            $updated[] = $key;
+        }
+
+        if (isset($settings['template_fields'])) {
+            update_option(
+                'woo_otec_moodle_template_fields',
+                $sanitizer->sanitize_array($settings['template_fields'])
+            );
+            $updated[] = 'template_fields';
+        }
+
+        if (isset($settings['mappings'])) {
+            update_option(
+                'woo_otec_moodle_mappings',
+                $sanitizer->sanitize_mappings($settings['mappings'])
+            );
+            $updated[] = 'mappings';
+        }
+
+        return array_values(array_unique($updated));
+    }
+
+    private function assert_ajax_permissions(): void {
+        if (!current_user_can('manage_options')) {
+            wp_send_json_error(array('message' => 'No autorizado.'), 403);
+        }
+    }
 }
+
