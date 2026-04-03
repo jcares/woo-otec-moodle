@@ -143,7 +143,7 @@ final class Woo_OTEC_Moodle_Core {
         }
 
         if (!isset($this->services[$id])) {
-            throw new \RuntimeException("Servicio '{$id}' no registrado en el contenedor.");
+            throw new \RuntimeException(esc_html("Servicio '{$id}' no registrado en el contenedor."));
         }
 
         $this->resolved[$id] = ($this->services[$id])();
@@ -241,7 +241,7 @@ final class Woo_OTEC_Moodle_Core {
                 continue;
             }
 
-            update_option($option_name, $is_spanish ? __($english_value, 'woo-otec-moodle') : $english_value);
+            update_option($option_name, $is_spanish ? call_user_func('__', $english_value, 'woo-otec-moodle') : $english_value);
         }
 
         update_option('woo_otec_moodle_i18n_migration_version', $migration_version);

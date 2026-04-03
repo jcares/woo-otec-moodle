@@ -29,11 +29,9 @@ final class Woo_OTEC_Moodle_Logger {
 
     private static function ensure_directory(string $path): void {
         if (!file_exists($path)) {
-            mkdir($path, 0755, true);
+            wp_mkdir_p($path);
             // Add index.php for security
             file_put_contents($path . 'index.php', '<?php // Silence is golden');
-            // Add .htaccess to prevent direct access
-            file_put_contents($path . '.htaccess', 'deny from all');
         }
     }
 

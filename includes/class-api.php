@@ -49,9 +49,9 @@ final class Woo_OTEC_Moodle_API {
 
         if ($moodle_url === '' || $token === '') {
             throw new PCC_Moodle_Exception(
-                'Moodle URL o token no configurado.',
+                esc_html__('Moodle URL o token no configurado.', 'woo-otec-moodle'),
                 'pcc_missing_config',
-                $function
+                esc_html($function)
             );
         }
 
@@ -86,7 +86,7 @@ final class Woo_OTEC_Moodle_API {
 
             Woo_OTEC_Moodle_Logger::error('Error HTTP Moodle', ['function' => $function, 'error' => $error_msg]);
 
-            throw new PCC_Moodle_Exception($friendly, 'pcc_http_error', $function, ['original' => $error_msg]);
+            throw new PCC_Moodle_Exception(esc_html($friendly), 'pcc_http_error', esc_html($function), ['original' => esc_html($error_msg)]);
         }
 
         $status_code = (int) wp_remote_retrieve_response_code($response);
@@ -95,14 +95,14 @@ final class Woo_OTEC_Moodle_API {
         if ($status_code < 200 || $status_code >= 300) {
             Woo_OTEC_Moodle_Logger::error('Respuesta HTTP invalida Moodle', ['function' => $function, 'status' => $status_code]);
             throw new PCC_Moodle_Exception(
-                sprintf(
+                esc_html(sprintf(
                     /* translators: %d: HTTP response code */
                     __('Invalid HTTP response from Moodle (code %d).', 'woo-otec-moodle'),
                     $status_code
-                ),
+                )),
                 'pcc_http_error',
-                $function,
-                ['status_code' => $status_code]
+                esc_html($function),
+                ['status_code' => esc_html((string) $status_code)]
             );
         }
 
@@ -110,7 +110,7 @@ final class Woo_OTEC_Moodle_API {
 
         if (json_last_error() !== JSON_ERROR_NONE) {
             Woo_OTEC_Moodle_Logger::error('JSON invalido desde Moodle', ['function' => $function, 'body' => substr($body, 0, 500)]);
-            throw new PCC_Moodle_Exception(__('Invalid JSON response from Moodle.', 'woo-otec-moodle'), 'pcc_invalid_json', $function);
+            throw new PCC_Moodle_Exception(esc_html__('Invalid JSON response from Moodle.', 'woo-otec-moodle'), 'pcc_invalid_json', esc_html($function));
         }
 
         if (is_object($decoded) && (isset($decoded->exception) || isset($decoded->errorcode))) {
@@ -123,10 +123,10 @@ final class Woo_OTEC_Moodle_API {
             ]);
 
             throw new PCC_Moodle_Exception(
-                $msg,
+                esc_html($msg),
                 'pcc_moodle_exception',
-                $function,
-                ['errorcode' => isset($decoded->errorcode) ? (string) $decoded->errorcode : '']
+                esc_html($function),
+                ['errorcode' => isset($decoded->errorcode) ? esc_html((string) $decoded->errorcode) : '']
             );
         }
 
@@ -295,7 +295,7 @@ final class Woo_OTEC_Moodle_API {
         $password .= 'Aa1!';
 
         $new_user = [
-            'username'  => strtolower(preg_replace('/[^a-z0-9]/', '', strstr($email, '@', true)) . mt_rand(10, 99)),
+            'username'  => strtolower(preg_replace('/[^a-z0-9]/', '', strstr($email, '@', true)) . wp_rand(10, 99)),
             'password'  => $password,
             'firstname' => !empty($data['firstname']) ? (string) $data['firstname'] : __('Student', 'woo-otec-moodle'),
             'lastname'  => !empty($data['lastname']) ? (string) $data['lastname'] : __('New', 'woo-otec-moodle'),

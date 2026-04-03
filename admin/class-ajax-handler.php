@@ -437,8 +437,8 @@ final class Woo_OTEC_Moodle_Ajax_Handler {
                     $total_courses_count++;
 
                     $c['modality']      = 'online';
-                    $c['startdate_iso'] = !empty($c['startdate']) ? date('Y-m-d', (int) $c['startdate']) : date('Y-m-d');
-                    $c['enddate_iso']   = !empty($c['enddate']) ? date('Y-m-d', (int) $c['enddate']) : date('Y-m-d', strtotime('+30 days'));
+                    $c['startdate_iso'] = !empty($c['startdate']) ? gmdate('Y-m-d', (int) $c['startdate']) : gmdate('Y-m-d');
+                    $c['enddate_iso']   = !empty($c['enddate']) ? gmdate('Y-m-d', (int) $c['enddate']) : gmdate('Y-m-d', strtotime('+30 days'));
 
                     if ($total_courses_count <= $max_courses_for_teachers) {
                         $course_teachers = $api->get_course_teachers($course_id);
@@ -586,8 +586,8 @@ final class Woo_OTEC_Moodle_Ajax_Handler {
         $log_content = Woo_OTEC_Moodle_Logger::read_full(Woo_OTEC_Moodle_Logger::ERROR_LOG);
 
         header('Content-Type: text/plain');
-        header('Content-Disposition: attachment; filename="woo-otec-logs-' . date('Y-m-d-His') . '.txt"');
-        echo $log_content;
+        header('Content-Disposition: attachment; filename="woo-otec-logs-' . gmdate('Y-m-d-His') . '.txt"');
+        echo $log_content; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
         exit;
     }
 
@@ -617,7 +617,7 @@ final class Woo_OTEC_Moodle_Ajax_Handler {
             'settings'    => $settings,
         );
 
-        $filename = 'woo-otec-moodle-config-' . date('Ymd-His') . '.json';
+        $filename = 'woo-otec-moodle-config-' . gmdate('Ymd-His') . '.json';
         $json = wp_json_encode($payload, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
 
         if (!is_string($json)) {
@@ -626,7 +626,7 @@ final class Woo_OTEC_Moodle_Ajax_Handler {
 
         header('Content-Type: application/json; charset=utf-8');
         header('Content-Disposition: attachment; filename="' . $filename . '"');
-        echo $json;
+        echo $json; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
         exit;
     }
 

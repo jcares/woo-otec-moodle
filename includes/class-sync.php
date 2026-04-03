@@ -412,7 +412,7 @@ final class Woo_OTEC_Moodle_Sync {
         $description_to_set = $new_description !== '' ? $new_description : $existing_description;
         $product->set_description($description_to_set);
 
-        $short_desc = wp_trim_words(strip_tags($description_to_set), 30);
+        $short_desc = wp_trim_words(wp_strip_all_tags($description_to_set), 30);
         if ($short_desc === '') {
             $short_desc = (string) $product->get_short_description();
         }
