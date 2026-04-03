@@ -33,9 +33,10 @@ final class Woo_OTEC_Moodle_Admin {
         add_action('admin_enqueue_scripts', array($this, 'enqueue_assets'));
     }
 
-    // -------------------------------------------------------------------------
-    // Assets
-    // -------------------------------------------------------------------------
+    /**
+     * Encolado de Recursos (Assets)
+     * Inserta los scripts y estilos necesarios de manera exclusiva en las vistas de nuestro plugin.
+     */
 
     public function enqueue_assets(string $hook): void {
         if (strpos($hook, 'woo-otec-moodle') === false) {
@@ -59,9 +60,10 @@ final class Woo_OTEC_Moodle_Admin {
         wp_localize_script('woo-otec-modern-ui', 'wooOtecMoodleAdmin', $local);
     }
 
-    // -------------------------------------------------------------------------
-    // Renderizado de páginas
-    // -------------------------------------------------------------------------
+    /**
+     * Renderizado de Páginas Administrativas
+     * Coordina la inyección de plantillas HTML y la preparación de datos desde el backend hacia la vista.
+     */
 
     public function render_settings_page(): void {
         $data = array(
@@ -105,9 +107,10 @@ final class Woo_OTEC_Moodle_Admin {
         exit;
     }
 
-    // -------------------------------------------------------------------------
-    // Privados
-    // -------------------------------------------------------------------------
+    /**
+     * Auxiliares Internos (Privados)
+     * Abstracciones enfocadas en facilitar información a los métodos de renderizado.
+     */
 
     private function render_view(string $view, array $data = array()): void {
         $view_path = WOO_OTEC_MOODLE_PATH . 'admin/views/' . $view;

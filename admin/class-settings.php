@@ -27,9 +27,10 @@ final class Woo_OTEC_Moodle_Settings {
         add_action('admin_init', array($this, 'register_settings'));
     }
 
-    // -------------------------------------------------------------------------
-    // MenA
-    // -------------------------------------------------------------------------
+    /**
+     * Registro de Menús y Submenús
+     * Inyecta las interfaces administrativas del plugin dentro del panel de WordPress.
+     */
 
     public function register_menu(): void {
         add_menu_page(
@@ -47,9 +48,10 @@ final class Woo_OTEC_Moodle_Settings {
         add_submenu_page('woo-otec-moodle', esc_html__('Logs', 'woo-otec-moodle'), esc_html__('Logs', 'woo-otec-moodle'), 'manage_options', 'woo-otec-moodle-logs', array(Woo_OTEC_Moodle_Admin::instance(), 'render_logs_page'));
     }
 
-    // -------------------------------------------------------------------------
-    // Registro de Settings API
-    // -------------------------------------------------------------------------
+    /**
+     * Registro de Opciones (Settings API)
+     * Define los parámetros de configuración y sus respectivos validadores dentro de la base de datos de WordPress.
+     */
 
     public function register_settings(): void {
         $fields = array(
@@ -162,9 +164,10 @@ final class Woo_OTEC_Moodle_Settings {
         }
     }
 
-    // -------------------------------------------------------------------------
-    // Sanitizacion
-    // -------------------------------------------------------------------------
+    /**
+     * Callbacks de Sanitización
+     * Filtrado riguroso de entradas asociadas a la Settings API según su naturaleza de datos.
+     */
 
     public function sanitize_array(mixed $value): array {
         return is_array($value) ? array_map('sanitize_text_field', $value) : array();
@@ -200,9 +203,10 @@ final class Woo_OTEC_Moodle_Settings {
         return wp_kses($value, Woo_OTEC_Moodle_Mailer::instance()->get_email_allowed_html());
     }
 
-    // -------------------------------------------------------------------------
-    // Helpers de vista (plantilla de campos)
-    // -------------------------------------------------------------------------
+    /**
+     * Facilitadores Visuales (View Helpers)
+     * Lógica de presentación delegada en componentes que componen la interfaz del administrador.
+     */
 
     public function get_template_reference_products(): array {
         if (!function_exists('wc_get_products')) {

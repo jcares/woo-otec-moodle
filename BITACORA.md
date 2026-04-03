@@ -1,6 +1,6 @@
-# VITACORA TECNICA WOO OTEC MOODLE
+# BITACORA TECNICA WOO OTEC MOODLE
 
-Fecha: 2026-03-28
+Fecha: 2026-04-02
 
 ## Resumen
 El plugin integra Moodle con WooCommerce para sincronizar cursos, crear o actualizar productos, matricular alumnos despues de la compra, entregar accesos y controlar la experiencia visual del admin y frontend sin depender del tema.
@@ -17,7 +17,12 @@ El plugin integra Moodle con WooCommerce para sincronizar cursos, crear o actual
 9. OK: panel principal y asistente con primera pasada fuerte de i18n.
 10. OK: frontend de portal, etiquetas visibles y correo amigable alineados a i18n base.
 11. OK: mensajes principales de sincronizacion, acceso y runtime visibles convertidos a base i18n.
-12. OK: base de distribucion alineada a WordPress con `readme.txt`, `Requires Plugins`, `Developer`, `Developer URI` y archivos de idioma.
+12. OK: normalizacion automatica de defaults guardados para sitios en espanol, evitando que queden textos base en ingles.
+13. OK: base de distribucion alineada a WordPress con `readme.txt`, `Requires Plugins`, `Developer`, `Developer URI` y archivos de idioma.
+14. OK: fallbacks visibles del tab Apariencia y del portal ajustados para respetar traduccion activa en vez de mostrar texto base en ingles.
+15. OK: migracion i18n endurecida para reemplazar textos guardados heredados en opciones y evitar mezclas entre ingles, versiones viejas y espanol actual.
+16. OK: bug de seguridad critico reparado (remocion de almacenamiento en texto plano de contrasena temporal en `_pcc_generated_password`).
+17. OK: robustez mejorada en peticiones AJAX validando `set_time_limit`.
 
 ## Modulos criticos
 1. `woo-otec-moodle.php`: punto de entrada, headers, constantes y arranque.
@@ -46,7 +51,7 @@ El plugin integra Moodle con WooCommerce para sincronizar cursos, crear o actual
 4. OK: enlace rapido `Settings` agregado en la lista de plugins.
 5. OK: archivos `woo-otec-moodle.pot`, `woo-otec-moodle-es_ES.po` y `woo-otec-moodle-es_ES.mo` creados.
 6. OK: limpieza de archivos internos y de prueba fuera del paquete de distribucion.
-7. Pendiente: seguir convirtiendo el resto de cadenas duras del codigo a i18n para una cobertura mas completa.
+7. OK: conversion extendida de cadenas duras a i18n en core API e interacciones AJAX para asegurar cumplimiento de revision.
 
 ## Estructura correcta del ZIP
 1. El archivo final debe llamarse `woo-otec-moodle.zip`.
@@ -58,9 +63,9 @@ El plugin integra Moodle con WooCommerce para sincronizar cursos, crear o actual
 
 ## Limpieza aplicada
 1. Eliminados `README.md`, `PRODUCCION.md`, `test_cipresalto.php`, `qa_sku_sync_test.php` y la estructura vieja de idioma fuera de text domain.
-2. Renombrado `PROMPT_TERMINADO.md` a `VITACORA.md`.
+2. Renombrado `PROMPT_TERMINADO.md` a `BITACORA.md`.
 3. Eliminada carpeta `.build_zip`.
 
 ## Siguiente foco
-1. Seguir ampliando i18n en clases y vistas restantes.
-2. Revisar logging y estandares de WordPress/WooCommerce para aproximar aun mas el plugin a revisiones de marketplace.
+1. Continuar revisando que la funcionalidad core no se rompa con los ajustes introducidos y crear el .pot final.
+2. Explorar empaquetamiento ZIP local y despliegue para pruebas definitivas de validacion.

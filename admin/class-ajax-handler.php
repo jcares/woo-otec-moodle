@@ -38,9 +38,10 @@ final class Woo_OTEC_Moodle_Ajax_Handler {
         add_action('wp_ajax_woo_otec_moodle_import_config', array($this, 'handle_import_config'));
     }
 
-    // -------------------------------------------------------------------------
-    // Sincronizacion manual (admin_post)
-    // -------------------------------------------------------------------------
+    /**
+     * Sincronización Manual
+     * Intercepta la peticion admin_post directa para ejecutar el volcado hacia Moodle.
+     */
 
     public function handle_manual_sync(): void {
         if (!current_user_can('manage_options')) {
@@ -63,9 +64,10 @@ final class Woo_OTEC_Moodle_Ajax_Handler {
         exit;
     }
 
-    // -------------------------------------------------------------------------
-    // Email
-    // -------------------------------------------------------------------------
+    /**
+     * Módulo de Correos
+     * Funcionalidad AJAX vinculada al previsualizador base y herramientas de testeo.
+     */
 
     public function handle_email_preview(): void {
         if (!current_user_can('manage_options')) {
@@ -95,9 +97,10 @@ final class Woo_OTEC_Moodle_Ajax_Handler {
         wp_send_json_success(array('message' => esc_html__('Test email sent successfully.', 'woo-otec-moodle')));
     }
 
-    // -------------------------------------------------------------------------
-    // Template fields
-    // -------------------------------------------------------------------------
+    /**
+     * Gestión de Plantillas de Campos
+     * Administración de las preferencias visuales del frontend desde la vista de opciones.
+     */
 
     public function handle_template_fields_ajax(): void {
         if (!current_user_can('manage_options')) {
@@ -324,9 +327,10 @@ final class Woo_OTEC_Moodle_Ajax_Handler {
         return $value;
     }
 
-    // -------------------------------------------------------------------------
-    // Asistente de sincronizacion
-    // -------------------------------------------------------------------------
+    /**
+     * Asistente de Sincronización Interactiva
+     * Métodos expuestos para la interfaz paso a paso del wizard.
+     */
 
     public function handle_get_categories(): void {
         $this->assert_ajax_permissions();
@@ -361,7 +365,7 @@ final class Woo_OTEC_Moodle_Ajax_Handler {
 
         $category_ids = isset($_POST['categories']) ? array_map('absint', (array) $_POST['categories']) : array();
         if (empty($category_ids)) {
-            wp_send_json_error('No se seleccionaron categorias.');
+            wp_send_json_error(esc_html__('No categories selected.', 'woo-otec-moodle'));
         }
 
         $teachers          = array();
@@ -392,7 +396,7 @@ final class Woo_OTEC_Moodle_Ajax_Handler {
         }
 
         if ($courses_processed >= $max_courses) {
-            $teachers[] = '(Deteccion limitada por cantidad de cursos)';
+            $teachers[] = esc_html__('(Detection limited by number of courses)', 'woo-otec-moodle');
         }
 
         sort($teachers);
@@ -402,11 +406,14 @@ final class Woo_OTEC_Moodle_Ajax_Handler {
     public function handle_get_courses(): void {
         $this->assert_ajax_permissions();
         check_ajax_referer('woo_otec_moodle_sync_stage', 'nonce');
-        set_time_limit(120);
+        
+        if (function_exists('set_time_limit')) {
+            set_time_limit(120);
+        }
 
         $category_ids = isset($_POST['categories']) ? array_map('absint', (array) $_POST['categories']) : array();
         if (empty($category_ids)) {
-            wp_send_json_error('No se seleccionaron categorias.');
+            wp_send_json_error(esc_html__('No categories selected.', 'woo-otec-moodle'));
         }
 
         $courses                  = array();
@@ -435,9 +442,9 @@ final class Woo_OTEC_Moodle_Ajax_Handler {
 
                     if ($total_courses_count <= $max_courses_for_teachers) {
                         $course_teachers = $api->get_course_teachers($course_id);
-                        $c['teacher']    = !empty($course_teachers) ? implode(', ', $course_teachers) : 'No asignado';
+                        $c['teacher']    = !empty($course_teachers) ? implode(', ', $course_teachers) : esc_html__('Not assigned', 'woo-otec-moodle');
                     } else {
-                        $c['teacher'] = 'Sincronizar para asignar';
+                        $c['teacher'] = esc_html__('Sync to assign', 'woo-otec-moodle');
                     }
 
                     $existing_product_id = Woo_OTEC_Moodle_Sync::instance()->find_product_id($course_id);
@@ -457,7 +464,7 @@ final class Woo_OTEC_Moodle_Ajax_Handler {
             }
             wp_send_json_success($courses);
         } catch (Throwable $e) {
-            wp_send_json_error('Error fatal obteniendo cursos: ' . $e->getMessage());
+            wp_send_json_error(esc_html__('Fatal error getting courses:', 'woo-otec-moodle') . ' ' . $e->getMessage());
         }
     }
 
@@ -466,16 +473,18 @@ final class Woo_OTEC_Moodle_Ajax_Handler {
         check_ajax_referer('woo_otec_moodle_sync_stage', 'nonce');
 
         if (!class_exists('WooCommerce')) {
-            wp_send_json_error('WooCommerce no esta activo.');
+            wp_send_json_error(esc_html__('WooCommerce is not active.', 'woo-otec-moodle'));
         }
 
-        set_time_limit(300);
+        if (function_exists('set_time_limit')) {
+            set_time_limit(300);
+        }
 
         $categories = isset($_POST['categories']) ? array_map('absint', (array) $_POST['categories']) : array();
         $courses    = isset($_POST['courses']) ? (array) $_POST['courses'] : array();
 
         if (empty($categories) && empty($courses)) {
-            wp_send_json_error('No hay datos para sincronizar.');
+            wp_send_json_error(esc_html__('No data to synchronize.', 'woo-otec-moodle'));
         }
 
         $sync    = Woo_OTEC_Moodle_Sync::instance();
@@ -529,9 +538,10 @@ final class Woo_OTEC_Moodle_Ajax_Handler {
         }
     }
 
-    // -------------------------------------------------------------------------
-    // SSO
-    // -------------------------------------------------------------------------
+    /**
+     * Single Sign-On (SSO)
+     * Verificador de disponibilidad del extremo de Moodle para autenticación conectada.
+     */
 
     public function handle_test_sso(): void {
         $this->assert_ajax_permissions();
@@ -561,9 +571,10 @@ final class Woo_OTEC_Moodle_Ajax_Handler {
         }
     }
 
-    // -------------------------------------------------------------------------
-    // Logs y ZIP
-    // -------------------------------------------------------------------------
+    /**
+     * Exportación de Registros y Configuración (Dump)
+     * Facilitadores de descarga de archivos para diagnóstico y copias de seguridad de los ajustes.
+     */
 
     public function handle_export_logs(): void {
         if (!current_user_can('manage_options')) {

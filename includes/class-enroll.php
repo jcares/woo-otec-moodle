@@ -329,9 +329,6 @@ final class Woo_OTEC_Moodle_Enroll {
 
         if ($sent) {
             $order->update_meta_data('_pcc_access_email_sent', '1');
-            if ($password !== null && $password !== '') {
-                $order->update_meta_data('_pcc_generated_password', $password);
-            }
             $order->save();
             Woo_OTEC_Moodle_Logger::info('Correo de acceso enviado exitosamente', array('order_id' => $order->get_id(), 'email' => $learner['email']));
             return true;

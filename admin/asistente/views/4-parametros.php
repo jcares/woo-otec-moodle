@@ -4,7 +4,7 @@ if (!defined('ABSPATH')) {
 }
 
 $price = Woo_OTEC_Moodle_Core::instance()->get_option('default_price', '0');
-$instructor = Woo_OTEC_Moodle_Core::instance()->get_option('default_instructor', 'Not assigned');
+$instructor = Woo_OTEC_Moodle_Core::instance()->get_option('default_instructor', __('Not assigned', 'woo-otec-moodle'));
 ?>
 <h3><?php echo esc_html__('Step 4: Base settings for your courses', 'woo-otec-moodle'); ?></h3>
 <p><?php echo esc_html__('To save time, every imported course will use these base values whenever Moodle does not provide them.', 'woo-otec-moodle'); ?></p>

@@ -31,9 +31,11 @@ final class Woo_OTEC_Moodle_API {
         return max(1, (int) Woo_OTEC_Moodle_Core::instance()->get_option('student_role_id', 5));
     }
 
-    // -------------------------------------------------------------------------
-    // Nucleo HTTP: lanza PCC_Moodle_Exception internamente
-    // -------------------------------------------------------------------------
+    /**
+     * Núcleo de peticiones HTTP.
+     * Encapsula la comunicación con la API REST de Moodle, lanzando excepciones controladas
+     * ante errores de conexión o formato de respuesta.
+     */
 
     /**
      * Realiza la peticion HTTP a Moodle.
@@ -143,9 +145,9 @@ final class Woo_OTEC_Moodle_API {
         }
     }
 
-    // -------------------------------------------------------------------------
-    // Metodos publicos de la API
-    // -------------------------------------------------------------------------
+    /**
+     * Métodos públicos de interacción con la API de Moodle.
+     */
 
     public function test_connection(): bool {
         try {
@@ -242,7 +244,7 @@ final class Woo_OTEC_Moodle_API {
     public function create_user($user): array|WP_Error {
         $payload = $this->normalize_user_payload($user);
         if (!$payload) {
-            return new WP_Error('pcc_invalid_user_payload', 'Datos insuficientes para crear usuario Moodle.');
+            return new WP_Error('pcc_invalid_user_payload', __('Insufficient data to create Moodle user.', 'woo-otec-moodle'));
         }
 
         $password = wp_generate_password(14, true, true);
@@ -262,7 +264,7 @@ final class Woo_OTEC_Moodle_API {
         }
 
         if (!is_array($response) || empty($response[0]->id)) {
-            return new WP_Error('pcc_moodle_user_create_failed', 'No fue posible crear el usuario en Moodle.');
+            return new WP_Error('pcc_moodle_user_create_failed', __('It was not possible to create the user in Moodle.', 'woo-otec-moodle'));
         }
 
         return [
@@ -274,10 +276,10 @@ final class Woo_OTEC_Moodle_API {
     public function get_or_create_user(array $data): array|WP_Error {
         $email = sanitize_email($data['email'] ?? '');
         if ($email === '') {
-            return new WP_Error('pcc_invalid_email', 'Email invalido.');
+            return new WP_Error('pcc_invalid_email', __('Invalid email.', 'woo-otec-moodle'));
         }
 
-        // 1. Buscar por email
+        // Paso 1: Intentar ubicar al alumno mediante su correo electrónico vigente.
         $existing = $this->safe_request('core_user_get_users_by_field', [
             'field'  => 'email',
             'values' => [$email],
@@ -288,15 +290,15 @@ final class Woo_OTEC_Moodle_API {
             return ['id' => (int) $user->id, 'created' => false];
         }
 
-        // 2. Crear si no existe
+        // Paso 2: Proceder a la creación de un nuevo registro en Moodle si el alumno no cuenta con perfil activo.
         $password  = wp_generate_password(12, true, true);
         $password .= 'Aa1!';
 
         $new_user = [
             'username'  => strtolower(preg_replace('/[^a-z0-9]/', '', strstr($email, '@', true)) . mt_rand(10, 99)),
             'password'  => $password,
-            'firstname' => !empty($data['firstname']) ? (string) $data['firstname'] : 'Alumno',
-            'lastname'  => !empty($data['lastname']) ? (string) $data['lastname'] : 'Nuevo',
+            'firstname' => !empty($data['firstname']) ? (string) $data['firstname'] : __('Student', 'woo-otec-moodle'),
+            'lastname'  => !empty($data['lastname']) ? (string) $data['lastname'] : __('New', 'woo-otec-moodle'),
             'email'     => $email,
             'auth'      => 'manual',
         ];
@@ -312,7 +314,7 @@ final class Woo_OTEC_Moodle_API {
             return ['id' => (int) $user->id, 'password' => $password, 'created' => true];
         }
 
-        return new WP_Error('pcc_create_failed', 'No se pudo crear el usuario en Moodle.');
+        return new WP_Error('pcc_create_failed', __('Could not create the user in Moodle.', 'woo-otec-moodle'));
     }
 
     public function enroll_user(int $moodle_user_id, int $course_id): bool {
@@ -339,7 +341,7 @@ final class Woo_OTEC_Moodle_API {
             return [
                 'email'     => $email,
                 'firstname' => (string) ($user->first_name !== '' ? $user->first_name : $user->display_name),
-                'lastname'  => (string) ($user->last_name !== '' ? $user->last_name : 'Alumno'),
+                'lastname'  => (string) ($user->last_name !== '' ? $user->last_name : __('Student', 'woo-otec-moodle')),
             ];
         }
 
@@ -352,8 +354,8 @@ final class Woo_OTEC_Moodle_API {
             $lastname  = sanitize_text_field((string) ($user['lastname'] ?? ''));
             return [
                 'email'     => $email,
-                'firstname' => $firstname !== '' ? $firstname : 'Alumno',
-                'lastname'  => $lastname !== '' ? $lastname : 'Alumno',
+                'firstname' => $firstname !== '' ? $firstname : __('Student', 'woo-otec-moodle'),
+                'lastname'  => $lastname !== '' ? $lastname : __('Student', 'woo-otec-moodle'),
             ];
         }
 

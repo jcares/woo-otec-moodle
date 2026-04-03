@@ -9,11 +9,16 @@ final class Woo_OTEC_Moodle_Core {
     private static ?Woo_OTEC_Moodle_Core $instance = null;
     private array $defaults  = array();
 
-    /** @var array<string, callable> Registro de servicios (Tarea #4) */
+    /**
+     * @var array<string, callable> Mapeo de servicios registrados en el contenedor.
+     */
     private array $services  = array();
 
     /** @var array<string, mixed> Instancias resueltas */
     private array $resolved  = array();
+
+    /** @var array<string, string>|null */
+    private ?array $runtime_translations = null;
 
     public static function instance(): Woo_OTEC_Moodle_Core {
         if (self::$instance === null) {
@@ -87,7 +92,7 @@ final class Woo_OTEC_Moodle_Core {
 
     private function load_dependencies(): void {
 
-        // La excepción debe cargarse ANTES que class-api.php (Tarea #5)
+        // Requiere una carga estricta de dependencias; la clase de excepciones debe cargarse antes que la API base.
         $files = array(
             'includes/class-moodle-exception.php',
             'includes/class-logger.php',
@@ -107,13 +112,14 @@ final class Woo_OTEC_Moodle_Core {
             }
         }
 
-        // Registrar servicios en el contenedor (Tarea #4)
+        // Inicialización y registro de los servicios base del plugin en el contenedor.
         $this->register_services();
     }
 
-    // -------------------------------------------------------------------------
-    // Contenedor de servicios (Tarea #4)
-    // -------------------------------------------------------------------------
+    /**
+     * Contenedor de Servicios
+     * Gestiona la inyección de dependencias para los componentes principales.
+     */
 
     /**
      * Registra una fábrica de servicio.
@@ -169,6 +175,8 @@ final class Woo_OTEC_Moodle_Core {
 
         add_action('init', array($this, 'register_runtime'));
         add_action('init', array($this, 'load_textdomain'));
+        add_action('init', array($this, 'normalize_localized_defaults'), 20);
+        add_filter('gettext', array($this, 'translate_runtime_strings'), 20, 3);
         add_action('before_woocommerce_init', array($this, 'declare_woocommerce_compatibility'));
     }
 
@@ -176,11 +184,195 @@ final class Woo_OTEC_Moodle_Core {
         load_plugin_textdomain('woo-otec-moodle', false, dirname(WOO_OTEC_MOODLE_BASENAME) . '/languages');
     }
 
+    public function normalize_localized_defaults(): void {
+        $migration_version = '20260328_3';
+        if ((string) get_option('woo_otec_moodle_i18n_migration_version', '') === $migration_version) {
+            return;
+        }
+
+        $locale = function_exists('determine_locale') ? (string) determine_locale() : (string) get_locale();
+        $is_spanish = stripos($locale, 'es_') === 0 || stripos($locale, 'es') === 0;
+
+        $text_defaults = array(
+            'default_instructor' => 'Not assigned',
+            'fallback_description' => 'Course synchronized automatically from Moodle.',
+            'email_from_name' => 'Virtual Campus',
+            'email_subject' => 'Welcome! Access your modules on {{sitio}}',
+            'email_builder_heading' => 'Your access details are ready',
+            'email_builder_intro' => 'Your purchase has been confirmed successfully. Here are your access details for the platform.',
+            'email_builder_button_text' => 'Access my courses',
+            'email_builder_footer' => 'If you need help, reply to this email and we will gladly assist you.',
+            'single_description_heading' => 'Course description',
+            'single_button_text' => 'Buy course',
+            'shop_intro_title' => 'Explore our course catalog',
+            'shop_intro_text' => 'Discover our available courses and choose the one that best fits your goal.',
+            'shop_button_text' => 'View course',
+            'cart_intro_title' => 'Your training cart',
+            'cart_intro_text' => 'Review your courses before completing the payment.',
+            'checkout_intro_title' => 'Last step to activate your courses',
+            'checkout_intro_text' => 'Complete your information to activate immediate access to your courses.',
+            'checkout_button_text' => 'Complete purchase',
+            'portal_title' => 'My courses',
+            'portal_intro_text' => 'From here you can enter each purchased course directly.',
+            'portal_button_text' => 'Enter course',
+        );
+
+        $legacy_values = array(
+            'shop_intro_title' => array('Explora nuestra oferta de cursos'),
+            'shop_button_text' => array('Ver curso'),
+            'cart_intro_title' => array('Tu carrito de capacitacion'),
+            'portal_title' => array('Mis cursos'),
+            'portal_intro_text' => array('Desde aqui puedes entrar directamente a cada curso comprado.'),
+            'portal_button_text' => array('Entrar al curso'),
+            'email_builder_heading' => array('Tus accesos ya estan listos'),
+            'email_builder_intro' => array('Tu compra fue confirmada correctamente. Aqui tienes los datos para ingresar a tu plataforma.'),
+            'email_builder_button_text' => array('Acceder a mis cursos'),
+        );
+
+        foreach ($text_defaults as $key => $english_value) {
+            $option_name = 'woo_otec_moodle_' . $key;
+            $current = get_option($option_name, null);
+            if (!is_string($current)) {
+                continue;
+            }
+
+            $allowed_values = array_merge(array($english_value), $legacy_values[$key] ?? array());
+            if (!in_array($current, $allowed_values, true)) {
+                continue;
+            }
+
+            update_option($option_name, $is_spanish ? __($english_value, 'woo-otec-moodle') : $english_value);
+        }
+
+        update_option('woo_otec_moodle_i18n_migration_version', $migration_version);
+    }
+
+    public function translate_runtime_strings(string $translation, string $text, string $domain): string {
+        if ($domain !== 'woo-otec-moodle' || $text === '') {
+            return $translation;
+        }
+
+        $map = $this->get_runtime_translations();
+        if ($map === array()) {
+            return $translation;
+        }
+
+        return $map[$text] ?? $translation;
+    }
+
+    private function get_runtime_translations(): array {
+        if ($this->runtime_translations !== null) {
+            return $this->runtime_translations;
+        }
+
+        $locale = function_exists('determine_locale') ? (string) determine_locale() : (string) get_locale();
+        if (stripos($locale, 'es_') !== 0 && stripos($locale, 'es') !== 0) {
+            $this->runtime_translations = array();
+            return $this->runtime_translations;
+        }
+
+        $candidates = array(
+            WOO_OTEC_MOODLE_PATH . 'languages/woo-otec-moodle-' . $locale . '.po',
+            WOO_OTEC_MOODLE_PATH . 'languages/woo-otec-moodle-es_CL.po',
+            WOO_OTEC_MOODLE_PATH . 'languages/woo-otec-moodle-es_ES.po',
+        );
+
+        foreach ($candidates as $path) {
+            if (!file_exists($path)) {
+                continue;
+            }
+
+            $map = $this->parse_po_file($path);
+            if ($map !== array()) {
+                $this->runtime_translations = $map;
+                return $this->runtime_translations;
+            }
+        }
+
+        $this->runtime_translations = array();
+        return $this->runtime_translations;
+    }
+
+    private function parse_po_file(string $path): array {
+        $lines = @file($path, FILE_IGNORE_NEW_LINES);
+        if (!is_array($lines)) {
+            return array();
+        }
+
+        $translations = array();
+        $state = null;
+        $msgid = '';
+        $msgstr = '';
+        $is_fuzzy = false;
+
+        $finalize = static function () use (&$translations, &$msgid, &$msgstr, &$is_fuzzy): void {
+            if ($msgid === '') {
+                $msgid = '';
+                $msgstr = '';
+                $is_fuzzy = false;
+                return;
+            }
+
+            if (!$is_fuzzy && $msgstr !== '') {
+                $translations[$msgid] = $msgstr;
+            }
+
+            $msgid = '';
+            $msgstr = '';
+            $is_fuzzy = false;
+        };
+
+        foreach ($lines as $line) {
+            if (strncmp($line, '#, fuzzy', 8) === 0) {
+                $is_fuzzy = true;
+                continue;
+            }
+
+            if ($line === '') {
+                $finalize();
+                $state = null;
+                continue;
+            }
+
+            if (strncmp($line, 'msgid ', 6) === 0) {
+                if ($msgid !== '' || $msgstr !== '') {
+                    $finalize();
+                }
+                $state = 'msgid';
+                $msgid = $this->decode_po_string(substr($line, 6));
+                continue;
+            }
+
+            if (strncmp($line, 'msgstr ', 7) === 0) {
+                $state = 'msgstr';
+                $msgstr = $this->decode_po_string(substr($line, 7));
+                continue;
+            }
+
+            if ($line !== '' && $line[0] === '"') {
+                if ($state === 'msgid') {
+                    $msgid .= $this->decode_po_string($line);
+                } elseif ($state === 'msgstr') {
+                    $msgstr .= $this->decode_po_string($line);
+                }
+            }
+        }
+
+        $finalize();
+        return $translations;
+    }
+
+    private function decode_po_string(string $value): string {
+        $value = trim($value);
+        $value = trim($value, '"');
+        return stripcslashes($value);
+    }
+
     public function register_runtime(): void {
 
         $this->register_default_options();
 
-        // ADMIN
+        // Inicialización del panel de administración
         if (is_admin()) {
 
             $settings_file = WOO_OTEC_MOODLE_PATH . 'admin/class-settings.php';
@@ -211,7 +403,7 @@ final class Woo_OTEC_Moodle_Core {
 
         }
 
-        // FRONTEND
+        // Inicialización de la vista pública (Frontend)
         if (!is_admin()) {
             $frontend = WOO_OTEC_MOODLE_PATH . 'public/class-frontend.php';
             if (file_exists($frontend)) {
