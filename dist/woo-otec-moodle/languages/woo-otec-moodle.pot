@@ -1,0 +1,1225 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Woo OTEC Moodle 2.1.0\n"
+"Report-Msgid-Bugs-To: https://github.com/jcares/woo-otec-moodle/issues\n"
+"POT-Creation-Date: 2026-03-28 00:00+0000\n"
+"PO-Revision-Date: 2026-03-28 00:00+0000\n"
+"Last-Translator: JCares\n"
+"Language-Team: JCares\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Codex\n"
+"X-Domain: woo-otec-moodle\n"
+
+#: woo-otec-moodle.php
+msgid "Settings"
+msgstr ""
+
+#: woo-otec-moodle.php admin/class-settings.php
+msgid "Woo OTEC Moodle"
+msgstr ""
+
+#: admin/class-settings.php
+msgid "Synchronization"
+msgstr ""
+
+#: admin/class-settings.php
+msgid "Logs"
+msgstr ""
+
+#: admin/class-settings.php
+msgid "No metadata was found for the selected product."
+msgstr ""
+
+#: admin/class-ajax-handler.php
+msgid "Unauthorized request."
+msgstr ""
+
+#: admin/class-ajax-handler.php
+msgid "Test email sent successfully."
+msgstr ""
+
+#: admin/class-ajax-handler.php
+msgid "Invalid product selected."
+msgstr ""
+
+#: admin/class-ajax-handler.php
+msgid "Configuration updated."
+msgstr ""
+
+#: admin/class-ajax-handler.php
+msgid "Empty"
+msgstr ""
+
+#: admin/class-ajax-handler.php
+msgid "The selected course could not be loaded."
+msgstr ""
+
+#: admin/class-ajax-handler.php
+msgid "Select at least one field to view the preview."
+msgstr ""
+
+#: admin/class-ajax-handler.php
+msgid "No value is available for this course."
+msgstr ""
+
+#: admin/class-ajax-handler.php
+msgid "Synchronization completed: %1$d created, %2$d updated, %3$d errors."
+msgstr ""
+
+#: admin/class-ajax-handler.php
+msgid "Server error:"
+msgstr ""
+
+#: admin/class-ajax-handler.php
+msgid "Invalid URL."
+msgstr ""
+
+#: admin/class-ajax-handler.php
+msgid "Connection successful."
+msgstr ""
+
+#: admin/class-ajax-handler.php
+msgid "The URL responded with code: %d"
+msgstr ""
+
+#: admin/class-ajax-handler.php
+msgid "The configuration file could not be generated."
+msgstr ""
+
+#: admin/class-ajax-handler.php
+msgid "You must select a valid JSON file."
+msgstr ""
+
+#: admin/class-ajax-handler.php
+msgid "The configuration file could not be read."
+msgstr ""
+
+#: admin/class-ajax-handler.php
+msgid "The file does not contain valid JSON."
+msgstr ""
+
+#: admin/class-ajax-handler.php
+msgid "The file format is not supported or does not contain importable settings."
+msgstr ""
+
+#: admin/class-ajax-handler.php
+msgid "Configuration imported successfully."
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "No runs yet"
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Completed"
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "With issues"
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Not started"
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Created: %1$d | Updated: %2$d"
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Connection status"
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "OK"
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Pending"
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Last synchronization"
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Email"
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Configured"
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Student portal"
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Active"
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Disabled"
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Home"
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Connect Moodle"
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Student login access"
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Moodle metadata"
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Appearance and colors"
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Email settings"
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Error log"
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "PCCurico"
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "WooCommerce to Moodle Synchronizer"
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "developed by JCares"
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Recommended path to get started"
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Quick guide"
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Step 1"
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Step 2"
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Step 3"
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Step 4"
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Synchronize courses"
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Test email"
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Enable sales"
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Status: OK"
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Status: Pending"
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Recommendation: if this is your first time, use the <strong>Wizard</strong> first and then review each tab for fine adjustments."
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Manual synchronization finished successfully."
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Manual synchronization finished with issues. Review the logs in the Synchronization tab."
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Configuration sections"
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Start configuration wizard"
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Moodle connection"
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Moodle URL"
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Example: `https://campus.yourdomain.com`."
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Moodle token"
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Web service token with permissions for users, courses, categories, and enrollments."
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Student role ID"
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Usually `5`, but it depends on your Moodle setup."
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Default image"
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Select image"
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Used when the course does not include an image from Moodle."
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Default price"
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Amount without currency symbols or separators, for example `49000`."
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Default instructor"
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Fallback text when Moodle does not provide an instructor."
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Fallback description"
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Description used when creating or updating products without enough content."
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Export configuration"
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Download current configuration"
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Download a JSON file with the current plugin configuration, including Moodle connection, parameters, appearance, email, mappings, and active fields."
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Import configuration"
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Upload a JSON file exported from this plugin to restore Moodle connection, parameters, appearance, email, mappings, and active fields."
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Synchronization wizard"
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Categories"
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Teachers"
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Courses"
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Confirmation"
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Step 1: Category selection"
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Loading categories from Moodle. Please select the ones you want to import."
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Loading categories..."
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Confirm and continue"
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Step 2: Detected teachers"
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "These are the teachers associated with the courses in the selected categories. You can verify their names before proceeding."
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Loading teachers..."
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Back"
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Confirm teachers"
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Step 3: Course configuration"
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Edit the course information before importing."
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Next step"
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Step 4: Summary and confirmation"
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Run synchronization"
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "View technical history (logs)"
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Automatic access (SSO)"
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "SSO status"
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Enable SSO"
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Allows direct access to the classroom without an additional manual login."
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "SSO base URL"
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Example: `https://campus.yourdomain.com/auth/userkey/login.php`."
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Redirect after purchase"
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Send the student directly to the virtual classroom after checkout."
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Test"
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Test connection"
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Metadata and mapping"
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Example course"
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Select a synchronized course"
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Fields to display"
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Select the data you want to show in the course card. Labels already use clearer language for the final user."
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Available course data"
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Enable only the information you want to display. If the course has a synchronized cover image from Moodle, you will also see it visually here."
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Select a course to list the available metadata."
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "The preview updates according to the selected example course and the fields you keep active."
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Live preview"
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Select a course and enable the fields you want to display to preview the card in real time."
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Email delivery and tests"
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Enable sending"
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Sender email"
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Subject"
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "The visual email appearance is now edited from the Appearance tab."
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Preview"
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Email for test delivery"
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Send test"
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Visual builder"
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Configure each template separately. Changes apply only to plugin areas to avoid affecting the rest of the site."
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Shop"
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Cart"
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Portal"
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Example synchronized course"
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "This is how the main course block will look with your current palette."
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Modality not provided"
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Instructor not provided"
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Control the course card, the main button text, and the description section."
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Template style"
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Preview course"
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "No short summary available."
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "No price available"
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Use a real course to preview the template with actual information."
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Buy button text"
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Buy button color"
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Description title"
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Primary color"
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Used in buttons, icons, and headings."
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Secondary color"
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Text color"
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Accent color"
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Quick preview"
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "No cover image"
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Buy course"
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Course description"
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Edit the top block and the main button color for the catalog."
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Block title"
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Supporting text"
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Background color"
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Title color"
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Button text"
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Button color"
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Explore our course catalog"
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Discover our available courses and choose the one that best fits your goal."
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "View course"
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Define the top message and the button color used to continue to checkout."
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Your training cart"
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Review your courses before completing the payment."
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Continue to checkout"
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Define the intro block and the final purchase button color."
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Last step to activate your courses"
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Complete purchase"
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Complete your information to activate immediate access to your courses."
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Portal / My courses"
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Configure the shortcode block and course access button independently."
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Portal title"
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "My courses"
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Enter course"
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "From here you can enter each purchased course directly."
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Edit the visual email content here without touching HTML."
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Friendly editor"
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Use the visual builder without HTML"
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Main title"
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Your access details are ready"
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Main text"
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Access my courses"
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Closing text"
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Email logo"
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Select logo"
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "If you do not select one, the logo configured in your theme will be used automatically."
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Header color"
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Your purchase has been confirmed successfully. Here are your access details for the platform."
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Latest 100 log lines:"
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Export log"
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "There are no recent entries."
+msgstr ""
+
+#: admin/views/settings-page.php
+msgid "Save configuration"
+msgstr ""
+
+#: admin/asistente/clase-asistente.php
+msgid "Moodle wizard"
+msgstr ""
+
+#: admin/asistente/clase-asistente.php
+msgid "You do not have sufficient permissions to access this page."
+msgstr ""
+
+#: admin/asistente/clase-asistente.php
+msgid "The main wizard template could not be found."
+msgstr ""
+
+#: admin/asistente/views/plantilla.php
+msgid "Moodle"
+msgstr ""
+
+#: admin/asistente/views/plantilla.php
+msgid "Wizard"
+msgstr ""
+
+#: admin/asistente/views/plantilla.php
+msgid "1. Connection"
+msgstr ""
+
+#: admin/asistente/views/plantilla.php
+msgid "2. Validation"
+msgstr ""
+
+#: admin/asistente/views/plantilla.php
+msgid "3. Permissions"
+msgstr ""
+
+#: admin/asistente/views/plantilla.php
+msgid "4. Base settings"
+msgstr ""
+
+#: admin/asistente/views/plantilla.php
+msgid "5. Finish"
+msgstr ""
+
+#: admin/asistente/views/plantilla.php
+msgid "Step not found."
+msgstr ""
+
+#: admin/asistente/views/plantilla.php
+msgid "Go to main dashboard"
+msgstr ""
+
+#: admin/asistente/views/1-conexion.php
+msgid "Step 1: Connect your school"
+msgstr ""
+
+#: admin/asistente/views/1-conexion.php
+msgid "Tell the system where your Moodle course platform is located and provide the access token so both systems can communicate securely."
+msgstr ""
+
+#: admin/asistente/views/1-conexion.php
+msgid "School URL"
+msgstr ""
+
+#: admin/asistente/views/1-conexion.php
+msgid "Use the exact URL your students use to access their courses. Copy it from your browser and make sure it starts with <strong>https://</strong>."
+msgstr ""
+
+#: admin/asistente/views/1-conexion.php
+msgid "Connection token"
+msgstr ""
+
+#: admin/asistente/views/1-conexion.php
+msgid "This is a long secret token generated inside Moodle, usually in the External Services section. It allows the store to create students and enroll them automatically after each purchase."
+msgstr ""
+
+#: admin/asistente/views/2-validacion.php
+msgid "Step 2: Validate connection"
+msgstr ""
+
+#: admin/asistente/views/2-validacion.php
+msgid "We will test your school connection to confirm that the URL and token are working correctly."
+msgstr ""
+
+#: admin/asistente/views/2-validacion.php
+msgid "Connection successful!"
+msgstr ""
+
+#: admin/asistente/views/2-validacion.php
+msgid "Great, your store and virtual school are already connected. You can continue."
+msgstr ""
+
+#: admin/asistente/views/2-validacion.php
+msgid "Connection failed"
+msgstr ""
+
+#: admin/asistente/views/2-validacion.php
+msgid "We could not reach the school. Please <strong>go back to the previous step</strong> and make sure the URL and token were copied exactly as provided, without trailing spaces."
+msgstr ""
+
+#: admin/asistente/views/3-roles.php
+msgid "Step 3: Student permissions (role)"
+msgstr ""
+
+#: admin/asistente/views/3-roles.php
+msgid "Choose the access role your customers will use when entering the school after buying a course. Most Moodle sites use the Student role."
+msgstr ""
+
+#: admin/asistente/views/3-roles.php
+msgid "Role ID in Moodle"
+msgstr ""
+
+#: admin/asistente/views/3-roles.php
+msgid "In most Moodle platforms, the Student role is <strong>5</strong>. Leave this value unless your technical team told you to use a different role ID."
+msgstr ""
+
+#: admin/asistente/views/4-parametros.php
+msgid "Step 4: Base settings for your courses"
+msgstr ""
+
+#: admin/asistente/views/4-parametros.php
+msgid "To save time, every imported course will use these base values whenever Moodle does not provide them."
+msgstr ""
+
+#: admin/asistente/views/4-parametros.php
+msgid "Suggested base price"
+msgstr ""
+
+#: admin/asistente/views/4-parametros.php
+msgid "If you import a new course, the system will use this temporary price to avoid publishing something as free by mistake. Example: <strong>25000</strong> without commas or dots."
+msgstr ""
+
+#: admin/asistente/views/4-parametros.php
+msgid "Main instructor name"
+msgstr ""
+
+#: admin/asistente/views/4-parametros.php
+msgid "This name will be used if the system cannot identify the course instructor. Example: Academic Team or OTEC Trainers."
+msgstr ""
+
+#: admin/asistente/views/4-parametros.php
+msgid "Default cover image"
+msgstr ""
+
+#: admin/asistente/views/4-parametros.php
+msgid "Remove image"
+msgstr ""
+
+#: admin/asistente/views/4-parametros.php
+msgid "If a Moodle course does not include a cover image, this image will be assigned automatically in WooCommerce."
+msgstr ""
+
+#: admin/asistente/views/4-parametros.php
+msgid "Select default image"
+msgstr ""
+
+#: admin/asistente/views/4-parametros.php
+msgid "Use this image"
+msgstr ""
+
+#: admin/asistente/views/5-finalizar.php
+msgid "Step 5: Everything is ready!"
+msgstr ""
+
+#: admin/asistente/views/5-finalizar.php
+msgid "You completed the wizard successfully. WooCommerce can now sell courses and create student access automatically."
+msgstr ""
+
+#: admin/asistente/views/5-finalizar.php
+msgid "The system is active"
+msgstr ""
+
+#: admin/asistente/views/5-finalizar.php
+msgid "Press the button below to enter your main dashboard. From there you can sync courses into the store, adjust visual templates, and review the welcome emails your students will receive."
+msgstr ""
+
+#: public/templates/my-courses.php
+msgid "No date"
+msgstr ""
+
+#: public/templates/my-courses.php
+msgid "You do not have enabled courses yet. Once you complete a purchase, they will appear here automatically."
+msgstr ""
+
+#: public/templates/my-courses.php
+msgid "Available"
+msgstr ""
+
+#: public/templates/my-courses.php public/class-frontend.php
+msgid "Instructor"
+msgstr ""
+
+#: public/templates/my-courses.php
+msgid "Start"
+msgstr ""
+
+#: public/templates/my-courses.php
+msgid "End"
+msgstr ""
+
+#: public/class-frontend.php
+msgid "Start date"
+msgstr ""
+
+#: public/class-frontend.php
+msgid "End date"
+msgstr ""
+
+#: public/class-frontend.php
+msgid "Duration"
+msgstr ""
+
+#: public/class-frontend.php
+msgid "Modality"
+msgstr ""
+
+#: public/class-frontend.php
+msgid "Location"
+msgstr ""
+
+#: public/class-frontend.php
+msgid "Field"
+msgstr ""
+
+#: includes/class-api.php
+msgid "Network error: The Moodle server could not be resolved via DNS. Please verify the URL."
+msgstr ""
+
+#: includes/class-api.php
+msgid "Timeout error: The Moodle server took too long to respond."
+msgstr ""
+
+#: includes/class-api.php
+msgid "Invalid HTTP response from Moodle (code %d)."
+msgstr ""
+
+#: includes/class-api.php
+msgid "Invalid JSON response from Moodle."
+msgstr ""
+
+#: includes/class-api.php
+msgid "Moodle API error"
+msgstr ""
+
+#: includes/class-mailer.php
+msgid "Student"
+msgstr ""
+
+#: includes/class-mailer.php
+msgid "If you need help, reply to this email and we will gladly assist you."
+msgstr ""
+
+#: includes/class-sync.php public/class-frontend.php
+msgid "WooCommerce is not active."
+msgstr ""
+
+#: includes/class-sync.php
+msgid "Courses could not be retrieved from Moodle."
+msgstr ""
+
+#: includes/class-sync.php
+msgid "Synchronization completed."
+msgstr ""
+
+#: includes/class-sync.php
+msgid "Moodle connection error:"
+msgstr ""
+
+#: includes/class-sync.php
+msgid "Course ID %d ignored (system or site home)."
+msgstr ""
+
+#: includes/class-sync.php
+msgid "Updated course with Moodle ID %d."
+msgstr ""
+
+#: includes/class-sync.php
+msgid "Created course with Moodle ID %d."
+msgstr ""
+
+#: includes/class-sync.php
+msgid "The course with Moodle ID %d could not be synchronized."
+msgstr ""
+
+#: includes/class-sync.php
+msgid "Moodle course"
+msgstr ""
+
+#: includes/class-sync.php
+msgid "Course synchronized automatically from Moodle."
+msgstr ""
+
+#: includes/class-sync.php
+msgid "Not assigned"
+msgstr ""
+
+#: includes/class-enroll.php
+msgid "You must provide a valid test email."
+msgstr ""
+
+#: includes/class-enroll.php
+msgid "The test email could not be sent."
+msgstr ""
+
+#: includes/class-enroll.php
+msgid "PCC: resend access email"
+msgstr ""
+
+#: includes/class-enroll.php
+msgid "Use your current Moodle password"
+msgstr ""
+
+#: includes/class-enroll.php
+msgid "Demo student"
+msgstr ""
+
+#: includes/class-enroll.php
+msgid "Demo Course 1"
+msgstr ""
+
+#: includes/class-enroll.php
+msgid "Demo Course 2"
+msgstr ""
+
+#: includes/class-enroll.php
+msgid "Access your courses"
+msgstr ""
+
+#: includes/class-enroll.php
+msgid "Use the following direct access links:"
+msgstr ""
+
+#: includes/class-enroll.php public/class-frontend.php
+msgid "Access course"
+msgstr ""
+
+#: config/defaults.php
+msgid "Virtual Campus"
+msgstr ""
+
+#: config/defaults.php
+msgid "Welcome! Access your modules on {{sitio}}"
+msgstr ""
+
+#: includes/class-mailer.php
+msgid "Access your courses on {{sitio}}"
+msgstr ""
+
+#: includes/class-mailer.php
+msgid "Welcome to {{sitio}}"
+msgstr ""
+
+#: includes/class-mailer.php
+msgid "Hello {{nombre}},"
+msgstr ""
+
+#: includes/class-mailer.php
+msgid "User:"
+msgstr ""
+
+#: includes/class-mailer.php
+msgid "Password:"
+msgstr ""
+
+#: includes/class-mailer.php
+msgid "Courses:"
+msgstr ""
+
+#: includes/class-mailer.php
+msgid "If the button does not work, copy this link into your browser:"
+msgstr ""
+
+#: public/class-frontend.php
+msgid "Course start date"
+msgstr ""
+
+#: public/class-frontend.php
+msgid "Course end date"
+msgstr ""
+
+#: public/class-frontend.php
+msgid "Instructor name"
+msgstr ""
+
+#: public/class-frontend.php
+msgid "Course format"
+msgstr ""
+
+#: public/class-frontend.php
+msgid "Sections"
+msgstr ""
+
+#: public/class-frontend.php
+msgid "Completion certificate"
+msgstr ""
+
+#: public/class-frontend.php
+msgid "Included"
+msgstr ""
+
+#: public/class-frontend.php
+msgid "View course"
+msgstr ""
+
+#: public/class-frontend.php
+msgid "You must log in to view your courses."
+msgstr ""
